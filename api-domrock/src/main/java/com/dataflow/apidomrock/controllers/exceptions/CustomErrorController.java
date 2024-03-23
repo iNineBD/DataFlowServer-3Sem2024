@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+/*
+* Essa classe implementa a ErrorController e mapeia erros do tipo: "url digitada errada..."
+* */
 @RestController
 public class CustomErrorController implements ErrorController {
     private static final String PATH = "/error";

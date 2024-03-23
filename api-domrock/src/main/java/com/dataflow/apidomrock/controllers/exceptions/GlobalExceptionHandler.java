@@ -10,6 +10,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.AccessDeniedException;
 
+/*
+* Essa classe está mapeada pelo ControllerAdvice - isso siginifica que o spring vai buscar uma trataiva para qualquer exceção lançada nos controllers
+* Como isso funciona?
+* Quando estouramos uma exceção, ela tem um tipo (RuntimeException... etc)
+*
+* O Adivice vem nessa classe GlobalExceptionHandler e busca o metodo que trata exceções do tipo em questão.
+*
+* Se fosse uma exeção do RuntimeException, por exemplo, a função invocada seria a handleException
+* */
 @ControllerAdvice
 public class GlobalExceptionHandler {
     //Exceção para recurso não encontrado
