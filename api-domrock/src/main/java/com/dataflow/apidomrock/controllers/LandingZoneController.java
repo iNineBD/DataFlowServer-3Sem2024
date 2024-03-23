@@ -1,7 +1,8 @@
 package com.dataflow.apidomrock.controllers;
 
+import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.entities.database.Metadata;
-import com.dataflow.apidomrock.entities.http.responses.CustomResponseEntity;
+import com.dataflow.apidomrock.dto.CustomResponseDTO;
 import com.dataflow.apidomrock.services.LandingZoneService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +20,11 @@ public class LandingZoneController {
 
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
-    public ResponseEntity<CustomResponseEntity<List<Metadata>>> processUploadCSV(
+    public ResponseEntity<CustomResponseDTO<UploadCSVResponseDTO>> processUploadCSV(
             @RequestPart MultipartFile multipartFile,
             @RequestParam(required = false) String delimiter){
         //invoca a func do service
-        List<Metadata> listMetadata = lzService.processUploadCSV(multipartFile, delimiter);
-        return ResponseEntity.ok().body(new CustomResponseEntity<>("Processamento efetuado com sucesso", listMetadata));
+        UploadCSVResponseDTO response = lzService.processUploadCSV(multipartFile, delimiter);
+        return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", response));
     }
 }

@@ -1,10 +1,9 @@
-package com.dataflow.apidomrock.entities.http.responses;
+package com.dataflow.apidomrock.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -17,13 +16,13 @@ import java.util.UUID;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustomResponseEntity<T> {
+public class CustomResponseDTO<T> {
     private UUID transID;
     private String critica;
     private LocalDateTime serverTime;
     private T response;
 
-    public CustomResponseEntity(String feedback, T response) {
+    public CustomResponseDTO(String feedback, T response) {
         this.critica = feedback;
         this.response = response;
         this.transID = UUID.randomUUID();

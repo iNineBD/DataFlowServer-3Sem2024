@@ -1,5 +1,6 @@
 package com.dataflow.apidomrock.services;
 
+import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.services.utils.ValidateRequest;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.List;
 @Service
 public class LandingZoneService {
 
-    public List<Metadata> processUploadCSV(MultipartFile multipartFile, String delimiter) {
+    public UploadCSVResponseDTO processUploadCSV(MultipartFile multipartFile, String delimiter) {
 
         List<Metadata> metadatas = new ArrayList<>();
 
@@ -47,7 +48,9 @@ public class LandingZoneService {
             throw new RuntimeException(ex);
         }
 
-        return metadatas;
+        double fileSize = (double) multipartFile.getSize() / (1024 * 1024);
+
+        return new UploadCSVResponseDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
     }
 
 }
