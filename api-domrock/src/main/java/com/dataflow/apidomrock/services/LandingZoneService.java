@@ -5,6 +5,7 @@ import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.services.utils.ValidateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,14 +17,15 @@ import java.util.List;
 @Service
 public class LandingZoneService {
 
-    public UploadCSVResponseDTO processUploadCSV(MultipartFile multipartFile, String delimiter) {
+    public UploadCSVResponseDTO processUploadCSV(MultipartHttpServletRequest request, String delimiter) {
 
         List<Metadata> metadatas = new ArrayList<>();
+        MultipartFile multipartFile;
 
         try {
             //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
             //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
-            ValidateRequest.validateprocessUploadCSV(multipartFile, delimiter);
+            multipartFile = ValidateRequest.validateprocessUploadCSV(request, delimiter);
 
             //lendo o arquivo
             InputStream in = multipartFile.getInputStream();
@@ -46,6 +48,10 @@ public class LandingZoneService {
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
+        }
+
+        if (multipartFile == null){
+            throw new RuntimeException("Erro ao interpretar o arquivo inserido");
         }
 
         double fileSize = (double) multipartFile.getSize() / (1024 * 1024);

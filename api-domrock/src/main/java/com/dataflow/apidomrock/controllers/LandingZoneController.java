@@ -7,6 +7,7 @@ import com.dataflow.apidomrock.services.LandingZoneService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class LandingZoneController {
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
     public ResponseEntity<CustomResponseDTO<UploadCSVResponseDTO>> processUploadCSV(
-            @RequestPart MultipartFile multipartFile,
+            MultipartHttpServletRequest multipartFile,
             @RequestParam(required = false) String delimiter){
         //invoca a func do service
         UploadCSVResponseDTO response = lzService.processUploadCSV(multipartFile, delimiter);
