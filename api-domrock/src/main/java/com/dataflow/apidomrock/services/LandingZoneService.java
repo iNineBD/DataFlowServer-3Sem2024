@@ -17,40 +17,36 @@ import java.util.List;
 @Service
 public class LandingZoneService {
 
-    public UploadCSVResponseDTO processUploadCSV(MultipartHttpServletRequest request, String delimiter) {
+    public UploadCSVResponseDTO processUploadCSV(MultipartHttpServletRequest request, String delimiter) throws IOException {
 
         List<Metadata> metadatas = new ArrayList<>();
         MultipartFile multipartFile;
 
-        try {
-            //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
-            //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
-            multipartFile = ValidateRequest.validateprocessUploadCSV(request, delimiter);
+        //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
+        //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
+        multipartFile = ValidateRequest.validateprocessUploadCSV(request, delimiter);
 
-            //lendo o arquivo
-            InputStream in = multipartFile.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(in));
+        //lendo o arquivo
+        InputStream in = multipartFile.getInputStream();
+        BufferedReader rd = new BufferedReader(new InputStreamReader(in));
 
-            //pego o cabeçalho (nome das colunas)
-            String line = rd.readLine().trim();
+        //pego o cabeçalho (nome das colunas)
+        String line = rd.readLine().trim();
 
-            //isso foi feito para minimizar problemas do tipo: CSV não integro
-            while (line.endsWith(";")) {
-                line = line.substring(0, line.length() - 1);
-            }
-
-            //divido o nome das colunas pelo delimitador especificado
-            String[] headers = line.split(delimiter);
-
-            //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
-            for (String columName : headers) {
-                metadatas.add(new Metadata(columName, null, null, null, null, null));
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        //isso foi feito para minimizar problemas do tipo: CSV não integro
+        while (line.endsWith(";")) {
+            line = line.substring(0, line.length() - 1);
         }
 
-        if (multipartFile == null){
+        //divido o nome das colunas pelo delimitador especificado
+        String[] headers = line.split(delimiter);
+
+        //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
+        for (String columName : headers) {
+            metadatas.add(new Metadata(columName, null, null, null, null, null));
+        }
+
+        if (multipartFile == null) {
             throw new RuntimeException("Erro ao interpretar o arquivo inserido");
         }
 

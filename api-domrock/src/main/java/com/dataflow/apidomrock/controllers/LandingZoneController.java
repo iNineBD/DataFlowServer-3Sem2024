@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.IOException;
 import java.util.List;
 
 //Esta classe é o controller da landing zone
@@ -21,10 +22,7 @@ public class LandingZoneController {
 
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
-    public ResponseEntity<CustomResponseDTO<UploadCSVResponseDTO>> processUploadCSV(
-            MultipartHttpServletRequest multipartFile,
-            @RequestParam(required = false) String delimiter){
-        //invoca a func do service
+    public ResponseEntity<CustomResponseDTO<UploadCSVResponseDTO>> processUploadCSV(MultipartHttpServletRequest multipartFile, @RequestParam(required = false) String delimiter) throws IOException {
         UploadCSVResponseDTO response = lzService.processUploadCSV(multipartFile, delimiter);
         return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", response));
     }

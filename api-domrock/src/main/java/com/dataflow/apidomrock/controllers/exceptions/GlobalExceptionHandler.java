@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 
 /*
@@ -25,6 +26,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<CustomResponseDTO<Object>> handleResourceNotFoundException(ResponseStatusException ex) {
         CustomResponseDTO<Object> customResponse = new CustomResponseDTO<>(ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(customResponse);
+    }
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<CustomResponseDTO<Object>> handleIOReaderFileException(ResponseStatusException ex) {
+        CustomResponseDTO<Object> customResponse = new CustomResponseDTO<>("Erro ao serializar arquivo inserido", null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(customResponse);
     }
 
