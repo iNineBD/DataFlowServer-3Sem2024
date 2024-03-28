@@ -25,7 +25,7 @@ public class ValidateRequest {
 
         MultipartFile file = files.getFirst();
 
-        if (delimiter == null){
+        if (delimiter == null || delimiter.isEmpty()){
             throw new IllegalArgumentException("É necessário especificar o delimitador do arquivo");
         }
         if (delimiter.length() > 1){
