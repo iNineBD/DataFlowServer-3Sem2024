@@ -23,22 +23,8 @@ import java.util.Optional;
 
 @Service
 public class LandingZoneService {
-
-    @Autowired
-    private OrganizacaoRepository orgRepository;
-    @Autowired
-    private NivelAcessoRepository nivelRepository;
-    @Autowired
-    private UsuarioRepository userRepository;
-    @Autowired
-    private ArquivoRepository fileRepository;
-
     @Transactional(readOnly = false)
     public UploadCSVResponseDTO processUploadCSV(MultipartHttpServletRequest request, String delimiter) throws IOException {
-
-
-
-        testeInsert();
 
         List<Metadata> metadatas = new ArrayList<>();
         MultipartFile multipartFile;
@@ -75,24 +61,4 @@ public class LandingZoneService {
 
         return new UploadCSVResponseDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
     }
-
-    @Transactional(readOnly = false)
-    public void testeInsert(){
-//        Usuario user = new Usuario();
-//        userRepository.save();
-
-        List<Usuario> org = userRepository.findAll();
-
-        System.out.println("ola");
-
-        NivelAcesso nll = new NivelAcesso("landing");
-        List<NivelAcesso> lis = new ArrayList<>();
-        lis.add(nll);
-        Arquivo arq = new Arquivo(Long.getLong("teste"), "testando", new Usuario("jm", "123", new Organizacao("teste"), lis), new Organizacao("teste"), new Status("aguardando landing"));
-
-
-        fileRepository.save(arq);
-
-    }
-
 }
