@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "metadado")
 @Getter
@@ -18,11 +20,11 @@ import lombok.Setter;
 public class Metadata {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer ID;
+    private Long ID;
     private String fieldName;
     private TypeEnum fieldTypeEnum;
     private Integer fieldMaxLength;
-    private Object fieldDefaultValue;
+    private String fieldDefaultValue;
     private String fieldDescription;
     private Boolean fieldIsRequired;
 }
