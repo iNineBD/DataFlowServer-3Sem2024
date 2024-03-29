@@ -25,6 +25,6 @@ public class Arquivo {
     private Organizacao organizacao;
 
     @ManyToOne
-    @JoinColumn(name = "status")
+    @JoinColumn(name = "status_id")
     private Status status;
 }
