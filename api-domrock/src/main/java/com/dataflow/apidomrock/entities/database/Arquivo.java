@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "arquivo")
 @AllArgsConstructor
@@ -27,4 +29,8 @@ public class Arquivo {
     @ManyToOne
     @JoinColumn(name = "status_id")
     private Status status;
+
+    @OneToMany
+    @JoinColumn(name = "id")
+    private List<Metadata> metadados;
 }
