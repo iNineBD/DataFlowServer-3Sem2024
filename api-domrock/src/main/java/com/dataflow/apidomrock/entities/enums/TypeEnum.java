@@ -1,5 +1,5 @@
 package com.dataflow.apidomrock.entities.enums;
 
-public enum Type {
+public enum TypeEnum {
     INTEIRO, TEXTO, DATA, DECIMAL, BOOLEANO
 }

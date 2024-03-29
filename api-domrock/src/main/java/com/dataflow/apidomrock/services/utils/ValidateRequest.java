@@ -1,6 +1,5 @@
 package com.dataflow.apidomrock.services.utils;
 
-import org.apache.tika.Tika;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
