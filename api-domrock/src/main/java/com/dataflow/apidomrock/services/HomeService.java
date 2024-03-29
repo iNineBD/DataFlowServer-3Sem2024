@@ -1,5 +1,6 @@
 package com.dataflow.apidomrock.services;
 
+import com.dataflow.apidomrock.dto.ArquivoDTO;
 import com.dataflow.apidomrock.dto.HomeResponseDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Organizacao;
@@ -32,50 +33,60 @@ public class HomeService {
                     .map(Organizacao::getNome)
                     .collect(Collectors.toList());
 
-            List<Arquivo> arquivos = arquivoRepository.findByOrganizacao(organizacao.get(0));
-
-            return arquivos;
+            return arquivoRepository.findByOrganizacao(organizacao.get(0));
 
         }else{
             throw new RuntimeException("Usuário não cadastrado");
         }
     }
 
-    public List<Arquivo> arquivosLanding(List<Arquivo> arquivos){
+    public List<ArquivoDTO> arquivosLanding(List<Arquivo> arquivos){
         int qtdArquivos = arquivos.size();
-        List<Arquivo> arquivosLz = new ArrayList<>();
+        List<Arquivo> arq = new ArrayList<>();
 
-        for (int i = 0; i < qtdArquivos; i++){
-            if(arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId()== 2 || arquivos.get(i).getStatus().getId() == 98){
-                arquivosLz.add(arquivos.get(i));
+        for (int i = 0; i < qtdArquivos; i++) {
+            if (arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId() == 2 || arquivos.get(i).getStatus().getId() == 98) {
+                arq.add(arquivos.get(i));
             }
         }
+
+        List<ArquivoDTO> arquivosLz = arq.stream()
+                .map(ArquivoDTO::new)
+                .collect(Collectors.toList());
 
         return arquivosLz;
     }
 
-    public List<Arquivo> arquivosBronze(List<Arquivo> arquivos){
+    public List<ArquivoDTO> arquivosBronze(List<Arquivo> arquivos){
         int qtdArquivos = arquivos.size();
-        List<Arquivo> arquivosBz = new ArrayList<>();
+        List<Arquivo> arq = new ArrayList<>();
 
         for (int i = 0; i < qtdArquivos; i++){
             if(arquivos.get(i).getStatus().getId() == 3 || arquivos.get(i).getStatus().getId() == 4 || arquivos.get(i).getStatus().getId() == 99){
-                arquivosBz.add(arquivos.get(i));
+                arq.add(arquivos.get(i));
             }
         }
+
+        List<ArquivoDTO> arquivosBz = arq.stream()
+                .map(ArquivoDTO::new)
+                .collect(Collectors.toList());
 
         return arquivosBz;
     }
 
-    public List<Arquivo> arquivosSilver(List<Arquivo> arquivos){
+    public List<ArquivoDTO> arquivosSilver(List<Arquivo> arquivos){
         int qtdArquivos = arquivos.size();
-        List<Arquivo> arquivosSz = new ArrayList<>();
+        List<Arquivo> arq = new ArrayList<>();
 
         for (int i = 0; i < qtdArquivos; i++){
             if(arquivos.get(i).getStatus().getId() == 5){
-                arquivosSz.add(arquivos.get(i));
+                arq.add(arquivos.get(i));
             }
         }
+
+        List<ArquivoDTO> arquivosSz = arq.stream()
+                .map(ArquivoDTO::new)
+                .collect(Collectors.toList());
 
         return arquivosSz;
     }
