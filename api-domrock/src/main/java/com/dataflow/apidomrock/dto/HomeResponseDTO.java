@@ -7,5 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record HomeResponseDTO(@JsonAlias("response") List<Arquivo> listaArquivos) {
+public record HomeResponseDTO(@JsonAlias("landing") List<Arquivo> arquivosLanding,
+                              @JsonAlias("bronze") List<Arquivo> arquivosBronze,
+                              @JsonAlias("silver") List<Arquivo> arquivosSilver) {
 }
