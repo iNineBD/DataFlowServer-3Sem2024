@@ -1,22 +1,38 @@
 package com.dataflow.apidomrock.entities.database;
 
-import com.dataflow.apidomrock.entities.enums.Type;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
+@Entity
+@Table(name = "metadado")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Metadata {
-    private String fieldName;
-    private Type fieldType;
-    private Integer fieldMaxLength;
-    private Object fieldDefaultValue;
-    private String fieldDescription;
-    private Boolean fieldIsRequired;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer ID;
+    private String nome;
+    private String valorPadrao;
+    private String descricao;
+
+
+    @ManyToMany(targetEntity= NivelAcesso.class, fetch = FetchType.LAZY)
+    @JoinTable(name = "detem", // nome da tabela no sql
+            joinColumns = @JoinColumn(name = "metadado_id"), // fk do metadado na detem
+            inverseJoinColumns = @JoinColumn(name = "restricao_nome") // fk do restricao na detem
+    )
+    private List<Restricao> restricoes;
+
+    @ManyToOne
+    @JoinColumn(name = "nome_tipo")
+    private Tipo tipo;
 }

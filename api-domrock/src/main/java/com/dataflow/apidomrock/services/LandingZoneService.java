@@ -1,9 +1,15 @@
 package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
+import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
+import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.repository.ArquivoRepository;
+import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.utils.ValidateRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -17,7 +23,15 @@ import java.util.List;
 @Service
 public class LandingZoneService {
 
+    @Autowired
+    ArquivoRepository userRepository;
+
+    @Transactional(readOnly = false)
     public UploadCSVResponseDTO processUploadCSV(MultipartHttpServletRequest request, String delimiter) throws IOException {
+
+        List<Arquivo> user = userRepository.findAll();
+
+        System.out.println("iha");
 
         List<Metadata> metadatas = new ArrayList<>();
         MultipartFile multipartFile;
@@ -43,7 +57,7 @@ public class LandingZoneService {
 
         //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
         for (String columName : headers) {
-            metadatas.add(new Metadata(columName, null, null, null, null, null));
+            metadatas.add(new Metadata(null, columName, null, null, null, null));
         }
 
         if (multipartFile == null) {
@@ -54,5 +68,4 @@ public class LandingZoneService {
 
         return new UploadCSVResponseDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
     }
-
 }

@@ -1,24 +1,24 @@
 package com.dataflow.apidomrock.services.utils;
 
-import com.dataflow.apidomrock.entities.enums.Type;
+import com.dataflow.apidomrock.entities.enums.TypeEnum;
 
 public class InferenceTypes {
-    public static Type inferTypeField(String[] fieldValues){
-        Type typeFinal = Type.TEXTO;
+    public static TypeEnum inferTypeField(String[] fieldValues){
+        TypeEnum typeEnumFinal = TypeEnum.TEXTO;
         for (String input : fieldValues){
             if (isInteger(input)) {
-                typeFinal =  Type.INTEIRO;
+                typeEnumFinal =  TypeEnum.INTEIRO;
             } else if (isDouble(input)) {
-                typeFinal =  Type.DECIMAL;
+                typeEnumFinal =  TypeEnum.DECIMAL;
             } else if (isBoolean(input)) {
-                typeFinal =  Type.BOOLEANO;
+                typeEnumFinal =  TypeEnum.BOOLEANO;
             } else if (DateInferenceType.isDate(input)) {
-                typeFinal =  Type.DATA;
+                typeEnumFinal =  TypeEnum.DATA;
             } else {
-                typeFinal =  Type.TEXTO;
+                typeEnumFinal =  TypeEnum.TEXTO;
             }
         }
-        return typeFinal;
+        return typeEnumFinal;
     }
 
     public static boolean isInteger(String input) {

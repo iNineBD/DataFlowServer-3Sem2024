@@ -1,16 +1,17 @@
 package com.dataflow.apidomrock.controllers;
 
-import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
-import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.dto.CustomResponseDTO;
+import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.services.LandingZoneService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
-import java.util.List;
 
 //Esta classe é o controller da landing zone
 @RestController
@@ -18,7 +19,8 @@ import java.util.List;
 public class LandingZoneController {
 
     //injecao de dependencia do service responsavel pela landing zone
-    LandingZoneService lzService = new LandingZoneService();
+    @Autowired
+    LandingZoneService lzService;
 
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
