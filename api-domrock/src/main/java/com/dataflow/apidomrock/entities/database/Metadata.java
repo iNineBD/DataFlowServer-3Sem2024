@@ -21,6 +21,7 @@ public class Metadata {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ID;
     private String nome;
+    private Boolean ativo;
     private String valorPadrao;
     private String descricao;
 
