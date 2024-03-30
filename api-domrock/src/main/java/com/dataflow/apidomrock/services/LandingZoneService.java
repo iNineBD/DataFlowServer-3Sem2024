@@ -29,15 +29,13 @@ import java.util.List;
 public class LandingZoneService {
 
     @Autowired
-    ArquivoRepository userRepository;
+    ArquivoRepository arquivoRepository;
 
     @Autowired
     MetadataRepository metadataRepository;
 
     @Transactional(readOnly = false)
     public UploadCSVResponseDTO processUploadCSV(MultipartHttpServletRequest request, String delimiter) throws IOException {
-
-        List<Arquivo> user = userRepository.findAll();
 
         List<Metadata> metadatas = new ArrayList<>();
         MultipartFile multipartFile;
@@ -77,21 +75,41 @@ public class LandingZoneService {
     @Transactional
     public void saveMetadadosInDataBase (RequestBodySaveDTO requestBodySaveDTO){
 
-        List<Arquivo> user = userRepository.findAll();
-        System.out.println("a");
+        /* TODO:
+            Olá dona Ana Raquel Yamamoto Sasaki Machado!
+            Antes de salvar o metadado, vamos precisar verificar algumas coisas:
+                ARQUIVO: se olharmos no banco de dados, veremos que cada metadado tem uma REFERENCIA para ARQUIVO. Ou seja, cada metadado pertence a um arquivo.
+                        Precisaremos fazer isso aqui também.
+                        Antes de iniciar o cadastro dos metadados (antes desse FOR aqui em baixo) precisaremos cadastrar o ARQUIVO em questão.
+                        Para cadastrar o ARQUIVO, precisamos do NOME_ARQUIVO e EMAIL_USUARIO (isso vai vir no JSON da requisição);
+                        Temos que verificar se esse usuario ja está cadastrado (userRepository.findByID(email que veio no json)
+                        Com o retorno da base, temos que montar uma INSTANCIA de ARQUIVO (new Arquivo...)
+                        Com o arquivo inserido na base, ai sim conseguiremos cadastrar os metadados com a referencia ao arquivo
+        */
 
+        List<RequestBodySaveMetadadoDTO> list = requestBodySaveDTO.getMetadados();
+        for (RequestBodySaveMetadadoDTO item : list){
+            /*
+            TODO:
+                TIPO DO METADADO: os tipos ficaram FIXOS no banco e, portanto, nunca vamos "cadastrar" novos tipos via aplicação.
+                                Portanto, antes de salvar o metadado, temos que verificar se o tipo do metadado que estamos tentando cadastrar já existe na base
+                                Para isso, precisaremos de um REPOSITORY para o Tipo;
+                                tipoRepository.FindByID(tipo do metadado q estamos querendo cadastrar)
+                                O codigo acima retorna ou nao o tipo da base;
+                                Se retornar, cadastramos o metadado fazendo referencia ao retorno da base;
+                                Se nao retornar, pode estourar um erro ou dar um return... oq for melhor
+            */
+            Metadata metadata = new Metadata();
+            metadata.setAtivo(item.getAtivo());
+            metadata.setNome(item.getNome());
+            metadata.setValorPadrao(item.getValorPadrao());
+            metadata.setDescricao(item.getDescricao());
+            metadata.setRestricoes(item.getRestricoes());
+            metadata.setNomeTipo(new Tipo(item.getTipo().getNomeTipo()));
 
-//        List<RequestBodySaveMetadadoDTO> list = requestBodySaveDTO.getMetadados();
-//        for (RequestBodySaveMetadadoDTO item : list){
-//            Metadata metadata = new Metadata();
-//            metadata.setAtivo(item.getAtivo());
-//            metadata.setNome(item.getNome());
-//            metadata.setValorPadrao(item.getValorPadrao());
-//            metadata.setDescricao(item.getDescricao());
-//            metadata.setRestricoes(item.getRestricoes());
-//            metadata.setNomeTipo(new Tipo(item.getTipo().getNomeTipo()));
-//
-//            metadataRepository.save(metadata);
-//        }
+            // TODO: metadata.setArquivo( - ARQUIVO QUE FOI SALVO NO BANCO - );
+
+            metadataRepository.save(metadata);
+        }
     }
 }

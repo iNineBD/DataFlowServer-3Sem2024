@@ -26,7 +26,7 @@ public class Metadata {
     private Integer ativo;
 
     @ManyToOne
-    @JoinColumn(name = "arquivo_id", nullable = false)
+    @JoinColumn(name = "arquivo_id")
     private Arquivo arquivo;
 
 
