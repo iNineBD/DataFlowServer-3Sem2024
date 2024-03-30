@@ -24,7 +24,7 @@ public class HomeController {
     @Autowired
     HomeService homeService;
 
-    @GetMapping
+    @GetMapping("/filesOrg")
     public ResponseEntity<CustomResponseDTO<HomeResponseDTO>> homeDados(@RequestBody UsuarioDTO usuario) throws IOException {
         List<Arquivo> arquivos =  homeService.getUsuario(usuario.email());
         List<ArquivoDTO> arquivosLanding = homeService.arquivosLanding(arquivos);

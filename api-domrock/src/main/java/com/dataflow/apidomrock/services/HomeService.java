@@ -28,12 +28,9 @@ public class HomeService {
     public List<Arquivo> getUsuario(String emailUsuario){
         Optional<Usuario> usuario = usuarioRepository.findById(emailUsuario);
         if(usuario.isPresent()){
-            List<String> organizacao = usuario.stream()
-                    .map(Usuario::getOrganizacao)
-                    .map(Organizacao::getNome)
-                    .collect(Collectors.toList());
+            String organizacao = usuario.get().getOrganizacao().getNome();
 
-            return arquivoRepository.findByOrganizacao(organizacao.get(0));
+            return arquivoRepository.findByOrganizacao(organizacao);
 
         }else{
             throw new RuntimeException("Usuário não cadastrado");
@@ -45,7 +42,7 @@ public class HomeService {
         List<Arquivo> arq = new ArrayList<>();
 
         for (int i = 0; i < qtdArquivos; i++) {
-            if (arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId() == 2 || arquivos.get(i).getStatus().getId() == 98) {
+            if (arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId() == 98) {
                 arq.add(arquivos.get(i));
             }
         }
@@ -62,7 +59,7 @@ public class HomeService {
         List<Arquivo> arq = new ArrayList<>();
 
         for (int i = 0; i < qtdArquivos; i++){
-            if(arquivos.get(i).getStatus().getId() == 3 || arquivos.get(i).getStatus().getId() == 4 || arquivos.get(i).getStatus().getId() == 99){
+            if(arquivos.get(i).getStatus().getId() == 2 || arquivos.get(i).getStatus().getId() == 3 || arquivos.get(i).getStatus().getId() == 99){
                 arq.add(arquivos.get(i));
             }
         }
@@ -79,7 +76,7 @@ public class HomeService {
         List<Arquivo> arq = new ArrayList<>();
 
         for (int i = 0; i < qtdArquivos; i++){
-            if(arquivos.get(i).getStatus().getId() == 5){
+            if(arquivos.get(i).getStatus().getId() == 4 || arquivos.get(i).getStatus().getId() == 5){
                 arq.add(arquivos.get(i));
             }
         }
