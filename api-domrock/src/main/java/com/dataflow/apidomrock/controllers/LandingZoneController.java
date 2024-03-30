@@ -1,6 +1,7 @@
 package com.dataflow.apidomrock.controllers;
 
 import com.dataflow.apidomrock.dto.CustomResponseDTO;
+import com.dataflow.apidomrock.dto.SaveMetadado.RequestBodySaveDTO;
 import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.services.LandingZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,8 @@ public class LandingZoneController {
 
 
     @PostMapping( "/save")
-    public ResponseEntity<CustomResponseDTO<T>> saveMetadadosInDataBase(@RequestBody ) throws IOException {
-
-
-
-        return;
+    public ResponseEntity<CustomResponseDTO<String>> saveMetadadosInDataBase(@RequestBody RequestBodySaveDTO requestBodySaveDTO) throws IOException {
+        lzService.saveMetadadosInDataBase(requestBodySaveDTO);
+        return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", null));
     }
 }

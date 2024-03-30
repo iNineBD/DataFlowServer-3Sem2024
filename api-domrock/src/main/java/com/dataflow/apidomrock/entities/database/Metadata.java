@@ -23,16 +23,18 @@ public class Metadata {
     private String nome;
     private String valorPadrao;
     private String descricao;
+    private Integer ativo;
 
 
-    @ManyToMany(targetEntity= NivelAcesso.class, fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity= Restricao.class, fetch = FetchType.LAZY)
     @JoinTable(name = "detem", // nome da tabela no sql
             joinColumns = @JoinColumn(name = "metadado_id"), // fk do metadado na detem
             inverseJoinColumns = @JoinColumn(name = "restricao_nome") // fk do restricao na detem
     )
+
     private List<Restricao> restricoes;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "nome_tipo")
-    private Tipo tipo;
+    private Tipo nomeTipo;
 }

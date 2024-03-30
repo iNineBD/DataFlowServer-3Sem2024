@@ -1,12 +1,14 @@
 package com.dataflow.apidomrock.entities.database;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.catalina.LifecycleState;
+
+import java.util.List;
 
 @Entity
 @Table(name = "tipo")
@@ -16,5 +18,7 @@ import lombok.Setter;
 @Setter
 public class Tipo {
     @Id
-    private String nome_tipo;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty("tipoMetadado")
+    private String nomeTipo;
 }

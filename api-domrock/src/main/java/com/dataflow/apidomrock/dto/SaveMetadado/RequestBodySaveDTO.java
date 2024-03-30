@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto;
+package com.dataflow.apidomrock.dto.SaveMetadado;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class RequestBodySaveDTO {
 
-    private List<T> metadados;
+    private List<RequestBodySaveMetadadoDTO> metadados;
 
 }
