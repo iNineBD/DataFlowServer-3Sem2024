@@ -5,10 +5,7 @@ import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.services.LandingZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
@@ -27,5 +24,14 @@ public class LandingZoneController {
     public ResponseEntity<CustomResponseDTO<UploadCSVResponseDTO>> processUploadCSV(MultipartHttpServletRequest multipartFile, @RequestParam(required = false) String delimiter) throws IOException {
         UploadCSVResponseDTO response = lzService.processUploadCSV(multipartFile, delimiter);
         return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", response));
+    }
+
+
+    @PostMapping( "/save")
+    public ResponseEntity<CustomResponseDTO<T>> saveMetadadosInDataBase(@RequestBody ) throws IOException {
+
+
+
+        return;
     }
 }
