@@ -16,7 +16,11 @@ public class Restricao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String nome;
-
     private String valor;
+
+    @ManyToOne
+    @JoinColumn(name = "id_metadado")
+    private Metadata metadata;
 }

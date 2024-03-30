@@ -26,12 +26,8 @@ public class Metadata {
     private Integer ativo;
 
 
-    @ManyToMany(targetEntity= Restricao.class, fetch = FetchType.LAZY)
-    @JoinTable(name = "detem", // nome da tabela no sql
-            joinColumns = @JoinColumn(name = "metadado_id"), // fk do metadado na detem
-            inverseJoinColumns = @JoinColumn(name = "restricao_nome") // fk do restricao na detem
-    )
-
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_metadado")
     private List<Restricao> restricoes;
 
     @ManyToOne(cascade = CascadeType.MERGE)
