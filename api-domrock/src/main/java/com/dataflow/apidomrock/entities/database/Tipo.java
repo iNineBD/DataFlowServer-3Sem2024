@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.catalina.LifecycleState;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -16,9 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Tipo {
+public class Tipo implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonProperty("tipoMetadado")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "nome_tipo")
     private String nomeTipo;
 }

@@ -34,7 +34,7 @@ public class Metadata {
 
     private List<Restricao> restricoes;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "nome_tipo")
     private Tipo nomeTipo;
 }
