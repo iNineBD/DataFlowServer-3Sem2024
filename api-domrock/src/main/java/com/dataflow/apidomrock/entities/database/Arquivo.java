@@ -20,7 +20,7 @@ public class Arquivo {
     private Long id;
     private  String nomeArquivo;
 
-    @OneToOne
+    @ManyToOne
     private Usuario usuario;
 
     @ManyToOne
@@ -30,7 +30,6 @@ public class Arquivo {
     @JoinColumn(name = "status_id")
     private Status status;
 
-    @OneToMany
-    @JoinColumn(name = "id")
+    @OneToMany(mappedBy = "arquivo")
     private List<Metadata> metadados;
 }

@@ -25,6 +25,10 @@ public class Metadata {
     private String descricao;
     private Integer ativo;
 
+    @ManyToOne
+    @JoinColumn(name = "arquivo_id", nullable = false)
+    private Arquivo arquivo;
+
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_metadado")

@@ -39,8 +39,6 @@ public class LandingZoneService {
 
         List<Arquivo> user = userRepository.findAll();
 
-        System.out.println("iha");
-
         List<Metadata> metadatas = new ArrayList<>();
         MultipartFile multipartFile;
 
@@ -65,7 +63,7 @@ public class LandingZoneService {
 
         //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
         for (String columName : headers) {
-            metadatas.add(new Metadata(null, columName, null, null, null, null, null));
+            metadatas.add(new Metadata(null, columName, null, null, null, null, null, null));
         }
 
         if (multipartFile == null) {
@@ -78,17 +76,22 @@ public class LandingZoneService {
     }
     @Transactional
     public void saveMetadadosInDataBase (RequestBodySaveDTO requestBodySaveDTO){
-        List<RequestBodySaveMetadadoDTO> list = requestBodySaveDTO.getMetadados();
-        for (RequestBodySaveMetadadoDTO item : list){
-            Metadata metadata = new Metadata();
-            metadata.setAtivo(item.getAtivo());
-            metadata.setNome(item.getNome());
-            metadata.setValorPadrao(item.getValorPadrao());
-            metadata.setDescricao(item.getDescricao());
-            metadata.setRestricoes(item.getRestricoes());
-            metadata.setNomeTipo(new Tipo(item.getTipo().getNomeTipo()));
 
-            metadataRepository.save(metadata);
-        }
+        List<Arquivo> user = userRepository.findAll();
+        System.out.println("a");
+
+
+//        List<RequestBodySaveMetadadoDTO> list = requestBodySaveDTO.getMetadados();
+//        for (RequestBodySaveMetadadoDTO item : list){
+//            Metadata metadata = new Metadata();
+//            metadata.setAtivo(item.getAtivo());
+//            metadata.setNome(item.getNome());
+//            metadata.setValorPadrao(item.getValorPadrao());
+//            metadata.setDescricao(item.getDescricao());
+//            metadata.setRestricoes(item.getRestricoes());
+//            metadata.setNomeTipo(new Tipo(item.getTipo().getNomeTipo()));
+//
+//            metadataRepository.save(metadata);
+//        }
     }
 }
