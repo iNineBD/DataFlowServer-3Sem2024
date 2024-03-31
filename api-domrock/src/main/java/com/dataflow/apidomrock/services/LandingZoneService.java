@@ -3,15 +3,14 @@ package com.dataflow.apidomrock.services;
 import com.dataflow.apidomrock.dto.SaveMetadado.RequestBodySaveDTO;
 import com.dataflow.apidomrock.dto.SaveMetadado.RequestBodySaveMetadadoDTO;
 import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
-import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.Metadata;
-import com.dataflow.apidomrock.entities.database.Tipo;
-import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.MetadataRepository;
+import com.dataflow.apidomrock.repository.TipoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.utils.ValidateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LandingZoneService {
@@ -33,6 +33,12 @@ public class LandingZoneService {
 
     @Autowired
     MetadataRepository metadataRepository;
+
+    @Autowired
+    UsuarioRepository usuarioRepository;
+
+    @Autowired
+    TipoRepository tipoRepository;
 
     @Transactional(readOnly = false)
     public UploadCSVResponseDTO processUploadCSV(MultipartHttpServletRequest request, String delimiter) throws IOException {
@@ -75,30 +81,56 @@ public class LandingZoneService {
     @Transactional
     public void saveMetadadosInDataBase (RequestBodySaveDTO requestBodySaveDTO){
 
-        /* TODO:
-            Olá dona Ana Raquel Yamamoto Sasaki Machado!
-            Antes de salvar o metadado, vamos precisar verificar algumas coisas:
-                ARQUIVO: se olharmos no banco de dados, veremos que cada metadado tem uma REFERENCIA para ARQUIVO. Ou seja, cada metadado pertence a um arquivo.
-                        Precisaremos fazer isso aqui também.
-                        Antes de iniciar o cadastro dos metadados (antes desse FOR aqui em baixo) precisaremos cadastrar o ARQUIVO em questão.
-                        Para cadastrar o ARQUIVO, precisamos do NOME_ARQUIVO e EMAIL_USUARIO (isso vai vir no JSON da requisição);
-                        Temos que verificar se esse usuario ja está cadastrado (userRepository.findByID(email que veio no json)
-                        Com o retorno da base, temos que montar uma INSTANCIA de ARQUIVO (new Arquivo...)
-                        Com o arquivo inserido na base, ai sim conseguiremos cadastrar os metadados com a referencia ao arquivo
-        */
+        // recebendo o nome do arquivo referente ao json enviado
+        String nomeArquivo = requestBodySaveDTO.getNomeArquivo();
 
+        //recebendo os dados do usuario apartir do email enviado no json
+        String usuarioEmail = requestBodySaveDTO.getUsuario();
+
+        //confere se o usuario que subiu o json ja existe no banco de dados
+        Optional<Usuario> usuarioBD = usuarioRepository.findById(usuarioEmail);
+
+        if (usuarioBD.isEmpty()){
+            //caso não exista, o ele retorna esta "critica"
+            throw new RuntimeException("Não foi encontrado nenhum usuario");
+        }
+
+        //confere se o arquivo enviado ao json ja existe no banco de dados
+        Optional<Arquivo> arquivoBD = arquivoRepository.findNomeArquivo(nomeArquivo);
+
+
+        if (arquivoBD.isPresent()){
+            //caso exista, ele retorna esta "critica"
+            throw new RuntimeException("Este arquivo já existe");
+        }
+
+        // estamos instanciando a classe arquivo
+        Arquivo arquivo = new Arquivo();
+
+        // estamos inserindo os dados nos atributos da instancia arquivo
+        arquivo.setNomeArquivo(nomeArquivo);
+        arquivo.setStatus(new Status(2, "AGUARDANDO APROVAÇÃO DA BRONZE"));
+        arquivo.setUsuario(usuarioBD.get());
+        arquivo.setOrganizacao(usuarioBD.get().getOrganizacao());
+
+        // estamos salvando os dados na instancia arquivo
+        arquivoRepository.save(arquivo);
+
+        // cria uma lista a partir dos atributos presentes na classe "RequestBodySaveMetadadoDTO"
         List<RequestBodySaveMetadadoDTO> list = requestBodySaveDTO.getMetadados();
+
+        //estamos percorrendo a lista "list" e inserindo na variavel "item" toda vez que o for roda
         for (RequestBodySaveMetadadoDTO item : list){
-            /*
-            TODO:
-                TIPO DO METADADO: os tipos ficaram FIXOS no banco e, portanto, nunca vamos "cadastrar" novos tipos via aplicação.
-                                Portanto, antes de salvar o metadado, temos que verificar se o tipo do metadado que estamos tentando cadastrar já existe na base
-                                Para isso, precisaremos de um REPOSITORY para o Tipo;
-                                tipoRepository.FindByID(tipo do metadado q estamos querendo cadastrar)
-                                O codigo acima retorna ou nao o tipo da base;
-                                Se retornar, cadastramos o metadado fazendo referencia ao retorno da base;
-                                Se nao retornar, pode estourar um erro ou dar um return... oq for melhor
-            */
+
+            // compara se o tipo carregado no json corresponde a algum tipo ja existente no banco de dados
+            Optional<Tipo> tipoDB = tipoRepository.findById(item.getTipo().getNomeTipo());
+
+            // se o tipo não existir, ele retorna esta "critica"
+            if (tipoDB.isEmpty()){
+            throw new RuntimeException("O tipo "+item.getTipo().getNomeTipo()+" não existe");
+            }
+
+            // caso contratio, ele insere todos os dados recebidos nos atributos de metadata
             Metadata metadata = new Metadata();
             metadata.setAtivo(item.getAtivo());
             metadata.setNome(item.getNome());
@@ -107,8 +139,9 @@ public class LandingZoneService {
             metadata.setRestricoes(item.getRestricoes());
             metadata.setNomeTipo(new Tipo(item.getTipo().getNomeTipo()));
 
-            // TODO: metadata.setArquivo( - ARQUIVO QUE FOI SALVO NO BANCO - );
-
+            // envia os dados para arquivos
+            metadata.setArquivo(arquivo);
+            // salva a instancia metadata com todos os dados que lhe foram atribuidos
             metadataRepository.save(metadata);
         }
     }

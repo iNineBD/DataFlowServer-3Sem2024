@@ -1,6 +1,9 @@
 package com.dataflow.apidomrock.controllers.exceptions;
 
 import com.dataflow.apidomrock.dto.CustomResponseDTO;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,7 +36,6 @@ public class GlobalExceptionHandler {
         CustomResponseDTO<Object> customResponse = new CustomResponseDTO<>("Erro ao serializar arquivo inserido", null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(customResponse);
     }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     //Exceção para entrada inválida
     public ResponseEntity<CustomResponseDTO<Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
