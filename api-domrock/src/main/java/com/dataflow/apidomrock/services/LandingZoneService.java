@@ -41,10 +41,10 @@ public class LandingZoneService {
     TipoRepository tipoRepository;
 
     @Transactional(readOnly = false)
-    public UploadCSVResponseDTO processUploadCSV(MultipartHttpServletRequest request, String delimiter) throws IOException {
+    public UploadCSVResponseDTO processUploadCSV(MultipartFile request, String delimiter) throws IOException {
 
         List<Metadata> metadatas = new ArrayList<>();
-        MultipartFile multipartFile;
+        MultipartFile multipartFile = request;
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice

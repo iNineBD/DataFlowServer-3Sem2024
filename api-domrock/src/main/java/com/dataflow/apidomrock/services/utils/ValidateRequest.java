@@ -7,18 +7,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class ValidateRequest {
-    public static MultipartFile validateprocessUploadCSV(MultipartHttpServletRequest request, String delimiter){
+    public static MultipartFile validateprocessUploadCSV(MultipartFile file, String delimiter){
 
-        List<MultipartFile> files = request.getFiles("multipartFile");
 
-        if (files.isEmpty()) {
+        if (file.isEmpty()) {
             throw new IllegalArgumentException("Nenhum arquivo enviado. Por favor, envie um arquivo CSV.");
         }
-        if (files.size() > 1) {
-            throw new IllegalArgumentException("Apenas um arquivo é permitido por vez. Por favor, envie apenas um arquivo CSV.");
-        }
-
-        MultipartFile file = files.getFirst();
 
         if (delimiter == null || delimiter.isEmpty()){
             throw new IllegalArgumentException("É necessário especificar o delimitador do arquivo");
