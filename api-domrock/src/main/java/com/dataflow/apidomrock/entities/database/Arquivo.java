@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "arquivo")
 @AllArgsConstructor
@@ -18,7 +20,7 @@ public class Arquivo {
     private Long id;
     private  String nomeArquivo;
 
-    @OneToOne
+    @ManyToOne
     private Usuario usuario;
 
     @ManyToOne
@@ -27,4 +29,7 @@ public class Arquivo {
     @ManyToOne
     @JoinColumn(name = "status_id")
     private Status status;
+
+    @OneToMany(mappedBy = "arquivo")
+    private List<Metadata> metadados;
 }
