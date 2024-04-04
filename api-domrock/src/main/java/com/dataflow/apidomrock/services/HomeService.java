@@ -25,9 +25,14 @@ public class HomeService {
     public List<Arquivo> getUsuario(String emailUsuario){
         Optional<Usuario> usuario = usuarioRepository.findById(emailUsuario);
         if(usuario.isPresent()){
-            String organizacao = usuario.get().getOrganizacao().getNome();
+            if(usuario.get().getNiveisAcesso()){
 
-            return arquivoRepository.findByOrganizacao(organizacao);
+                return arquivoRepository.findAll();
+            }else {
+                String organizacao = usuario.get().getOrganizacao().getNome();
+
+                return arquivoRepository.findByOrganizacao(organizacao);
+            }
 
         }else{
             throw new RuntimeException("Usuário não cadastrado");
