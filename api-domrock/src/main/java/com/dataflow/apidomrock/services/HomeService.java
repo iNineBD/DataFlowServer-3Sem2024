@@ -25,7 +25,7 @@ public class HomeService {
     public List<Arquivo> getUsuario(String emailUsuario){
         Optional<Usuario> usuario = usuarioRepository.findById(emailUsuario);
         if(usuario.isPresent()){
-            if(usuario.get().getNiveisAcesso()){
+            if(usuario.get().getNiveisAcesso().size() == 5 || usuario.get().getNiveisAcesso().size() == 4){
 
                 return arquivoRepository.findAll();
             }else {
