@@ -1,12 +1,12 @@
 package com.dataflow.apidomrock.services;
 
-import com.dataflow.apidomrock.dto.ArquivoDTO;
-import com.dataflow.apidomrock.dto.UsuarioDTO;
+import com.dataflow.apidomrock.dto.ExibiHome.ArquivoDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
+import com.dataflow.apidomrock.services.utils.Niveis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +28,15 @@ public class HomeService {
     public String getNivel(String emailUsuario){
         NivelAcesso nivel = usuarioRepository.getNivelUsuario(emailUsuario);
 
-        return nivel.getNivel();
+        return nivel.getNivel().toUpperCase();
 
     }
 
-    public List<Arquivo> getUsuario(String emailUsuario){
+    public List<Arquivo> getArquivosUsuario(String emailUsuario){
         Optional<Usuario> usuario = usuarioRepository.findById(emailUsuario);
         String nivel = getNivel(emailUsuario);
         if(usuario.isPresent()){
-            if(nivel.equals("admin") || nivel.equals("func")){
+            if(nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
                 return arquivoRepository.findAll();
             }else {
                 String organizacao = usuario.get().getOrganizacao().getNome();
@@ -54,7 +54,7 @@ public class HomeService {
         List<Arquivo> arq = new ArrayList<>();
         List<ArquivoDTO> arquivosLz = new ArrayList<>();
 
-        if(nivel.equals("parceiroLanding") || nivel.equals("admin") || nivel.equals("func")){
+        if(nivel.equals(Niveis.LZ.toString()) || nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
             for (int i = 0; i < qtdArquivos; i++) {
                 if (arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId() == 98) {
                     arq.add(arquivos.get(i));
@@ -77,7 +77,7 @@ public class HomeService {
         List<Arquivo> arq = new ArrayList<>();
         List<ArquivoDTO> arquivosBz = new ArrayList<>();
 
-        if(nivel.equals("parceiroBronze") || nivel.equals("admin") || nivel.equals("func")){
+        if(nivel.equals(Niveis.B.toString()) || nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
             for (int i = 0; i < qtdArquivos; i++){
                 if(arquivos.get(i).getStatus().getId() == 2 || arquivos.get(i).getStatus().getId() == 3 || arquivos.get(i).getStatus().getId() == 99){
                     arq.add(arquivos.get(i));
@@ -99,7 +99,7 @@ public class HomeService {
         List<Arquivo> arq = new ArrayList<>();
         List<ArquivoDTO> arquivosSz = new ArrayList<>();
 
-        if(nivel.equals("parceiroSilver") || nivel.equals("admin") || nivel.equals("func")){
+        if(nivel.equals(Niveis.S.toString()) || nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
             for (int i = 0; i < qtdArquivos; i++){
                 if(arquivos.get(i).getStatus().getId() == 4 || arquivos.get(i).getStatus().getId() == 5){
                     arq.add(arquivos.get(i));

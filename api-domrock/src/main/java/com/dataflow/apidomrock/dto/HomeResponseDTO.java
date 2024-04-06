@@ -1,8 +1,6 @@
 package com.dataflow.apidomrock.dto;
 
-import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.NivelAcesso;
-import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.dto.ExibiHome.ArquivoDTO;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
