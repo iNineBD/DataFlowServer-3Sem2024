@@ -1,15 +1,19 @@
 package com.dataflow.apidomrock.services;
 
+import com.dataflow.apidomrock.dto.SaveMetadado.RequestBodySaveDTO;
+import com.dataflow.apidomrock.dto.SaveMetadado.RequestBodySaveMetadadoDTO;
 import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
-import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.Metadata;
-import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
+import com.dataflow.apidomrock.repository.MetadataRepository;
+import com.dataflow.apidomrock.repository.TipoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.utils.ValidateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -19,22 +23,28 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LandingZoneService {
 
     @Autowired
-    ArquivoRepository userRepository;
+    ArquivoRepository arquivoRepository;
+
+    @Autowired
+    MetadataRepository metadataRepository;
+
+    @Autowired
+    UsuarioRepository usuarioRepository;
+
+    @Autowired
+    TipoRepository tipoRepository;
 
     @Transactional(readOnly = false)
-    public UploadCSVResponseDTO processUploadCSV(MultipartHttpServletRequest request, String delimiter) throws IOException {
-
-        List<Arquivo> user = userRepository.findAll();
-
-        System.out.println("iha");
+    public UploadCSVResponseDTO processUploadCSV(MultipartFile request, String delimiter) throws IOException {
 
         List<Metadata> metadatas = new ArrayList<>();
-        MultipartFile multipartFile;
+        MultipartFile multipartFile = request;
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
@@ -57,7 +67,7 @@ public class LandingZoneService {
 
         //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
         for (String columName : headers) {
-            metadatas.add(new Metadata(null, columName, null, null, null, null));
+            metadatas.add(new Metadata(null, columName, null, null, null, null, null, null));
         }
 
         if (multipartFile == null) {
@@ -67,5 +77,72 @@ public class LandingZoneService {
         double fileSize = (double) multipartFile.getSize() / (1024 * 1024);
 
         return new UploadCSVResponseDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
+    }
+    @Transactional
+    public void saveMetadadosInDataBase (RequestBodySaveDTO requestBodySaveDTO){
+
+        // recebendo o nome do arquivo referente ao json enviado
+        String nomeArquivo = requestBodySaveDTO.getNomeArquivo();
+
+        //recebendo os dados do usuario apartir do email enviado no json
+        String usuarioEmail = requestBodySaveDTO.getUsuario();
+
+        //confere se o usuario que subiu o json ja existe no banco de dados
+        Optional<Usuario> usuarioBD = usuarioRepository.findById(usuarioEmail);
+
+        if (usuarioBD.isEmpty()){
+            //caso não exista, o ele retorna esta "critica"
+            throw new RuntimeException("Não foi encontrado nenhum usuario");
+        }
+
+        //confere se o arquivo enviado ao json ja existe no banco de dados
+        Optional<Arquivo> arquivoBD = arquivoRepository.findNomeArquivo(nomeArquivo);
+
+
+        if (arquivoBD.isPresent()){
+            //caso exista, ele retorna esta "critica"
+            throw new RuntimeException("Este arquivo já existe");
+        }
+
+        // estamos instanciando a classe arquivo
+        Arquivo arquivo = new Arquivo();
+
+        // estamos inserindo os dados nos atributos da instancia arquivo
+        arquivo.setNomeArquivo(nomeArquivo);
+        arquivo.setStatus(new Status(2, "AGUARDANDO APROVAÇÃO DA BRONZE"));
+        arquivo.setUsuario(usuarioBD.get());
+        arquivo.setOrganizacao(usuarioBD.get().getOrganizacao());
+
+        // estamos salvando os dados na instancia arquivo
+        arquivoRepository.save(arquivo);
+
+        // cria uma lista a partir dos atributos presentes na classe "RequestBodySaveMetadadoDTO"
+        List<RequestBodySaveMetadadoDTO> list = requestBodySaveDTO.getMetadados();
+
+        //estamos percorrendo a lista "list" e inserindo na variavel "item" toda vez que o for roda
+        for (RequestBodySaveMetadadoDTO item : list){
+
+            // compara se o tipo carregado no json corresponde a algum tipo ja existente no banco de dados
+            Optional<Tipo> tipoDB = tipoRepository.findById(item.getTipo().getNomeTipo());
+
+            // se o tipo não existir, ele retorna esta "critica"
+            if (tipoDB.isEmpty()){
+            throw new RuntimeException("O tipo "+item.getTipo().getNomeTipo()+" não existe");
+            }
+
+            // caso contratio, ele insere todos os dados recebidos nos atributos de metadata
+            Metadata metadata = new Metadata();
+            metadata.setAtivo(item.getAtivo());
+            metadata.setNome(item.getNome());
+            metadata.setValorPadrao(item.getValorPadrao());
+            metadata.setDescricao(item.getDescricao());
+            metadata.setRestricoes(item.getRestricoes());
+            metadata.setNomeTipo(new Tipo(item.getTipo().getNomeTipo()));
+
+            // envia os dados para arquivos
+            metadata.setArquivo(arquivo);
+            // salva a instancia metadata com todos os dados que lhe foram atribuidos
+            metadataRepository.save(metadata);
+        }
     }
 }

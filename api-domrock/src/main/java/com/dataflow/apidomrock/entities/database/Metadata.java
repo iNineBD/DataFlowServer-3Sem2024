@@ -24,16 +24,18 @@ public class Metadata {
     private Boolean ativo;
     private String valorPadrao;
     private String descricao;
-
-
-    @ManyToMany(targetEntity= NivelAcesso.class, fetch = FetchType.LAZY)
-    @JoinTable(name = "detem", // nome da tabela no sql
-            joinColumns = @JoinColumn(name = "metadado_id"), // fk do metadado na detem
-            inverseJoinColumns = @JoinColumn(name = "restricao_nome") // fk do restricao na detem
-    )
-    private List<Restricao> restricoes;
+    private Integer ativo;
 
     @ManyToOne
+    @JoinColumn(name = "arquivo_id")
+    private Arquivo arquivo;
+
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_metadado")
+    private List<Restricao> restricoes;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "nome_tipo")
-    private Tipo tipo;
+    private Tipo nomeTipo;
 }
