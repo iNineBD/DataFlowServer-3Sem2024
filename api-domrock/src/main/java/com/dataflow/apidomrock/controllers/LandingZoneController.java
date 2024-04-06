@@ -22,11 +22,6 @@ public class LandingZoneController {
     @Autowired
     LandingZoneService lzService;
 
-    @GetMapping
-    public ResponseEntity<CustomResponseDTO<String>> healthCheck (){
-        return ResponseEntity.ok().body(new CustomResponseDTO<>("A API está em pé", null));
-    }
-
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
     public ResponseEntity<CustomResponseDTO<UploadCSVResponseDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter) throws IOException {
