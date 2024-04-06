@@ -22,14 +22,15 @@ public class HomeController {
     @Autowired
     HomeService homeService;
 
-    @GetMapping("/filesOrg")
+    @PostMapping("/filesOrg")
     public ResponseEntity<CustomResponseDTO<HomeResponseDTO>> homeDados(@RequestBody UsuarioDTO usuario) throws IOException {
+        String nivel = homeService.getNivel(usuario.email());
         List<Arquivo> arquivos =  homeService.getUsuario(usuario.email());
-        List<ArquivoDTO> arquivosLanding = homeService.arquivosLanding(arquivos);
-        List<ArquivoDTO> arquivosBronze = homeService.arquivosBronze(arquivos);
-        List<ArquivoDTO> arquivosSilver = homeService.arquivosSilver(arquivos);
+        List<ArquivoDTO> arquivosLanding = homeService.arquivosLanding(nivel,arquivos);
+        List<ArquivoDTO> arquivosBronze = homeService.arquivosBronze(nivel, arquivos);
+        List<ArquivoDTO> arquivosSilver = homeService.arquivosSilver(nivel, arquivos);
 
-        HomeResponseDTO response = new HomeResponseDTO(arquivosLanding,arquivosBronze,arquivosSilver);
+        HomeResponseDTO response = new HomeResponseDTO(nivel,arquivosLanding,arquivosBronze,arquivosSilver);
         return ResponseEntity.ok().body(new CustomResponseDTO<>("Lista de dados:", response));
     }
 }

@@ -1,7 +1,9 @@
 package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.dto.ArquivoDTO;
+import com.dataflow.apidomrock.dto.UsuarioDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
+import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
@@ -22,11 +24,19 @@ public class HomeService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+
+    public String getNivel(String emailUsuario){
+        NivelAcesso nivel = usuarioRepository.getNivelUsuario(emailUsuario);
+
+        return nivel.getNivel();
+
+    }
+
     public List<Arquivo> getUsuario(String emailUsuario){
         Optional<Usuario> usuario = usuarioRepository.findById(emailUsuario);
+        String nivel = getNivel(emailUsuario);
         if(usuario.isPresent()){
-            if(usuario.get().getNiveisAcesso().size() == 5 || usuario.get().getNiveisAcesso().size() == 4){
-
+            if(nivel.equals("admin") || nivel.equals("func")){
                 return arquivoRepository.findAll();
             }else {
                 String organizacao = usuario.get().getOrganizacao().getNome();
@@ -39,55 +49,70 @@ public class HomeService {
         }
     }
 
-    public List<ArquivoDTO> arquivosLanding(List<Arquivo> arquivos){
+    public List<ArquivoDTO> arquivosLanding(String nivel, List<Arquivo> arquivos){
         int qtdArquivos = arquivos.size();
         List<Arquivo> arq = new ArrayList<>();
+        List<ArquivoDTO> arquivosLz = new ArrayList<>();
 
-        for (int i = 0; i < qtdArquivos; i++) {
-            if (arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId() == 98) {
-                arq.add(arquivos.get(i));
+        if(nivel.equals("parceiroLanding") || nivel.equals("admin") || nivel.equals("func")){
+            for (int i = 0; i < qtdArquivos; i++) {
+                if (arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId() == 98) {
+                    arq.add(arquivos.get(i));
+                }
             }
+
+            arquivosLz = arq.stream()
+                    .map(ArquivoDTO::new)
+                    .collect(Collectors.toList());
+
+            return arquivosLz;
+        }else {
+            return arquivosLz;
         }
 
-        List<ArquivoDTO> arquivosLz = arq.stream()
-                .map(ArquivoDTO::new)
-                .collect(Collectors.toList());
-
-        return arquivosLz;
     }
 
-    public List<ArquivoDTO> arquivosBronze(List<Arquivo> arquivos){
+    public List<ArquivoDTO> arquivosBronze(String nivel, List<Arquivo> arquivos){
         int qtdArquivos = arquivos.size();
         List<Arquivo> arq = new ArrayList<>();
+        List<ArquivoDTO> arquivosBz = new ArrayList<>();
 
-        for (int i = 0; i < qtdArquivos; i++){
-            if(arquivos.get(i).getStatus().getId() == 2 || arquivos.get(i).getStatus().getId() == 3 || arquivos.get(i).getStatus().getId() == 99){
-                arq.add(arquivos.get(i));
+        if(nivel.equals("parceiroBronze") || nivel.equals("admin") || nivel.equals("func")){
+            for (int i = 0; i < qtdArquivos; i++){
+                if(arquivos.get(i).getStatus().getId() == 2 || arquivos.get(i).getStatus().getId() == 3 || arquivos.get(i).getStatus().getId() == 99){
+                    arq.add(arquivos.get(i));
+                }
             }
+
+            arquivosBz = arq.stream()
+                    .map(ArquivoDTO::new)
+                    .collect(Collectors.toList());
+
+            return arquivosBz;
+        }else{
+            return arquivosBz;
         }
-
-        List<ArquivoDTO> arquivosBz = arq.stream()
-                .map(ArquivoDTO::new)
-                .collect(Collectors.toList());
-
-        return arquivosBz;
     }
 
-    public List<ArquivoDTO> arquivosSilver(List<Arquivo> arquivos){
+    public List<ArquivoDTO> arquivosSilver(String nivel, List<Arquivo> arquivos){
         int qtdArquivos = arquivos.size();
         List<Arquivo> arq = new ArrayList<>();
+        List<ArquivoDTO> arquivosSz = new ArrayList<>();
 
-        for (int i = 0; i < qtdArquivos; i++){
-            if(arquivos.get(i).getStatus().getId() == 4 || arquivos.get(i).getStatus().getId() == 5){
-                arq.add(arquivos.get(i));
+        if(nivel.equals("parceiroSilver") || nivel.equals("admin") || nivel.equals("func")){
+            for (int i = 0; i < qtdArquivos; i++){
+                if(arquivos.get(i).getStatus().getId() == 4 || arquivos.get(i).getStatus().getId() == 5){
+                    arq.add(arquivos.get(i));
+                }
             }
+
+            arquivosSz = arq.stream()
+                    .map(ArquivoDTO::new)
+                    .collect(Collectors.toList());
+
+            return arquivosSz;
+        }else{
+            return arquivosSz;
         }
-
-        List<ArquivoDTO> arquivosSz = arq.stream()
-                .map(ArquivoDTO::new)
-                .collect(Collectors.toList());
-
-        return arquivosSz;
     }
-
 }
