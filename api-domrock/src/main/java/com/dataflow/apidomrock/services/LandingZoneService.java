@@ -1,8 +1,8 @@
 package com.dataflow.apidomrock.services;
 
-import com.dataflow.apidomrock.dto.SaveMetadado.RequestBodySaveDTO;
-import com.dataflow.apidomrock.dto.SaveMetadado.RequestBodySaveMetadadoDTO;
-import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
+import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveDTO;
+import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveMetadadoDTO;
+import com.dataflow.apidomrock.dto.processUploadCSV.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.MetadataRepository;

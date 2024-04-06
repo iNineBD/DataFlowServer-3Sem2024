@@ -1,14 +1,13 @@
 package com.dataflow.apidomrock.controllers;
 
-import com.dataflow.apidomrock.dto.CustomResponseDTO;
-import com.dataflow.apidomrock.dto.SaveMetadado.RequestBodySaveDTO;
-import com.dataflow.apidomrock.dto.UploadCSVResponseDTO;
+import com.dataflow.apidomrock.dto.customResponse.CustomResponseDTO;
+import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveDTO;
+import com.dataflow.apidomrock.dto.processUploadCSV.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.services.LandingZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
 

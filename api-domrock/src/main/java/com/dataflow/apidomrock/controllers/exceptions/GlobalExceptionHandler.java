@@ -1,9 +1,6 @@
 package com.dataflow.apidomrock.controllers.exceptions;
 
-import com.dataflow.apidomrock.dto.CustomResponseDTO;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.dao.DataIntegrityViolationException;
+import com.dataflow.apidomrock.dto.customResponse.CustomResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

@@ -1,6 +1,5 @@
-package com.dataflow.apidomrock.dto.SaveMetadado;
+package com.dataflow.apidomrock.dto.saveMetadado;
 
-import com.dataflow.apidomrock.entities.database.Arquivo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

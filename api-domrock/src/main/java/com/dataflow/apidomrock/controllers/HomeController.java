@@ -1,11 +1,10 @@
 package com.dataflow.apidomrock.controllers;
 
 import com.dataflow.apidomrock.dto.ArquivoDTO;
-import com.dataflow.apidomrock.dto.CustomResponseDTO;
+import com.dataflow.apidomrock.dto.customResponse.CustomResponseDTO;
 import com.dataflow.apidomrock.dto.HomeResponseDTO;
 import com.dataflow.apidomrock.dto.UsuarioDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.services.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
