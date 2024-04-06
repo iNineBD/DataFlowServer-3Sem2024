@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestBodySaveMetadadoDTO {
-    private Integer ativo;
+    private Boolean ativo;
     private String nome;
     private String valorPadrao;
     private String descricao;

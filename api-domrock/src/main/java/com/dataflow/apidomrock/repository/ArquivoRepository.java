@@ -1,7 +1,5 @@
 package com.dataflow.apidomrock.repository;
 
-import com.dataflow.apidomrock.controllers.HomeController;
-import com.dataflow.apidomrock.dto.HomeResponseDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface ArquivoRepository extends JpaRepository<Arquivo, Long> {
-    @Query(value = "SELECT * FROM Arquivo where nome_arquivo = :nomeArquivo", nativeQuery = true)
-    Optional<Arquivo> findNomeArquivo(String nomeArquivo);
+    @Query(value = "SELECT * FROM Arquivo where nome_arquivo = :nomeArquivo and organizacao_nome = :nomeOrganizacao", nativeQuery = true)
+    Optional<Arquivo> findByNameAndOrganization(String nomeArquivo, String nomeOrganizacao);
 
     Optional<Usuario> findByUsuario(Optional<Usuario> usuario);
 

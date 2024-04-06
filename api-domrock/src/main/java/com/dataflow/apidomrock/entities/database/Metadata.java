@@ -23,7 +23,7 @@ public class Metadata {
     private String nome;
     private String valorPadrao;
     private String descricao;
-    private Integer ativo;
+    private Boolean ativo;
 
     @ManyToOne
     @JoinColumn(name = "arquivo_id")

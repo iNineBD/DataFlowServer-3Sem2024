@@ -10,12 +10,9 @@ import com.dataflow.apidomrock.repository.TipoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.utils.ValidateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,19 +86,16 @@ public class LandingZoneService {
 
         //confere se o usuario que subiu o json ja existe no banco de dados
         Optional<Usuario> usuarioBD = usuarioRepository.findById(usuarioEmail);
-
         if (usuarioBD.isEmpty()){
             //caso não exista, o ele retorna esta "critica"
             throw new RuntimeException("Não foi encontrado nenhum usuario");
         }
 
         //confere se o arquivo enviado ao json ja existe no banco de dados
-        Optional<Arquivo> arquivoBD = arquivoRepository.findNomeArquivo(nomeArquivo);
-
-
+        Optional<Arquivo> arquivoBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, usuarioBD.get().getOrganizacao().getNome());
         if (arquivoBD.isPresent()){
             //caso exista, ele retorna esta "critica"
-            throw new RuntimeException("Este arquivo já existe");
+            throw new RuntimeException("Este arquivo já existe para esta organizacao");
         }
 
         // estamos instanciando a classe arquivo
