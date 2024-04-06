@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto.ExibiHome;
+package com.dataflow.apidomrock.dto.ArquivosLzBS;
 
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.fasterxml.jackson.annotation.JsonAlias;

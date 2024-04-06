@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto.ExibiHome;
+package com.dataflow.apidomrock.dto.GetArquivosUsuario;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
