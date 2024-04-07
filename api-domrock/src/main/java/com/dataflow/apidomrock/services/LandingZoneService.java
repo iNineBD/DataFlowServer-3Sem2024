@@ -1,8 +1,10 @@
 package com.dataflow.apidomrock.services;
 
+import com.dataflow.apidomrock.dto.getMetadados.ResponseBodyGetMetadadosDTO;
+import com.dataflow.apidomrock.dto.getMetadados.ResponseBodyMetadadoDTO;
+import com.dataflow.apidomrock.dto.processUploadCSV.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveDTO;
 import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveMetadadoDTO;
-import com.dataflow.apidomrock.dto.processUploadCSV.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.MetadataRepository;
@@ -143,5 +145,25 @@ public class LandingZoneService {
             // salva a instancia metadata com todos os dados que lhe foram atribuidos
             metadataRepository.save(metadata);
         }
+    }
+
+    @Transactional
+    public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo){
+        Optional<Usuario> userBD = usuarioRepository.findById(user);
+        if (userBD.isEmpty()){
+            throw new RuntimeException("Usuário ["+user+"] não existe");
+        }
+
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getNome());
+        if (arqBD.isEmpty()){
+            throw new RuntimeException("Arquivo [" + nomeArquivo + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]");
+        }
+
+        List<ResponseBodyMetadadoDTO> temp = new ArrayList<>();
+        for (Metadata metadata : arqBD.get().getMetadados()){
+            temp.add(new ResponseBodyMetadadoDTO(metadata));
+        }
+        return new ResponseBodyGetMetadadosDTO(user, nomeArquivo, temp);
+
     }
 }
