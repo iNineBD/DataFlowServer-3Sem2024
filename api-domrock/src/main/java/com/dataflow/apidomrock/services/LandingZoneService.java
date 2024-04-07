@@ -1,15 +1,14 @@
 package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.dto.entitiesDTO.MetadataDTO;
+import com.dataflow.apidomrock.dto.entitiesDTO.RestricaoDTO;
 import com.dataflow.apidomrock.dto.getMetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.processUploadCSV.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveDTO;
 import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveMetadadoDTO;
+import com.dataflow.apidomrock.dto.updateMetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.database.*;
-import com.dataflow.apidomrock.repository.ArquivoRepository;
-import com.dataflow.apidomrock.repository.MetadataRepository;
-import com.dataflow.apidomrock.repository.TipoRepository;
-import com.dataflow.apidomrock.repository.UsuarioRepository;
+import com.dataflow.apidomrock.repository.*;
 import com.dataflow.apidomrock.services.utils.ValidateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +37,9 @@ public class LandingZoneService {
     @Autowired
     TipoRepository tipoRepository;
 
+    @Autowired
+    RestricaoRepository restricaoRepository;
+
     @Transactional(readOnly = false)
     public UploadCSVResponseDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException {
 
@@ -57,7 +59,7 @@ public class LandingZoneService {
             line = line.substring(0, line.length() - 1);
         }
         String[] headers;
-        if(line.contains(",")){
+        if (line.contains(",")) {
             //divido o nome das colunas pelo delimitador especificado
             headers = line.split(",");
         } else {
@@ -74,87 +76,86 @@ public class LandingZoneService {
 
         return new UploadCSVResponseDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
     }
-    @Transactional
-    public void saveMetadadosInDataBase (RequestBodySaveDTO requestBodySaveDTO){
-
-        // recebendo o nome do arquivo referente ao json enviado
-        String nomeArquivo = requestBodySaveDTO.getNomeArquivo();
-
-        //recebendo os dados do usuario apartir do email enviado no json
-        String usuarioEmail = requestBodySaveDTO.getUsuario();
-
-        //confere se o usuario que subiu o json ja existe no banco de dados
-        Optional<Usuario> usuarioBD = usuarioRepository.findById(usuarioEmail);
-        if (usuarioBD.isEmpty()){
-            //caso não exista, o ele retorna esta "critica"
-            throw new RuntimeException("Não foi encontrado nenhum usuario");
-        }
-
-        //confere se o arquivo enviado ao json ja existe no banco de dados
-        Optional<Arquivo> arquivoBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, usuarioBD.get().getOrganizacao().getNome());
-        if (arquivoBD.isPresent()){
-            //caso exista, ele retorna esta "critica"
-            throw new RuntimeException("Este arquivo já existe para esta organizacao");
-        }
-
-        // estamos instanciando a classe arquivo
-        Arquivo arquivo = new Arquivo();
-
-        // estamos inserindo os dados nos atributos da instancia arquivo
-        arquivo.setNomeArquivo(nomeArquivo);
-        arquivo.setStatus(new Status(2, "AGUARDANDO APROVAÇÃO DA BRONZE"));
-        arquivo.setUsuario(usuarioBD.get());
-        arquivo.setOrganizacao(usuarioBD.get().getOrganizacao());
-
-        // estamos salvando os dados na instancia arquivo
-        arquivoRepository.save(arquivo);
-
-        // cria uma lista a partir dos atributos presentes na classe "RequestBodySaveMetadadoDTO"
-        List<RequestBodySaveMetadadoDTO> list = requestBodySaveDTO.getMetadados();
-
-        //estamos percorrendo a lista "list" e inserindo na variavel "item" toda vez que o for roda
-        for (RequestBodySaveMetadadoDTO item : list){
-
-            // compara se o tipo carregado no json corresponde a algum tipo ja existente no banco de dados
-            Optional<Tipo> tipoDB = tipoRepository.findById(item.getTipo().getNomeTipo());
-
-            // se o tipo não existir, ele retorna esta "critica"
-            if (tipoDB.isEmpty()){
-            throw new RuntimeException("O tipo "+item.getTipo().getNomeTipo()+" não existe");
-            }
-
-            // caso contratio, ele insere todos os dados recebidos nos atributos de metadata
-            Metadata metadata = new Metadata();
-            metadata.setAtivo(item.getAtivo());
-            metadata.setNome(item.getNome());
-            metadata.setValorPadrao(item.getValorPadrao());
-            metadata.setDescricao(item.getDescricao());
-            metadata.setRestricoes(item.getRestricoes());
-            metadata.setNomeTipo(new Tipo(item.getTipo().getNomeTipo()));
-
-            // envia os dados para arquivos
-            metadata.setArquivo(arquivo);
-            // salva a instancia metadata com todos os dados que lhe foram atribuidos
-            metadataRepository.save(metadata);
-        }
-    }
 
     @Transactional
-    public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo){
+    public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) {
         Optional<Usuario> userBD = usuarioRepository.findById(user);
-        if (userBD.isEmpty()){
-            throw new RuntimeException("Usuário ["+user+"] não existe");
+        if (userBD.isEmpty()) {
+            throw new RuntimeException("Usuário [" + user + "] não existe");
         }
 
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getNome());
-        if (arqBD.isEmpty()){
+        if (arqBD.isEmpty()) {
             throw new RuntimeException("Arquivo [" + nomeArquivo + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]");
         }
 
         List<MetadataDTO> temp = new ArrayList<>();
-        for (Metadata metadata : arqBD.get().getMetadados()){
+        for (Metadata metadata : arqBD.get().getMetadados()) {
             temp.add(new MetadataDTO(metadata));
         }
         return new ResponseBodyGetMetadadosDTO(user, nomeArquivo, temp);
+    }
+
+    @Transactional
+    public void updateMetadadosInDatabase(RequestBodyUpdateMetaDTO request) {
+        Optional<Usuario> userBD = usuarioRepository.findById(request.getUsuario());
+        if (userBD.isEmpty()) {
+            throw new RuntimeException("Usuário [" + request.getUsuario() + "] não existe");
+        }
+
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
+        if (arqBD.isEmpty()) {
+            Arquivo arquivo = new Arquivo();
+            arquivo.setNomeArquivo(request.getNomeArquivo());
+            arquivo.setStatus(new Status(2, "AGUARDANDO APROVAÇÃO DA BRONZE"));
+            arquivo.setUsuario(userBD.get());
+            arquivo.setOrganizacao(userBD.get().getOrganizacao());
+
+            arquivoRepository.save(arquivo);
+            arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
+        }
+
+        for (MetadataDTO metadadoJson : request.getMetadados()) {
+            Optional<Metadata> metaBD = metadataRepository.findByNameAndFile(arqBD.get().getId(), metadadoJson.getNome());
+            Metadata newMetadado = new Metadata();
+            if (metaBD.isPresent()) {
+                newMetadado.setID(metaBD.get().getID());
+                restricaoRepository.deleteAll(metaBD.get().getRestricoes());
+            }
+            newMetadado.setNome(metadadoJson.getNome());
+            newMetadado.setArquivo(arqBD.get());
+            newMetadado.setAtivo(metadadoJson.getAtivo());
+            if (!metadadoJson.getAtivo()) {
+                metadataRepository.save(newMetadado);
+                continue;
+            }
+
+            newMetadado.setDescricao(metadadoJson.getDescricao());
+            newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
+
+            Optional<Tipo> tipoDB = tipoRepository.findById(metadadoJson.getNomeTipo());
+            if (tipoDB.isEmpty()) {
+                throw new RuntimeException("O tipo " + metadadoJson.getNomeTipo() + " não existe");
+            }
+
+            newMetadado.setNomeTipo(tipoDB.get());
+
+            List<Restricao> newRestricoes = new ArrayList<>();
+
+            for (RestricaoDTO restricaoJson : metadadoJson.getRestricoes()) {
+                if (metadadoJson.getNomeTipo().equals("Hora") || metadadoJson.getNomeTipo().equals("Data") || metadadoJson.getNomeTipo().equals("Data e Hora")  || metadadoJson.getNomeTipo().equals("Booleano")){
+                    if (restricaoJson.getNome().equals("tamanhoMaximo")) {
+                        continue;
+                    }
+                }
+                Restricao newRestricao = new Restricao();
+                newRestricao.setNome(restricaoJson.getNome());
+                newRestricao.setValor(restricaoJson.getValor());
+                newRestricoes.add(newRestricao);
+            }
+
+            newMetadado.setRestricoes(newRestricoes);
+            metadataRepository.save(newMetadado);
+        }
     }
 }

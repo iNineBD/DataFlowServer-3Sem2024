@@ -31,16 +31,9 @@ public class LandingZoneController {
         return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", response));
     }
 
-
-    @PostMapping( "/save")
-    public ResponseEntity<CustomResponseDTO<String>> saveMetadadosInDataBase(@RequestBody RequestBodySaveDTO requestBodySaveDTO) throws IOException {
-        lzService.saveMetadadosInDataBase(requestBodySaveDTO);
-        return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", null));
-    }
-
-    @PostMapping( "/update")
+    @PostMapping( "/upsert")
     public ResponseEntity<CustomResponseDTO<String>> updateMetadadosInDataBase(@RequestBody RequestBodyUpdateMetaDTO requestBodyUpdateMetaDTO) throws IOException {
-        //TODO: updatear os metadados na base
+        lzService.updateMetadadosInDatabase(requestBodyUpdateMetaDTO);
         return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", null));
     }
 

@@ -41,6 +41,8 @@ public class MetadataDTO {
         for (Restricao restricao : list) {
             this.restricoes.add(new RestricaoDTO(restricao.getId(), restricao.getNome(), restricao.getValor()));
         }
-        this.nomeTipo = entity.getNomeTipo().getNomeTipo();
+        if (entity.getNomeTipo() != null) {
+            this.nomeTipo = entity.getNomeTipo().getNomeTipo();
+        }
     }
 }
