@@ -120,13 +120,23 @@ public class LandingZoneService {
 
         //estamos percorrendo a lista "list" e inserindo na variavel "item" toda vez que o for roda
         for (RequestBodySaveMetadadoDTO item : list){
+            arquivoBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, usuarioBD.get().getOrganizacao().getNome());
+
+            if (item.getAtivo() == false){
+                Metadata metadata = new Metadata();
+                metadata.setAtivo(item.getAtivo());
+                metadata.setNome(item.getNome());
+                metadata.setArquivo(arquivo);
+                metadataRepository.save(metadata);
+                continue;
+            }
 
             // compara se o tipo carregado no json corresponde a algum tipo ja existente no banco de dados
             Optional<Tipo> tipoDB = tipoRepository.findById(item.getTipo().getNomeTipo());
 
             // se o tipo não existir, ele retorna esta "critica"
-            if (tipoDB.isEmpty()){
-            throw new RuntimeException("O tipo "+item.getTipo().getNomeTipo()+" não existe");
+            if (tipoDB.isEmpty()) {
+                throw new RuntimeException("O tipo " + item.getTipo().getNomeTipo() + " não existe");
             }
 
             // caso contratio, ele insere todos os dados recebidos nos atributos de metadata
@@ -136,10 +146,12 @@ public class LandingZoneService {
             metadata.setValorPadrao(item.getValorPadrao());
             metadata.setDescricao(item.getDescricao());
             metadata.setRestricoes(item.getRestricoes());
+            
             metadata.setNomeTipo(new Tipo(item.getTipo().getNomeTipo()));
 
             // envia os dados para arquivos
             metadata.setArquivo(arquivo);
+
             // salva a instancia metadata com todos os dados que lhe foram atribuidos
             metadataRepository.save(metadata);
         }
