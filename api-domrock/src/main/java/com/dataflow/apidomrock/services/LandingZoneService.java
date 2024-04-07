@@ -58,14 +58,9 @@ public class LandingZoneService {
         while (line.endsWith(";")) {
             line = line.substring(0, line.length() - 1);
         }
-        String[] headers;
-        if(line.contains(",")){
-            //divido o nome das colunas pelo delimitador especificado
-            headers = line.split(",");
-        } else {
-            headers = line.split(";");
-        }
 
+        //divido o nome das colunas pelo delimitador especificado
+        String[] headers = line.split(delimiter);
 
         //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
         for (String columName : headers) {
