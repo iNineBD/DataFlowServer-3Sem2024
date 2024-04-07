@@ -24,7 +24,6 @@ public class Metadata {
     private Boolean ativo;
     private String valorPadrao;
     private String descricao;
-    private Integer ativo;
 
     @ManyToOne
     @JoinColumn(name = "arquivo_id")
