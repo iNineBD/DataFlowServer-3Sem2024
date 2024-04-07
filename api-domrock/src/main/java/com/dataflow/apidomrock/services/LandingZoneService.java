@@ -139,7 +139,6 @@ public class LandingZoneService {
             }
 
             newMetadado.setNomeTipo(tipoDB.get());
-
             List<Restricao> newRestricoes = new ArrayList<>();
 
             for (RestricaoDTO restricaoJson : metadadoJson.getRestricoes()) {
@@ -156,6 +155,7 @@ public class LandingZoneService {
 
             newMetadado.setRestricoes(newRestricoes);
             metadataRepository.save(newMetadado);
+
         }
     }
 }
