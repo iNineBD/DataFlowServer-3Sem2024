@@ -132,7 +132,9 @@ public class LandingZoneService {
 
             newMetadado.setDescricao(metadadoJson.getDescricao());
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
-
+            if (metadadoJson.getNomeTipo().isEmpty()){
+                throw new RuntimeException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo");
+            }
             Optional<Tipo> tipoDB = tipoRepository.findById(metadadoJson.getNomeTipo());
             if (tipoDB.isEmpty()) {
                 throw new RuntimeException("O tipo " + metadadoJson.getNomeTipo() + " não existe");
@@ -146,6 +148,9 @@ public class LandingZoneService {
                     if (restricaoJson.getNome().equals("tamanhoMaximo")) {
                         continue;
                     }
+                }
+                if (restricaoJson.getValor().isEmpty()){
+                    continue;
                 }
                 Restricao newRestricao = new Restricao();
                 newRestricao.setNome(restricaoJson.getNome());
