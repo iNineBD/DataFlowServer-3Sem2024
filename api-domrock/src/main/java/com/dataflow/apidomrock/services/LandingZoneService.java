@@ -40,18 +40,15 @@ public class LandingZoneService {
     TipoRepository tipoRepository;
 
     @Transactional(readOnly = false)
-    public UploadCSVResponseDTO processUploadCSV(MultipartFile request, String delimiter) throws IOException {
+    public UploadCSVResponseDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException {
 
-        List<Metadata> metadatas = new ArrayList<>();
-        MultipartFile multipartFile = request;
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
-        multipartFile = ValidateRequest.validateprocessUploadCSV(request, delimiter);
+        multipartFile = ValidateRequest.validateprocessUploadCSV(multipartFile, delimiter);
 
         //lendo o arquivo
-        InputStream in = multipartFile.getInputStream();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(in));
+        BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()));
 
         //pego o cabeçalho (nome das colunas)
         String line = rd.readLine().trim();
@@ -68,14 +65,10 @@ public class LandingZoneService {
             headers = line.split(";");
         }
 
-
+        List<Metadata> metadatas = new ArrayList<>();
         //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
         for (String columName : headers) {
             metadatas.add(new Metadata(null, columName, null, null, null, null, null, null));
-        }
-
-        if (multipartFile == null) {
-            throw new RuntimeException("Erro ao interpretar o arquivo inserido");
         }
 
         double fileSize = (double) multipartFile.getSize() / (1024 * 1024);
@@ -164,6 +157,5 @@ public class LandingZoneService {
             temp.add(new ResponseBodyMetadadoDTO(metadata));
         }
         return new ResponseBodyGetMetadadosDTO(user, nomeArquivo, temp);
-
     }
 }
