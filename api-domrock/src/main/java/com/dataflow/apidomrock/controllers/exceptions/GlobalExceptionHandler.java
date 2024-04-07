@@ -10,13 +10,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.sql.SQLException;
 
 /*
 * Essa classe está mapeada pelo ControllerAdvice - isso siginifica que o spring vai buscar uma trataiva para qualquer exceção lançada nos controllers
 * Como isso funciona?
 * Quando estouramos uma exceção, ela tem um tipo (RuntimeException... etc)
 *
-* O Adivice vem nessa classe GlobalExceptionHandler e busca o metodo que trata exceções do tipo em questão.
+* O Advice vem nessa classe GlobalExceptionHandler e busca o metodo que trata exceções do tipo em questão.
 *
 * Se fosse uma exeção do RuntimeException, por exemplo, a função invocada seria a handleException
 * */
@@ -31,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IOException.class)
     public ResponseEntity<CustomResponseDTO<Object>> handleIOReaderFileException(ResponseStatusException ex) {
         CustomResponseDTO<Object> customResponse = new CustomResponseDTO<>("Erro ao serializar arquivo inserido", null);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(customResponse);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customResponse);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     //Exceção para entrada inválida
@@ -50,7 +51,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     //Exceção para erro interno generico
     public ResponseEntity<CustomResponseDTO<Object>> handleException(RuntimeException ex) {
-        CustomResponseDTO<Object> customResponse = new CustomResponseDTO<>(ex.getMessage(), null);
+        CustomResponseDTO<Object> customResponse = new CustomResponseDTO<>("Ocorreu um erro inesperado: "+ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customResponse);
+    }
+
+    @ExceptionHandler(SQLException.class)
+    //Exceção para erro interno generico
+    public ResponseEntity<CustomResponseDTO<Object>> handleSQLException(SQLException ex) {
+        CustomResponseDTO<Object> customResponse = new CustomResponseDTO<>("Ocorreu algum erro interno na base: " +ex.getMessage(), null);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customResponse);
     }
 }
