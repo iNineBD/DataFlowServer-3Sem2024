@@ -1,5 +1,6 @@
 package com.dataflow.apidomrock.dto.getMetadados;
 
+import com.dataflow.apidomrock.dto.entitiesDTO.MetadataDTO;
 import lombok.*;
 
 import java.util.List;
@@ -12,6 +13,6 @@ import java.util.List;
 public class ResponseBodyGetMetadadosDTO {
     private String usuario;
     private String nomeArquivo;
-    private List<ResponseBodyMetadadoDTO> metadados;
+    private List<MetadataDTO> metadados;
 }
 

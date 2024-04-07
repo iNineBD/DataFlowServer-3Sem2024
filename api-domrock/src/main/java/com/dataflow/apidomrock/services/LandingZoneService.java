@@ -1,7 +1,7 @@
 package com.dataflow.apidomrock.services;
 
+import com.dataflow.apidomrock.dto.entitiesDTO.MetadataDTO;
 import com.dataflow.apidomrock.dto.getMetadados.ResponseBodyGetMetadadosDTO;
-import com.dataflow.apidomrock.dto.getMetadados.ResponseBodyMetadadoDTO;
 import com.dataflow.apidomrock.dto.processUploadCSV.UploadCSVResponseDTO;
 import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveDTO;
 import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveMetadadoDTO;
@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -152,9 +151,9 @@ public class LandingZoneService {
             throw new RuntimeException("Arquivo [" + nomeArquivo + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]");
         }
 
-        List<ResponseBodyMetadadoDTO> temp = new ArrayList<>();
+        List<MetadataDTO> temp = new ArrayList<>();
         for (Metadata metadata : arqBD.get().getMetadados()){
-            temp.add(new ResponseBodyMetadadoDTO(metadata));
+            temp.add(new MetadataDTO(metadata));
         }
         return new ResponseBodyGetMetadadosDTO(user, nomeArquivo, temp);
     }
