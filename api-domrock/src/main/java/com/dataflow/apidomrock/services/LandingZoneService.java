@@ -145,7 +145,7 @@ public class LandingZoneService {
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
 
             // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
-            if (metadadoJson.getNomeTipo().isEmpty()){
+            if (metadadoJson.getNomeTipo() == null || metadadoJson.getNomeTipo().isEmpty()){
                 throw new RuntimeException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo");
             }
             Optional<Tipo> tipoDB = tipoRepository.findById(metadadoJson.getNomeTipo());
