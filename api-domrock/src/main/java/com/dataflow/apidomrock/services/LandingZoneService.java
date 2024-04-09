@@ -79,13 +79,16 @@ public class LandingZoneService {
 
     @Transactional
     public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) {
+        //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Usuario> userBD = usuarioRepository.findById(user);
+        //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
             throw new RuntimeException("Usuário [" + user + "] não existe");
         }
-
+        //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getNome());
         if (arqBD.isEmpty()) {
+            //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
             throw new RuntimeException("Arquivo [" + nomeArquivo + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]");
         }
 
@@ -98,11 +101,16 @@ public class LandingZoneService {
 
     @Transactional
     public void updateMetadadosInDatabase(RequestBodyUpdateMetaDTO request) {
+
+        //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Usuario> userBD = usuarioRepository.findById(request.getUsuario());
+
+        //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
             throw new RuntimeException("Usuário [" + request.getUsuario() + "] não existe");
         }
 
+        //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
         if (arqBD.isEmpty()) {
             Arquivo arquivo = new Arquivo();
@@ -114,14 +122,18 @@ public class LandingZoneService {
             arquivoRepository.save(arquivo);
             arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
         }
-
+        //TODO METADADO "CAPTURADO" PELO JSON, ELE JOGA AS INFORMAÇÕES NO OBJETO METADADO
         for (MetadataDTO metadadoJson : request.getMetadados()) {
             Optional<Metadata> metaBD = metadataRepository.findByNameAndFile(arqBD.get().getId(), metadadoJson.getNome());
             Metadata newMetadado = new Metadata();
+
+            // SE O METADADO JA EXISTIR, ELE PEGA O VALOR ANTIGO, DELETA E INSERE O NOVO
             if (metaBD.isPresent()) {
                 newMetadado.setID(metaBD.get().getID());
                 restricaoRepository.deleteAll(metaBD.get().getRestricoes());
             }
+
+            //SE O METADADO NÃO EXISTIR, ELE PEGA TODOS OS METADADOS CAPTURADOS E INSERE NA BASE
             newMetadado.setNome(metadadoJson.getNome());
             newMetadado.setArquivo(arqBD.get());
             newMetadado.setAtivo(metadadoJson.getAtivo());
@@ -129,13 +141,16 @@ public class LandingZoneService {
                 metadataRepository.save(newMetadado);
                 continue;
             }
-
             newMetadado.setDescricao(metadadoJson.getDescricao());
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
+
+            // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
             if (metadadoJson.getNomeTipo().isEmpty()){
                 throw new RuntimeException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo");
             }
             Optional<Tipo> tipoDB = tipoRepository.findById(metadadoJson.getNomeTipo());
+
+            // SE O TIPO DO METADADO FOR DIFERENTE DOS JA EXISTENTES NA BASE, ELE ESTOUES ESTA "CRITICA"
             if (tipoDB.isEmpty()) {
                 throw new RuntimeException("O tipo " + metadadoJson.getNomeTipo() + " não existe");
             }
@@ -143,21 +158,24 @@ public class LandingZoneService {
             newMetadado.setNomeTipo(tipoDB.get());
             List<Restricao> newRestricoes = new ArrayList<>();
 
+            //SE O METADADO FOR DO TIPO BOOLENAO, DATA, HORA, DATA E HORA, A COLUNA TAMANHO MAXIMO NÃO DEVERA SER PREENCHIDA
             for (RestricaoDTO restricaoJson : metadadoJson.getRestricoes()) {
                 if (metadadoJson.getNomeTipo().equals("Hora") || metadadoJson.getNomeTipo().equals("Data") || metadadoJson.getNomeTipo().equals("Data e Hora")  || metadadoJson.getNomeTipo().equals("Booleano")){
                     if (restricaoJson.getNome().equals("tamanhoMaximo")) {
                         continue;
                     }
                 }
+                // SE A RESTRIÇÃO ESTIVER VAZIA, O PROGRAMA CONTINUA
                 if (restricaoJson.getValor().isEmpty()){
                     continue;
                 }
                 Restricao newRestricao = new Restricao();
+                // INSERINDO AS INFORMAÇÕES DO JSON NOS ATRIBUTOS REQUERIDOS PARA RESTRIÇÃO
                 newRestricao.setNome(restricaoJson.getNome());
                 newRestricao.setValor(restricaoJson.getValor());
                 newRestricoes.add(newRestricao);
             }
-
+            //ADICIONANDO AS RESTRIÇOES NO METADADO
             newMetadado.setRestricoes(newRestricoes);
             metadataRepository.save(newMetadado);
 
