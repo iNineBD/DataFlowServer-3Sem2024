@@ -1,8 +1,8 @@
 package com.dataflow.apidomrock.controllers;
 
-import com.dataflow.apidomrock.dto.ArquivoDTO;
+import com.dataflow.apidomrock.dto.ArquivosLzBS.ArquivoDTO;
+import com.dataflow.apidomrock.dto.GetArquivosUsuario.UsuarioDTO;
 import com.dataflow.apidomrock.dto.HomeResponseDTO;
-import com.dataflow.apidomrock.dto.UsuarioDTO;
 import com.dataflow.apidomrock.dto.customResponse.CustomResponseDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.services.HomeService;

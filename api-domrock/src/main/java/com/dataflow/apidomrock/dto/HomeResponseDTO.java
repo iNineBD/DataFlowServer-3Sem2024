@@ -1,5 +1,6 @@
 package com.dataflow.apidomrock.dto;
 
+import com.dataflow.apidomrock.dto.ArquivosLzBS.ArquivoDTO;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

@@ -1,6 +1,6 @@
 package com.dataflow.apidomrock.services;
 
-import com.dataflow.apidomrock.dto.ArquivoDTO;
+import com.dataflow.apidomrock.dto.ArquivosLzBS.ArquivoDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
