@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto.SaveMetadado;
+package com.dataflow.apidomrock.dto.saveMetadado;
 
 import com.dataflow.apidomrock.entities.database.Restricao;
 import com.dataflow.apidomrock.entities.database.Tipo;

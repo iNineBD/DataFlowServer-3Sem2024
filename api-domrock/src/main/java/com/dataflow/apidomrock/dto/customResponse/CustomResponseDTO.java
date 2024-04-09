@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto;
+package com.dataflow.apidomrock.dto.customResponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

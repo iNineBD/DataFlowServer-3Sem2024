@@ -17,7 +17,7 @@ import java.util.List;
 public class Arquivo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private  String nomeArquivo;
 
     @ManyToOne

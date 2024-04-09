@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto;
+package com.dataflow.apidomrock.dto.processUploadCSV;
 
 import com.dataflow.apidomrock.entities.database.Metadata;
 import lombok.AllArgsConstructor;
