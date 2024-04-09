@@ -4,8 +4,6 @@ import com.dataflow.apidomrock.dto.entitiesDTO.MetadataDTO;
 import com.dataflow.apidomrock.dto.entitiesDTO.RestricaoDTO;
 import com.dataflow.apidomrock.dto.getMetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.processUploadCSV.UploadCSVResponseDTO;
-import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveDTO;
-import com.dataflow.apidomrock.dto.saveMetadado.RequestBodySaveMetadadoDTO;
 import com.dataflow.apidomrock.dto.updateMetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.repository.*;

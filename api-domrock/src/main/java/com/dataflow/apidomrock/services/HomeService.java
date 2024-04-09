@@ -1,13 +1,10 @@
 package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.dto.ArquivoDTO;
-import com.dataflow.apidomrock.dto.HomeResponseDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,6 @@
 package com.dataflow.apidomrock.dto;
 
 import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.Status;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 public record ArquivoDTO(@JsonAlias("nomeArquivo")String nome,

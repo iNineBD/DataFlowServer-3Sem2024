@@ -1,10 +1,7 @@
 package com.dataflow.apidomrock.dto.entitiesDTO;
 
-import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Restricao;
-import com.dataflow.apidomrock.entities.database.Tipo;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
