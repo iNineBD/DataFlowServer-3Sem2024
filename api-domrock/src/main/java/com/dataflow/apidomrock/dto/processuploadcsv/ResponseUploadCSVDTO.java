@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto.processUploadCSV;
+package com.dataflow.apidomrock.dto.processuploadcsv;
 
 import com.dataflow.apidomrock.entities.database.Metadata;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UploadCSVResponseDTO {
+public class ResponseUploadCSVDTO {
     private String fileName;
     private Double fileSize;
     private List<Metadata> columns;

@@ -1,6 +1,6 @@
-package com.dataflow.apidomrock.dto.updateMetados;
+package com.dataflow.apidomrock.dto.updatemetados;
 
-import com.dataflow.apidomrock.dto.entitiesDTO.MetadataDTO;
+import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import lombok.*;
 
 import java.util.List;

@@ -1,10 +1,10 @@
 package com.dataflow.apidomrock.controllers;
 
-import com.dataflow.apidomrock.dto.customResponse.CustomResponseDTO;
-import com.dataflow.apidomrock.dto.getMetadados.RequestBodyGetMetadadosDTO;
-import com.dataflow.apidomrock.dto.getMetadados.ResponseBodyGetMetadadosDTO;
-import com.dataflow.apidomrock.dto.processUploadCSV.UploadCSVResponseDTO;
-import com.dataflow.apidomrock.dto.updateMetados.RequestBodyUpdateMetaDTO;
+import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
+import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
+import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
+import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
+import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.services.LandingZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,20 +25,20 @@ public class LandingZoneController {
 
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
-    public ResponseEntity<CustomResponseDTO<UploadCSVResponseDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter) throws IOException {
-        UploadCSVResponseDTO response = lzService.processUploadCSV(multipartFile, delimiter);
-        return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", response));
+    public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter) throws IOException {
+        ResponseUploadCSVDTO response = lzService.processUploadCSV(multipartFile, delimiter);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 
     @PostMapping( "/upsert")
-    public ResponseEntity<CustomResponseDTO<String>> updateMetadadosInDataBase(@RequestBody RequestBodyUpdateMetaDTO requestBodyUpdateMetaDTO) throws IOException {
+    public ResponseEntity<ResponseCustomDTO<String>> updateMetadadosInDataBase(@RequestBody RequestBodyUpdateMetaDTO requestBodyUpdateMetaDTO) throws IOException {
         lzService.updateMetadadosInDatabase(requestBodyUpdateMetaDTO);
-        return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", null));
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
 
     @PostMapping( "/search")
-    public ResponseEntity<CustomResponseDTO<ResponseBodyGetMetadadosDTO>> getMetadadosInDataBase(@RequestBody RequestBodyGetMetadadosDTO request) throws IOException {
+    public ResponseEntity<ResponseCustomDTO<ResponseBodyGetMetadadosDTO>> getMetadadosInDataBase(@RequestBody RequestBodyGetMetadadosDTO request) throws IOException {
         ResponseBodyGetMetadadosDTO response = lzService.getMetadadosInDatabase(request.getUsuario(), request.getNomeArquivo());
-        return ResponseEntity.ok().body(new CustomResponseDTO<>("Processamento efetuado com sucesso", response));
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 }

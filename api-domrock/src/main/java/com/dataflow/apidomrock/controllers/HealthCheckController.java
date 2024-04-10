@@ -1,6 +1,6 @@
 package com.dataflow.apidomrock.controllers;
 
-import com.dataflow.apidomrock.dto.customResponse.CustomResponseDTO;
+import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,12 +18,12 @@ public class HealthCheckController {
     private JdbcTemplate jdbcTemplate;
 
     @GetMapping
-    public ResponseEntity<CustomResponseDTO<String>> healthCheck (){
+    public ResponseEntity<ResponseCustomDTO<String>> healthCheck (){
         try {
             jdbcTemplate.execute("SELECT 1");
-            return ResponseEntity.ok().body(new CustomResponseDTO<>("A API está em pé", null));
+            return ResponseEntity.ok().body(new ResponseCustomDTO<>("A API está em pé", null));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new CustomResponseDTO<>("Problema com conexão ao banco. Consultar o setor de suporte!", null));
+            return ResponseEntity.badRequest().body(new ResponseCustomDTO<>("Problema com conexão ao banco. Consultar o setor de suporte!", null));
         }
 
     }

@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto.customResponse;
+package com.dataflow.apidomrock.dto.customresponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -16,13 +16,13 @@ import java.util.UUID;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustomResponseDTO<T> {
+public class ResponseCustomDTO<T> {
     private UUID transID;
     private String critica;
     private LocalDateTime serverTime;
     private T response;
 
-    public CustomResponseDTO(String feedback, T response) {
+    public ResponseCustomDTO(String feedback, T response) {
         this.critica = feedback;
         this.response = response;
         this.transID = UUID.randomUUID();

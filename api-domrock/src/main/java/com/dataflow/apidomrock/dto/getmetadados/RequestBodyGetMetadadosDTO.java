@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto.getMetadados;
+package com.dataflow.apidomrock.dto.getmetadados;
 
 import lombok.*;
 

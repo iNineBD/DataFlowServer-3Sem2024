@@ -1,6 +1,6 @@
 package com.dataflow.apidomrock.services;
 
-import com.dataflow.apidomrock.dto.ArquivosLzBS.ArquivoDTO;
+import com.dataflow.apidomrock.dto.homedados.ResponseArquivosDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
@@ -34,7 +34,7 @@ public class HomeService {
         }
     }
 
-    public List<ArquivoDTO> arquivosLanding(List<Arquivo> arquivos){
+    public List<ResponseArquivosDTO> arquivosLanding(List<Arquivo> arquivos){
         int qtdArquivos = arquivos.size();
         List<Arquivo> arq = new ArrayList<>();
 
@@ -44,14 +44,14 @@ public class HomeService {
             }
         }
 
-        List<ArquivoDTO> arquivosLz = arq.stream()
-                .map(ArquivoDTO::new)
+        List<ResponseArquivosDTO> arquivosLz = arq.stream()
+                .map(ResponseArquivosDTO::new)
                 .collect(Collectors.toList());
 
         return arquivosLz;
     }
 
-    public List<ArquivoDTO> arquivosBronze(List<Arquivo> arquivos){
+    public List<ResponseArquivosDTO> arquivosBronze(List<Arquivo> arquivos){
         int qtdArquivos = arquivos.size();
         List<Arquivo> arq = new ArrayList<>();
 
@@ -61,14 +61,14 @@ public class HomeService {
             }
         }
 
-        List<ArquivoDTO> arquivosBz = arq.stream()
-                .map(ArquivoDTO::new)
+        List<ResponseArquivosDTO> arquivosBz = arq.stream()
+                .map(ResponseArquivosDTO::new)
                 .collect(Collectors.toList());
 
         return arquivosBz;
     }
 
-    public List<ArquivoDTO> arquivosSilver(List<Arquivo> arquivos){
+    public List<ResponseArquivosDTO> arquivosSilver(List<Arquivo> arquivos){
         int qtdArquivos = arquivos.size();
         List<Arquivo> arq = new ArrayList<>();
 
@@ -78,8 +78,8 @@ public class HomeService {
             }
         }
 
-        List<ArquivoDTO> arquivosSz = arq.stream()
-                .map(ArquivoDTO::new)
+        List<ResponseArquivosDTO> arquivosSz = arq.stream()
+                .map(ResponseArquivosDTO::new)
                 .collect(Collectors.toList());
 
         return arquivosSz;

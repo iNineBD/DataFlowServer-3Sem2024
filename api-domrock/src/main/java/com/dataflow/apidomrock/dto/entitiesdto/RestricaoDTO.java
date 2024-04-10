@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.dto.entitiesDTO;
+package com.dataflow.apidomrock.dto.entitiesdto;
 
 import lombok.*;
 

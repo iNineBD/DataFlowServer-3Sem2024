@@ -1,9 +1,9 @@
 package com.dataflow.apidomrock.controllers;
 
-import com.dataflow.apidomrock.dto.ArquivosLzBS.ArquivoDTO;
-import com.dataflow.apidomrock.dto.GetArquivosUsuario.UsuarioDTO;
-import com.dataflow.apidomrock.dto.HomeResponseDTO;
-import com.dataflow.apidomrock.dto.customResponse.CustomResponseDTO;
+import com.dataflow.apidomrock.dto.homedados.ResponseArquivosDTO;
+import com.dataflow.apidomrock.dto.homedados.RequestBodyUsuarioDTO;
+import com.dataflow.apidomrock.dto.homedados.ResponseHomeDTO;
+import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.services.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,13 @@ public class HomeController {
     HomeService homeService;
 
     @GetMapping("/filesOrg")
-    public ResponseEntity<CustomResponseDTO<HomeResponseDTO>> homeDados(@RequestBody UsuarioDTO usuario) throws IOException {
+    public ResponseEntity<ResponseCustomDTO<ResponseHomeDTO>> homeDados(@RequestBody RequestBodyUsuarioDTO usuario) throws IOException {
         List<Arquivo> arquivos =  homeService.getUsuario(usuario.email());
-        List<ArquivoDTO> arquivosLanding = homeService.arquivosLanding(arquivos);
-        List<ArquivoDTO> arquivosBronze = homeService.arquivosBronze(arquivos);
-        List<ArquivoDTO> arquivosSilver = homeService.arquivosSilver(arquivos);
+        List<ResponseArquivosDTO> arquivosLanding = homeService.arquivosLanding(arquivos);
+        List<ResponseArquivosDTO> arquivosBronze = homeService.arquivosBronze(arquivos);
+        List<ResponseArquivosDTO> arquivosSilver = homeService.arquivosSilver(arquivos);
 
-        HomeResponseDTO response = new HomeResponseDTO(arquivosLanding,arquivosBronze,arquivosSilver);
-        return ResponseEntity.ok().body(new CustomResponseDTO<>("Lista de dados:", response));
+        ResponseHomeDTO response = new ResponseHomeDTO(arquivosLanding,arquivosBronze,arquivosSilver);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Lista de dados:", response));
     }
 }

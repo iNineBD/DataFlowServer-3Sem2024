@@ -1,10 +1,10 @@
 package com.dataflow.apidomrock.services;
 
-import com.dataflow.apidomrock.dto.entitiesDTO.MetadataDTO;
-import com.dataflow.apidomrock.dto.entitiesDTO.RestricaoDTO;
-import com.dataflow.apidomrock.dto.getMetadados.ResponseBodyGetMetadadosDTO;
-import com.dataflow.apidomrock.dto.processUploadCSV.UploadCSVResponseDTO;
-import com.dataflow.apidomrock.dto.updateMetados.RequestBodyUpdateMetaDTO;
+import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
+import com.dataflow.apidomrock.dto.entitiesdto.RestricaoDTO;
+import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
+import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
+import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.repository.*;
 import com.dataflow.apidomrock.services.utils.ValidateRequest;
@@ -39,7 +39,7 @@ public class LandingZoneService {
     RestricaoRepository restricaoRepository;
 
     @Transactional(readOnly = false)
-    public UploadCSVResponseDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException {
+    public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException {
 
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
@@ -72,7 +72,7 @@ public class LandingZoneService {
 
         double fileSize = (double) multipartFile.getSize() / (1024 * 1024);
 
-        return new UploadCSVResponseDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
+        return new ResponseUploadCSVDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
     }
 
     @Transactional

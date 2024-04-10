@@ -1,6 +1,5 @@
 package com.dataflow.apidomrock.repository;
 
-import com.dataflow.apidomrock.dto.HomeResponseDTO;
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
