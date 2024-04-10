@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ResponseCustomDTO<Object>> handleIOReaderFileException(ResponseStatusException ex) {
         ResponseCustomDTO<Object> customResponse = new ResponseCustomDTO<>("Erro ao serializar arquivo inserido", null);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(customResponse);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     //Exceção para entrada inválida
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     //Exceção para erro interno generico
     public ResponseEntity<ResponseCustomDTO<Object>> handleException(RuntimeException ex) {
         ResponseCustomDTO<Object> customResponse = new ResponseCustomDTO<>("Ocorreu um erro inesperado: "+ex.getMessage(), null);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(customResponse);
     }
 
     @ExceptionHandler(SQLException.class)
