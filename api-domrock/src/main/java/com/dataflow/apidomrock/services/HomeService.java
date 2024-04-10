@@ -23,10 +23,13 @@ public class HomeService {
     private UsuarioRepository usuarioRepository;
 
     public List<Arquivo> getUsuario(String emailUsuario){
+        // Aqui ele busca o usuário no banco, se ele não acha no banco cai no else.
         Optional<Usuario> usuario = usuarioRepository.findById(emailUsuario);
         if(usuario.isPresent()){
+            //Aqui dentro de um usuário ele pega a organização que ela pertence.
             String organizacao = usuario.get().getOrganizacao().getNome();
 
+            //Aqui ele busca e retorna todos os arquivos da organização
             return arquivoRepository.findByOrganizacao(organizacao);
 
         }else{
@@ -38,12 +41,14 @@ public class HomeService {
         int qtdArquivos = arquivos.size();
         List<Arquivo> arq = new ArrayList<>();
 
+        // Dos arquivos buscados no método anterior ele separa quais estão na landing.
         for (int i = 0; i < qtdArquivos; i++) {
             if (arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId() == 98) {
                 arq.add(arquivos.get(i));
             }
         }
 
+        // Neste passo ele só ajusta o retorno passando para o formato necessário no response.
         List<ResponseArquivosDTO> arquivosLz = arq.stream()
                 .map(ResponseArquivosDTO::new)
                 .collect(Collectors.toList());
@@ -55,12 +60,14 @@ public class HomeService {
         int qtdArquivos = arquivos.size();
         List<Arquivo> arq = new ArrayList<>();
 
+        // Dos arquivos buscados no método anterior ele separa quais estão na bronze.
         for (int i = 0; i < qtdArquivos; i++){
             if(arquivos.get(i).getStatus().getId() == 2 || arquivos.get(i).getStatus().getId() == 3 || arquivos.get(i).getStatus().getId() == 99){
                 arq.add(arquivos.get(i));
             }
         }
 
+        // Neste passo ele só ajusta o retorno passando para o formato necessário no response.
         List<ResponseArquivosDTO> arquivosBz = arq.stream()
                 .map(ResponseArquivosDTO::new)
                 .collect(Collectors.toList());
@@ -72,12 +79,14 @@ public class HomeService {
         int qtdArquivos = arquivos.size();
         List<Arquivo> arq = new ArrayList<>();
 
+        // Dos arquivos buscados no método anterior ele separa quais estão na silver.
         for (int i = 0; i < qtdArquivos; i++){
             if(arquivos.get(i).getStatus().getId() == 4 || arquivos.get(i).getStatus().getId() == 5){
                 arq.add(arquivos.get(i));
             }
         }
 
+        // Neste passo ele só ajusta o retorno passando para o formato necessário no response.
         List<ResponseArquivosDTO> arquivosSz = arq.stream()
                 .map(ResponseArquivosDTO::new)
                 .collect(Collectors.toList());
