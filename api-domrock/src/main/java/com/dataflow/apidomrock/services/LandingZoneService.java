@@ -166,7 +166,7 @@ public class LandingZoneService {
                     }
                 }
                 // SE A RESTRIÇÃO ESTIVER VAZIA, O PROGRAMA CONTINUA
-                if (restricaoJson.getValor().isEmpty()){
+                if (restricaoJson.getValor() == null || restricaoJson.getValor().isEmpty()){
                     continue;
                 }
                 Restricao newRestricao = new Restricao();
