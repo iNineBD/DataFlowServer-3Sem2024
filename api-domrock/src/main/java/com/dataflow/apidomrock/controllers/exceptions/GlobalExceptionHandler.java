@@ -41,6 +41,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(customResponse);
     }
 
+    @ExceptionHandler(CustomException.class)
+    //Exceção para entrada inválida
+    public ResponseEntity<ResponseCustomDTO<Object>> handleCustomException(CustomException ex) {
+        ResponseCustomDTO<Object> customResponse = new ResponseCustomDTO<>(ex.getMsg(), null);
+        return ResponseEntity.status(ex.getHttpStatus()).body(customResponse);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     //Exceção para acesso negado
     public ResponseEntity<ResponseCustomDTO<Object>> handleAccessDeniedException(AccessDeniedException ex) {
@@ -52,7 +59,7 @@ public class GlobalExceptionHandler {
     //Exceção para erro interno generico
     public ResponseEntity<ResponseCustomDTO<Object>> handleException(RuntimeException ex) {
         ResponseCustomDTO<Object> customResponse = new ResponseCustomDTO<>("Ocorreu um erro inesperado: "+ex.getMessage(), null);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(customResponse);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customResponse);
     }
 
     @ExceptionHandler(SQLException.class)

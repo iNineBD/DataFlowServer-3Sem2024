@@ -1,5 +1,6 @@
 package com.dataflow.apidomrock.controllers;
 
+import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
@@ -25,19 +26,19 @@ public class LandingZoneController {
 
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
-    public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter) throws IOException {
+    public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter) throws IOException, CustomException {
         ResponseUploadCSVDTO response = lzService.processUploadCSV(multipartFile, delimiter);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 
     @PostMapping( "/upsert")
-    public ResponseEntity<ResponseCustomDTO<String>> updateMetadadosInDataBase(@RequestBody RequestBodyUpdateMetaDTO requestBodyUpdateMetaDTO) throws IOException {
+    public ResponseEntity<ResponseCustomDTO<String>> updateMetadadosInDataBase(@RequestBody RequestBodyUpdateMetaDTO requestBodyUpdateMetaDTO) throws CustomException {
         lzService.updateMetadadosInDatabase(requestBodyUpdateMetaDTO);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
 
     @PostMapping( "/search")
-    public ResponseEntity<ResponseCustomDTO<ResponseBodyGetMetadadosDTO>> getMetadadosInDataBase(@RequestBody RequestBodyGetMetadadosDTO request) throws IOException {
+    public ResponseEntity<ResponseCustomDTO<ResponseBodyGetMetadadosDTO>> getMetadadosInDataBase(@RequestBody RequestBodyGetMetadadosDTO request) throws CustomException {
         ResponseBodyGetMetadadosDTO response = lzService.getMetadadosInDatabase(request.getUsuario(), request.getNomeArquivo());
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }

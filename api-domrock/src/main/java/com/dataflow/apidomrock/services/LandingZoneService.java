@@ -1,5 +1,6 @@
 package com.dataflow.apidomrock.services;
 
+import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.entitiesdto.RestricaoDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
@@ -9,6 +10,7 @@ import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.repository.*;
 import com.dataflow.apidomrock.services.utils.ValidateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +41,7 @@ public class LandingZoneService {
     RestricaoRepository restricaoRepository;
 
     @Transactional(readOnly = false)
-    public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException {
+    public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException, CustomException {
 
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
@@ -76,18 +78,18 @@ public class LandingZoneService {
     }
 
     @Transactional
-    public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) {
+    public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Usuario> userBD = usuarioRepository.findById(user);
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
-            throw new RuntimeException("Usuário [" + user + "] não existe");
+            throw new CustomException("Usuário [" + user + "] não existe", HttpStatus.NOT_FOUND);
         }
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getNome());
         if (arqBD.isEmpty()) {
             //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
-            throw new RuntimeException("Arquivo [" + nomeArquivo + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]");
+            throw new CustomException("Arquivo [" + nomeArquivo + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]", HttpStatus.NOT_FOUND);
         }
 
         List<MetadataDTO> temp = new ArrayList<>();
@@ -98,14 +100,14 @@ public class LandingZoneService {
     }
 
     @Transactional
-    public void updateMetadadosInDatabase(RequestBodyUpdateMetaDTO request) {
+    public void updateMetadadosInDatabase(RequestBodyUpdateMetaDTO request) throws CustomException {
 
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Usuario> userBD = usuarioRepository.findById(request.getUsuario());
 
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
-            throw new RuntimeException("Usuário [" + request.getUsuario() + "] não existe");
+            throw new CustomException("Usuário [" + request.getUsuario() + "] não existe", HttpStatus.NOT_FOUND);
         }
 
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
@@ -144,13 +146,13 @@ public class LandingZoneService {
 
             // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
             if (metadadoJson.getNomeTipo() == null || metadadoJson.getNomeTipo().isEmpty()){
-                throw new RuntimeException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo");
+                throw new CustomException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo", HttpStatus.BAD_REQUEST);
             }
             Optional<Tipo> tipoDB = tipoRepository.findById(metadadoJson.getNomeTipo());
 
             // SE O TIPO DO METADADO FOR DIFERENTE DOS JA EXISTENTES NA BASE, ELE ESTOUES ESTA "CRITICA"
             if (tipoDB.isEmpty()) {
-                throw new RuntimeException("O tipo " + metadadoJson.getNomeTipo() + " não existe");
+                throw new CustomException("O tipo " + metadadoJson.getNomeTipo() + " não existe", HttpStatus.NOT_FOUND);
             }
 
             newMetadado.setNomeTipo(tipoDB.get());
