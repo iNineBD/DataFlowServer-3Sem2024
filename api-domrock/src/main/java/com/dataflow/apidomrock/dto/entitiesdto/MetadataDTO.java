@@ -41,5 +41,25 @@ public class MetadataDTO {
         if (entity.getNomeTipo() != null) {
             this.nomeTipo = entity.getNomeTipo().getNomeTipo();
         }
+
+        popularStringsNulas();
+    }
+
+    private void popularStringsNulas() {
+        if (this.nome == null) {
+            this.nome = "";
+        }
+        if (this.valorPadrao == null) {
+            this.valorPadrao = "";
+        }
+        if (this.descricao == null) {
+            this.descricao = "";
+        }
+        if (this.arquivo == null) {
+            this.arquivo = "";
+        }
+        if (this.nomeTipo == null) {
+            this.nomeTipo = "";
+        }
     }
 }
