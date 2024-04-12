@@ -24,6 +24,7 @@ public class Usuario implements Serializable {
     @JoinColumn (name="organizacao_nome", nullable=false)
     private Organizacao organizacao;
 
+    //TODO: revisar esse mapeamento
     @ManyToMany(targetEntity= NivelAcesso.class, fetch = FetchType.LAZY)
     @JoinTable(name = "nivel_acesso_usuario", // nome da tabela no sql
             joinColumns = @JoinColumn(name = "email"), // fk do usuario na nivel_acesso_usuario
