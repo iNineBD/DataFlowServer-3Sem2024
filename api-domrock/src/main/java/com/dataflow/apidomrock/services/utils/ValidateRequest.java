@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Objects;
 
 public class ValidateRequest {
-    public static MultipartFile validateprocessUploadCSV(MultipartFile file, String delimiter) throws CustomException {
+    public static Boolean validateprocessUploadCSV(MultipartFile file, String delimiter) throws CustomException {
 
         if (Objects.equals(file.getOriginalFilename(), "")) {
             throw new CustomException("Nenhum arquivo foi enviado na requisição", HttpStatus.NOT_FOUND);
@@ -16,10 +16,12 @@ public class ValidateRequest {
             throw new CustomException("O arquivo " + file.getOriginalFilename() + " enviado está vazio", HttpStatus.NO_CONTENT);
         }
         String fileType = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf('.') + 1);
-        if ((!"csv".equalsIgnoreCase(fileType))) {
-            throw new CustomException("Apenas arquivos .csv são permitidos", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        if (fileType.contains("csv")){
+            return true;
+        } else if (fileType.contains("xls")) {
+            return false;
+        } else {
+            throw new CustomException("Apenas arquivos .XLS e .CSV são permitidos", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         }
-
-        return file;
     }
 }
