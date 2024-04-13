@@ -74,7 +74,7 @@ public class LandingZoneService {
         return new ResponseBodyGetMetadadosDTO(user, nomeArquivo, temp);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = CustomException.class)
     public void updateMetadadosInDatabase(RequestBodyUpdateMetaDTO request) throws CustomException {
 
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
