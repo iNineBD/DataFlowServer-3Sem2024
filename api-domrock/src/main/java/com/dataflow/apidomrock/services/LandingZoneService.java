@@ -97,7 +97,7 @@ public class LandingZoneService {
             arquivoRepository.save(arquivo);
             arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
         }
-        //TODO METADADO "CAPTURADO" PELO JSON, ELE JOGA AS INFORMAÇÕES NO OBJETO METADADO
+        //METADADO "CAPTURADO" PELO JSON, ELE JOGA AS INFORMAÇÕES NO OBJETO METADADO
         for (MetadataDTO metadadoJson : request.getMetadados()) {
             Optional<Metadata> metaBD = metadataRepository.findByNameAndFile(arqBD.get().getId(), metadadoJson.getNome());
             Metadata newMetadado = new Metadata();

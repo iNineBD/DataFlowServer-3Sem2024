@@ -19,12 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessFiles {
-    public static ResponseUploadCSVDTO processCSVFile(MultipartFile multipartFile) throws IOException {
+    public static ResponseUploadCSVDTO processCSVFile(MultipartFile multipartFile) throws IOException, CustomException {
         //lendo o arquivo
         BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()));
 
         //pego o cabeçalho (nome das colunas)
         String line = rd.readLine().trim();
+
+        if (line.isEmpty()){
+            throw new CustomException("Não foi possivel identificar o header do arquivo.", HttpStatus.BAD_REQUEST);
+        }
 
         //isso foi feito para minimizar problemas do tipo: CSV não integro
         while (line.endsWith(";")) {
