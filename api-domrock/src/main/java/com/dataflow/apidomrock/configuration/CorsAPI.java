@@ -1,5 +1,6 @@
 package com.dataflow.apidomrock.configuration;
 
+import org.springframework.context.annimport org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -31,4 +32,4 @@ public class CorsAPI {
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
-}
+}otation.Bean;

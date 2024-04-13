@@ -135,13 +135,13 @@ public class LandingZoneService {
 
             //SE O METADADO FOR DO TIPO BOOLENAO, DATA, HORA, DATA E HORA, A COLUNA TAMANHO MAXIMO NÃO DEVERA SER PREENCHIDA
             for (RestricaoDTO restricaoJson : metadadoJson.getRestricoes()) {
-                if (restricaoJson.getNome().equals("tamanhoMaximo") && !Validate.isInteger(restricaoJson.getValor())){
-                    throw new CustomException("O campo \"Tamanho Máximo\" do metadado "+ metadadoJson.getNome() + " precisa ser um número inteiro", HttpStatus.BAD_REQUEST);
-                }
                 if (metadadoJson.getNomeTipo().equals("Hora") || metadadoJson.getNomeTipo().equals("Data") || metadadoJson.getNomeTipo().equals("Data e Hora")  || metadadoJson.getNomeTipo().equals("Booleano")){
                     if (restricaoJson.getNome().equals("tamanhoMaximo")) {
                         continue;
                     }
+                }
+                if (restricaoJson.getNome().equals("tamanhoMaximo") && !Validate.isInteger(restricaoJson.getValor())){
+                    throw new CustomException("O campo \"Tamanho Máximo\" do metadado "+ metadadoJson.getNome() + " precisa ser um número inteiro", HttpStatus.BAD_REQUEST);
                 }
                 // SE A RESTRIÇÃO ESTIVER VAZIA, O PROGRAMA CONTINUA
                 if (restricaoJson.getValor() == null || restricaoJson.getValor().isEmpty()){
