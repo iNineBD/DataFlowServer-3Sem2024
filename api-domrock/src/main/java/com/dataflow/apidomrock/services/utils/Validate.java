@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
-public class ValidateRequest {
+public class Validate {
     public static Boolean validateprocessUploadCSV(MultipartFile file, String delimiter) throws CustomException {
 
         if (Objects.equals(file.getOriginalFilename(), "")) {
@@ -23,5 +23,16 @@ public class ValidateRequest {
         } else {
             throw new CustomException("Apenas arquivos .XLS e .CSV são permitidos", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         }
+    }
+
+
+    public static Boolean isInteger(String str) {
+        int length = str.length();
+        for (int i = 0; i < length; i++) {
+            if (!Character.isDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

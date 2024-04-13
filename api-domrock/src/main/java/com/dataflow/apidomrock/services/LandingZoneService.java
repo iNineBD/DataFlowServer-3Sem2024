@@ -9,7 +9,7 @@ import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.repository.*;
 import com.dataflow.apidomrock.services.utils.ProcessFiles;
-import com.dataflow.apidomrock.services.utils.ValidateRequest;
+import com.dataflow.apidomrock.services.utils.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class LandingZoneService {
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
-        Boolean isCSV = ValidateRequest.validateprocessUploadCSV(multipartFile, delimiter);
+        Boolean isCSV = Validate.validateprocessUploadCSV(multipartFile, delimiter);
         if (isCSV) {
             return ProcessFiles.processCSVFile(multipartFile);
         } else {
@@ -135,6 +135,9 @@ public class LandingZoneService {
 
             //SE O METADADO FOR DO TIPO BOOLENAO, DATA, HORA, DATA E HORA, A COLUNA TAMANHO MAXIMO NÃO DEVERA SER PREENCHIDA
             for (RestricaoDTO restricaoJson : metadadoJson.getRestricoes()) {
+                if (restricaoJson.getNome().equals("tamanhoMaximo") && !Validate.isInteger(restricaoJson.getValor())){
+                    throw new CustomException("O campo \"Tamanho Máximo\" do metadado "+ metadadoJson.getNome() + " precisa ser um número inteiro", HttpStatus.BAD_REQUEST);
+                }
                 if (metadadoJson.getNomeTipo().equals("Hora") || metadadoJson.getNomeTipo().equals("Data") || metadadoJson.getNomeTipo().equals("Data e Hora")  || metadadoJson.getNomeTipo().equals("Booleano")){
                     if (restricaoJson.getNome().equals("tamanhoMaximo")) {
                         continue;
