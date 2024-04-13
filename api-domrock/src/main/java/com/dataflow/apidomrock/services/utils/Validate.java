@@ -28,7 +28,7 @@ public class Validate {
 
     public static Boolean isInteger(String str) {
         if (str == null || str.isEmpty()) {
-            return false;
+            return true;
         }
         int length = str.length();
         for (int i = 0; i < length; i++) {
