@@ -1,6 +1,6 @@
 package com.dataflow.apidomrock.dto.processuploadcsv;
 
-import com.dataflow.apidomrock.entities.database.Metadata;
+import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,5 +15,5 @@ import java.util.List;
 public class ResponseUploadCSVDTO {
     private String fileName;
     private Double fileSize;
-    private List<Metadata> columns;
+    private List<MetadataDTO> columns;
 }

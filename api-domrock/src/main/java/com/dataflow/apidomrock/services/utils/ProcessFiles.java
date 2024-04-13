@@ -1,6 +1,7 @@
 package com.dataflow.apidomrock.services.utils;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
+import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import org.apache.poi.ss.usermodel.Cell;
@@ -37,10 +38,10 @@ public class ProcessFiles {
             headers = line.split(";");
         }
 
-        List<Metadata> metadatas = new ArrayList<>();
+        List<MetadataDTO> metadatas = new ArrayList<>();
         //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
         for (String columName : headers) {
-            metadatas.add(new Metadata(null, columName, null, null, null, null, null, null));
+            metadatas.add(new MetadataDTO(null, columName, null, null, null, null, null, null));
         }
 
         double fileSize = (double) multipartFile.getSize() / (1024 * 1024);
@@ -50,7 +51,7 @@ public class ProcessFiles {
 
     public static ResponseUploadCSVDTO processExcelFile(MultipartFile file) throws CustomException {
         ResponseUploadCSVDTO response = new ResponseUploadCSVDTO();
-        List<Metadata> metadatas = new ArrayList<>();
+        List<MetadataDTO> metadatas = new ArrayList<>();
 
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -58,7 +59,7 @@ public class ProcessFiles {
             if (headerRow != null) {
                 for (Cell cell : headerRow) {
                     if (!cell.getStringCellValue().isEmpty() && cell.getStringCellValue() != null){
-                        metadatas.add(new Metadata(null, cell.getStringCellValue(), null, null, null, null, null, null));
+                        metadatas.add(new MetadataDTO(null, cell.getStringCellValue(), null, null, null, null, null, null));
                     }
                 }
             } else {
