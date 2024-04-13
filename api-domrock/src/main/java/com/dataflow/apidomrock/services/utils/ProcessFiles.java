@@ -57,7 +57,9 @@ public class ProcessFiles {
             Row headerRow = sheet.getRow(0);
             if (headerRow != null) {
                 for (Cell cell : headerRow) {
-                    metadatas.add(new Metadata(null, cell.getStringCellValue(), null, null, null, null, null, null));
+                    if (!cell.getStringCellValue().isEmpty() || cell.getStringCellValue() != null){
+                        metadatas.add(new Metadata(null, cell.getStringCellValue(), null, null, null, null, null, null));
+                    }
                 }
             } else {
                 throw new RuntimeException("Não foi possível encontrar o cabeçalho do arquivo");
