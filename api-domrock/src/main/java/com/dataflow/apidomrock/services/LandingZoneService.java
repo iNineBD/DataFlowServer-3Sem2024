@@ -39,7 +39,7 @@ public class LandingZoneService {
     @Autowired
     RestricaoRepository restricaoRepository;
 
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false, rollbackFor = CustomException.class)
     public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException, CustomException {
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
@@ -52,7 +52,7 @@ public class LandingZoneService {
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = CustomException.class)
     public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Usuario> userBD = usuarioRepository.findById(user);
