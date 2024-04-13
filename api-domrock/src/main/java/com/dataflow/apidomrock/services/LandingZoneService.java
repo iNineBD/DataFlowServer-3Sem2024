@@ -42,12 +42,11 @@ public class LandingZoneService {
     @Transactional(readOnly = false)
     public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException, CustomException {
 
-
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
         Boolean isCSV = ValidateRequest.validateprocessUploadCSV(multipartFile, delimiter);
         if (isCSV) {
-            return ProcessFiles.processCSV(multipartFile);
+            return ProcessFiles.processCSVFile(multipartFile);
         } else {
             return ProcessFiles.processExcelFile(multipartFile);
         }

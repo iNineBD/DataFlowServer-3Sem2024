@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessFiles {
-    public static ResponseUploadCSVDTO processCSV(MultipartFile multipartFile) throws IOException {
+    public static ResponseUploadCSVDTO processCSVFile(MultipartFile multipartFile) throws IOException {
         //lendo o arquivo
         BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()));
 
@@ -48,19 +48,13 @@ public class ProcessFiles {
         return new ResponseUploadCSVDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
     }
 
-    public static ResponseUploadCSVDTO processExcel(MultipartFile multipartFile) throws IOException {
-        return new ResponseUploadCSVDTO();
-    }
-
-
     public static ResponseUploadCSVDTO processExcelFile(MultipartFile file) throws CustomException {
         ResponseUploadCSVDTO response = new ResponseUploadCSVDTO();
         List<Metadata> metadatas = new ArrayList<>();
-        response.getFileName();
 
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
-            Row headerRow = sheet.getRow(0); // Assuming header is in the first row (index 0)
+            Row headerRow = sheet.getRow(0);
             if (headerRow != null) {
                 for (Cell cell : headerRow) {
                     metadatas.add(new Metadata(null, cell.getStringCellValue(), null, null, null, null, null, null));
@@ -71,8 +65,6 @@ public class ProcessFiles {
         } catch (IOException | RuntimeException e) {
             throw new CustomException(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
-        //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
 
         double fileSize = (double) file.getSize() / (1024 * 1024);
 
