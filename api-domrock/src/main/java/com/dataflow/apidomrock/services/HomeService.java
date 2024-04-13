@@ -1,5 +1,7 @@
 package com.dataflow.apidomrock.services;
 
+import com.dataflow.apidomrock.controllers.exceptions.CustomException;
+import com.dataflow.apidomrock.dto.deleteFile.RequestBodyDeleteFileDTO;
 import com.dataflow.apidomrock.dto.homedados.ResponseArquivosDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
@@ -8,10 +10,13 @@ import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.utils.Niveis;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -116,4 +121,33 @@ public class HomeService {
         }
     }
 
+    @Transactional(rollbackFor = CustomException.class)
+    public void deleteFile(RequestBodyDeleteFileDTO request) throws CustomException {
+        //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
+        Optional<Usuario> userBD = usuarioRepository.findById(request.getUsuario());
+        //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
+        if (userBD.isEmpty()) {
+            throw new CustomException("Usuário [" + request.getUsuario() + "] não existe", HttpStatus.NOT_FOUND);
+        }
+
+        boolean hasPermission = false;
+        for (NivelAcesso nvlAccess: userBD.get().getNiveisAcesso()) {
+            if (Objects.equals(nvlAccess.getNivel(), "MASTER")){
+                hasPermission = true;
+            }
+        }
+
+        if (!hasPermission){
+            throw new CustomException("Usuário [" + request.getUsuario() + "] não tem permissão para executar a ação", HttpStatus.UNAUTHORIZED);
+        }
+
+        //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
+        if (arqBD.isEmpty()) {
+            //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
+            throw new CustomException("Arquivo [" + request.getNomeArquivo() + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]", HttpStatus.NOT_FOUND);
+        }
+
+        arquivoRepository.delete(arqBD.get());
+    }
 }
