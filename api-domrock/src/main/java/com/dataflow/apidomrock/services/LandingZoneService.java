@@ -53,28 +53,6 @@ public class LandingZoneService {
     }
 
     @Transactional(rollbackFor = CustomException.class)
-    public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) throws CustomException {
-        //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Usuario> userBD = usuarioRepository.findById(user);
-        //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
-        if (userBD.isEmpty()) {
-            throw new CustomException("Usuário [" + user + "] não existe", HttpStatus.NOT_FOUND);
-        }
-        //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getNome());
-        if (arqBD.isEmpty()) {
-            //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
-            throw new CustomException("Arquivo [" + nomeArquivo + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]", HttpStatus.NOT_FOUND);
-        }
-
-        List<MetadataDTO> temp = new ArrayList<>();
-        for (Metadata metadata : arqBD.get().getMetadados()) {
-            temp.add(new MetadataDTO(metadata));
-        }
-        return new ResponseBodyGetMetadadosDTO(user, nomeArquivo, temp);
-    }
-
-    @Transactional(rollbackFor = CustomException.class)
     public void updateMetadadosInDatabase(RequestBodyUpdateMetaDTO request) throws CustomException {
 
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE

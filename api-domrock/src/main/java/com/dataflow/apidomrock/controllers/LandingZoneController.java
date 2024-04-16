@@ -6,6 +6,7 @@ import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
 import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
+import com.dataflow.apidomrock.services.GlobalServices;
 import com.dataflow.apidomrock.services.LandingZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,9 @@ public class LandingZoneController {
     @Autowired
     LandingZoneService lzService;
 
+    @Autowired
+    GlobalServices globalServices;
+
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
     public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter) throws IOException, CustomException {
@@ -39,7 +43,7 @@ public class LandingZoneController {
 
     @PostMapping( "/search")
     public ResponseEntity<ResponseCustomDTO<ResponseBodyGetMetadadosDTO>> getMetadadosInDataBase(@RequestBody RequestBodyGetMetadadosDTO request) throws CustomException {
-        ResponseBodyGetMetadadosDTO response = lzService.getMetadadosInDatabase(request.getUsuario(), request.getNomeArquivo());
+        ResponseBodyGetMetadadosDTO response = globalServices.getMetadadosInDatabase(request.getUsuario(), request.getNomeArquivo());
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 }
