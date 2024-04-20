@@ -1,11 +1,13 @@
 package com.dataflow.apidomrock.entities.database;
 
+import com.dataflow.apidomrock.entities.enums.Acao;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -19,10 +21,10 @@ public class Log {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Date dataHora;
+    private LocalDateTime dataHora;
     private String observacao;
     private String estagio; // LZ, BZ or SZ
-    private String acao;
+    private String acao; //'INSERIR', 'ALTERAR', 'EXCLUIR', 'APROVAR', 'REPROVAR'
 
     @ManyToOne
     @JoinColumn(name = "id_arquivo")

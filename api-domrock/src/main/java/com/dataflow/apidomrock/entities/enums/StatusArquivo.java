@@ -18,4 +18,6 @@ public enum StatusArquivo {
     public String getDescricao() {
         return descricao.toUpperCase();
     }
+
+
 }

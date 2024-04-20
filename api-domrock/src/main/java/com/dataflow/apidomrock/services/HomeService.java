@@ -6,10 +6,13 @@ import com.dataflow.apidomrock.dto.homedados.ResponseArquivosDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.enums.Acao;
+import com.dataflow.apidomrock.entities.enums.Estagio;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
+import com.dataflow.apidomrock.services.utils.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,8 @@ public class HomeService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    Logger logger;
 
     public String getNivel(String emailUsuario){
         NivelAcesso nivel = usuarioRepository.getNivelUsuario(emailUsuario);
@@ -151,5 +156,8 @@ public class HomeService {
         Arquivo arq = arqBD.get();
         arq.setAtivo(false);
         arquivoRepository.save(arq);
+
+
+        logger.insert(userBD.get().getId(), arq.getId(), "Delete file", Logger.getEstagioByStatus(arq.getStatus()), Acao.EXCLUIR);
     }
 }

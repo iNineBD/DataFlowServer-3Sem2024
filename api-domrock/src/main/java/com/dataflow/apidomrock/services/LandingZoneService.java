@@ -7,8 +7,11 @@ import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
 import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.database.*;
+import com.dataflow.apidomrock.entities.enums.Acao;
+import com.dataflow.apidomrock.entities.enums.Estagio;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.*;
+import com.dataflow.apidomrock.services.utils.Logger;
 import com.dataflow.apidomrock.services.utils.ProcessFiles;
 import com.dataflow.apidomrock.services.utils.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,9 @@ public class LandingZoneService {
 
     @Autowired
     RestricaoRepository restricaoRepository;
+
+    @Autowired
+    Logger logger;
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
     public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException, CustomException {
@@ -68,9 +74,12 @@ public class LandingZoneService {
             arquivo.setNomeArquivo(request.getNomeArquivo());
             arquivo.setStatus(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao());
             arquivo.setOrganizacao(userBD.get().getOrganizacao());
-
             arquivoRepository.save(arquivo);
             arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
+            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Insert file", Estagio.LZ, Acao.INSERIR);
+        }
+        else {
+            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Update file", Estagio.LZ, Acao.ALTERAR);
         }
         //METADADO "CAPTURADO" PELO JSON, ELE JOGA AS INFORMAÇÕES NO OBJETO METADADO
         for (MetadataDTO metadadoJson : request.getMetadados()) {
