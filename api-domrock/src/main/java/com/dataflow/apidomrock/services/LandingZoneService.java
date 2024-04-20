@@ -50,7 +50,7 @@ public class LandingZoneService {
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
         Boolean isCSV = Validate.validateprocessUploadCSV(multipartFile, delimiter);
         if (isCSV) {
-            return ProcessFiles.processCSVFile(multipartFile);
+            return ProcessFiles.processCSVFile(multipartFile, delimiter);
         } else {
             return ProcessFiles.processExcelFile(multipartFile);
         }

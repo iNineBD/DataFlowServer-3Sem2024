@@ -3,7 +3,6 @@ package com.dataflow.apidomrock.services.utils;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
-import com.dataflow.apidomrock.entities.database.Metadata;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessFiles {
-    public static ResponseUploadCSVDTO processCSVFile(MultipartFile multipartFile) throws IOException, CustomException {
+    public static ResponseUploadCSVDTO processCSVFile(MultipartFile multipartFile, String delimiter) throws IOException, CustomException {
         //lendo o arquivo
         BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()));
 
@@ -34,13 +33,7 @@ public class ProcessFiles {
         while (line.endsWith(";")) {
             line = line.substring(0, line.length() - 1);
         }
-        String[] headers;
-        if (line.contains(",")) {
-            //divido o nome das colunas pelo delimitador especificado
-            headers = line.split(",");
-        } else {
-            headers = line.split(";");
-        }
+        String[] headers = line.split(delimiter);
 
         List<MetadataDTO> metadatas = new ArrayList<>();
         //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
