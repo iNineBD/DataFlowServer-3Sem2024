@@ -1,4 +1,4 @@
-package com.dataflow.apidomrock.services.utils;
+package com.dataflow.apidomrock.entities.enums;
 
 public enum Niveis {
     MASTER,
