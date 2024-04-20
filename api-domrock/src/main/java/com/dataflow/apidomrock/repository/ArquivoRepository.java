@@ -15,6 +15,9 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
     @Query(value = "SELECT a FROM Arquivo a where a.nomeArquivo = :nomeArquivo and a.organizacao.cnpj = :cnpjOrg")
     Optional<Arquivo> findByNameAndOrganization(String nomeArquivo, String cnpjOrg);
 
+    @Query(value = "SELECT a FROM Arquivo a where a.nomeArquivo = :nomeArquivo and a.organizacao.nome = :orgName")
+    Optional<Arquivo> findByNameAndOrganizationName(String nomeArquivo, String orgName);
+
     @Query("select a from Arquivo a where a.organizacao.nome = :organizacao and a.isAtivo = true")
     List<Arquivo> findByOrganizacao(String organizacao);
 

@@ -137,14 +137,12 @@ public class HomeService {
                 hasPermission = true;
             }
         }
-
         if (!hasPermission){
             throw new CustomException("Usuário [" + request.getUsuario() + "] não tem permissão para executar a ação", HttpStatus.UNAUTHORIZED);
         }
 
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
-        //TODO: receber organização
-        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganizationName(request.getNomeArquivo(), request.getUsuarioOrg());
         if (arqBD.isEmpty()) {
             //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
             throw new CustomException("Arquivo [" + request.getNomeArquivo() + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]", HttpStatus.NOT_FOUND);
