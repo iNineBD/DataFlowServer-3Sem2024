@@ -21,14 +21,12 @@ public class Arquivo {
     private  String nomeArquivo;
 
     @ManyToOne
-    private Usuario usuario;
-
-    @ManyToOne
+    @JoinColumn(name = "cnpj_organizacao")
     private Organizacao organizacao;
 
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private Status status;
+
+    private boolean isAtivo;
+    private String status;
 
     @OneToMany(mappedBy = "arquivo")
     private List<Metadata> metadados;

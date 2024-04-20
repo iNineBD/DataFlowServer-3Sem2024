@@ -7,6 +7,7 @@ import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
 import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.database.*;
+import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.*;
 import com.dataflow.apidomrock.services.utils.ProcessFiles;
 import com.dataflow.apidomrock.services.utils.Validate;
@@ -34,9 +35,6 @@ public class LandingZoneService {
     UsuarioRepository usuarioRepository;
 
     @Autowired
-    TipoRepository tipoRepository;
-
-    @Autowired
     RestricaoRepository restricaoRepository;
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
@@ -56,7 +54,7 @@ public class LandingZoneService {
     public void updateMetadadosInDatabase(RequestBodyUpdateMetaDTO request) throws CustomException {
 
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Usuario> userBD = usuarioRepository.findById(request.getUsuario());
+        Optional<Usuario> userBD = usuarioRepository.findByEmail(request.getUsuario());
 
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
@@ -64,16 +62,15 @@ public class LandingZoneService {
         }
 
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
         if (arqBD.isEmpty()) {
             Arquivo arquivo = new Arquivo();
             arquivo.setNomeArquivo(request.getNomeArquivo());
-            arquivo.setStatus(new Status(2, "AGUARDANDO APROVAÇÃO DA BRONZE"));
-            arquivo.setUsuario(userBD.get());
+            arquivo.setStatus(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao());
             arquivo.setOrganizacao(userBD.get().getOrganizacao());
 
             arquivoRepository.save(arquivo);
-            arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
+            arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
         }
         //METADADO "CAPTURADO" PELO JSON, ELE JOGA AS INFORMAÇÕES NO OBJETO METADADO
         for (MetadataDTO metadadoJson : request.getMetadados()) {
@@ -89,7 +86,7 @@ public class LandingZoneService {
             //SE O METADADO NÃO EXISTIR, ELE PEGA TODOS OS METADADOS CAPTURADOS E INSERE NA BASE
             newMetadado.setNome(metadadoJson.getNome());
             newMetadado.setArquivo(arqBD.get());
-            newMetadado.setAtivo(metadadoJson.getAtivo());
+            newMetadado.setIsAtivo(metadadoJson.getAtivo());
             if (!metadadoJson.getAtivo()) {
                 metadataRepository.save(newMetadado);
                 continue;
@@ -101,14 +98,8 @@ public class LandingZoneService {
             if (metadadoJson.getNomeTipo() == null || metadadoJson.getNomeTipo().isEmpty()){
                 throw new CustomException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo", HttpStatus.BAD_REQUEST);
             }
-            Optional<Tipo> tipoDB = tipoRepository.findById(metadadoJson.getNomeTipo());
 
-            // SE O TIPO DO METADADO FOR DIFERENTE DOS JA EXISTENTES NA BASE, ELE ESTOUES ESTA "CRITICA"
-            if (tipoDB.isEmpty()) {
-                throw new CustomException("O tipo " + metadadoJson.getNomeTipo() + " não existe", HttpStatus.NOT_FOUND);
-            }
-
-            newMetadado.setNomeTipo(tipoDB.get());
+            newMetadado.setTipo(metadadoJson.getNomeTipo());
             List<Restricao> newRestricoes = new ArrayList<>();
 
             //SE O METADADO FOR DO TIPO BOOLENAO, DATA, HORA, DATA E HORA, A COLUNA TAMANHO MAXIMO NÃO DEVERA SER PREENCHIDA
@@ -119,7 +110,7 @@ public class LandingZoneService {
                     }
                 }
                 if (restricaoJson.getNome().equals("tamanhoMaximo") && !Validate.isInteger(restricaoJson.getValor())){
-                    throw new CustomException("O campo \"Tamanho Máximo\" do metadado "+ metadadoJson.getNome() + " precisa ser um número inteiro", HttpStatus.BAD_REQUEST);
+                    throw new CustomException("O campo [Tamanho Máximo] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número inteiro", HttpStatus.BAD_REQUEST);
                 }
                 // SE A RESTRIÇÃO ESTIVER VAZIA, O PROGRAMA CONTINUA
                 if (restricaoJson.getValor() == null || restricaoJson.getValor().isEmpty()){

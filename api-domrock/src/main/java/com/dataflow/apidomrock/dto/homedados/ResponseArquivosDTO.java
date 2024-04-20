@@ -9,6 +9,6 @@ public record ResponseArquivosDTO(@JsonAlias("nomeArquivo")String nome,
                                   @JsonAlias("status") String status) {
 
     public ResponseArquivosDTO(Arquivo arquivo){
-        this(arquivo.getNomeArquivo(),arquivo.getOrganizacao().getNome(), arquivo.getStatus().getStatus());
+        this(arquivo.getNomeArquivo(),arquivo.getOrganizacao().getNome(), arquivo.getStatus());
     }
 }

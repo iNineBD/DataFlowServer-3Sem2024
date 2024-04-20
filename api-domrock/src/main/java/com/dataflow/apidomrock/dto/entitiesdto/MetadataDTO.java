@@ -30,7 +30,7 @@ public class MetadataDTO {
 
     public MetadataDTO(Metadata entity) {
         this.ID = entity.getID();
-        this.ativo = entity.getAtivo();
+        this.ativo = entity.getIsAtivo();
         this.nome = entity.getNome();
         this.valorPadrao = entity.getValorPadrao();
         this.descricao = entity.getDescricao();
@@ -40,9 +40,7 @@ public class MetadataDTO {
         for (Restricao restricao : list) {
             this.restricoes.add(new RestricaoDTO(restricao.getId(), restricao.getNome(), restricao.getValor()));
         }
-        if (entity.getNomeTipo() != null) {
-            this.nomeTipo = entity.getNomeTipo().getNomeTipo();
-        }
+        this.nomeTipo = entity.getTipo();
 
         popularStringsNulas();
     }

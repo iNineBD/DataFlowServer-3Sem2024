@@ -30,13 +30,13 @@ public class GlobalServices {
     @Transactional(rollbackFor = CustomException.class)
     public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Usuario> userBD = usuarioRepository.findById(user);
+        Optional<Usuario> userBD = usuarioRepository.findByEmail(user);
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
             throw new CustomException("Usuário [" + user + "] não existe", HttpStatus.NOT_FOUND);
         }
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getNome());
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getCnpj());
         if (arqBD.isEmpty()) {
             //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
             throw new CustomException("Arquivo [" + nomeArquivo + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]", HttpStatus.NOT_FOUND);

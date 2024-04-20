@@ -24,8 +24,8 @@ public class BronzeZoneController {
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 
-    @PutMapping("/save")
-    public ResponseEntity<ResponseSaveBronzeDTO> setStatusBz(@RequestBody RequestBodySetStatusBzDTO){
-
-    }
+//    @PutMapping("/save")
+//    public ResponseEntity<ResponseSaveBronzeDTO> setStatusBz(@RequestBody RequestBodySetStatusBzDTO){
+//
+//    }
 }

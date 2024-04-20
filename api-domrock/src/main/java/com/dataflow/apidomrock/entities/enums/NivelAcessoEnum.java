@@ -1,6 +1,6 @@
 package com.dataflow.apidomrock.entities.enums;
 
-public enum Niveis {
+public enum NivelAcessoEnum {
     MASTER,
     FULL,
     LZ,

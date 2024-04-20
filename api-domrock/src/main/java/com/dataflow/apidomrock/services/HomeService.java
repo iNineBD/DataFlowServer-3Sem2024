@@ -6,9 +6,10 @@ import com.dataflow.apidomrock.dto.homedados.ResponseArquivosDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
-import com.dataflow.apidomrock.services.utils.Niveis;
+import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -38,11 +39,11 @@ public class HomeService {
     }
 
     public List<Arquivo> getArquivosUsuario(String emailUsuario){
-        Optional<Usuario> usuario = usuarioRepository.findById(emailUsuario);
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(emailUsuario);
         String nivel = getNivel(emailUsuario);
         if(usuario.isPresent()){
-            if(nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
-                return arquivoRepository.findAll();
+            if(nivel.equals(NivelAcessoEnum.MASTER.toString()) || nivel.equals(NivelAcessoEnum.FULL.toString())){
+                return arquivoRepository.findArquivoByAtivo();
             }else {
                 String organizacao = usuario.get().getOrganizacao().getNome();
 
@@ -59,9 +60,9 @@ public class HomeService {
         List<Arquivo> arq = new ArrayList<>();
         List<ResponseArquivosDTO> arquivosLz = new ArrayList<>();
 
-        if(nivel.equals(Niveis.LZ.toString()) || nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
+        if(nivel.equals(NivelAcessoEnum.LZ.toString()) || nivel.equals(NivelAcessoEnum.MASTER.toString()) || nivel.equals(NivelAcessoEnum.FULL.toString())){
             for (int i = 0; i < qtdArquivos; i++) {
-                if (arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId() == 98) {
+                if (arquivos.get(i).getStatus().equals(StatusArquivo.NAO_APROVADO_PELA_BRONZE.getDescricao())) {
                     arq.add(arquivos.get(i));
                 }
             }
@@ -82,9 +83,9 @@ public class HomeService {
         List<Arquivo> arq = new ArrayList<>();
         List<ResponseArquivosDTO> arquivosBz = new ArrayList<>();
 
-        if(nivel.equals(Niveis.B.toString()) || nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
+        if(nivel.equals(NivelAcessoEnum.B.toString()) || nivel.equals(NivelAcessoEnum.MASTER.toString()) || nivel.equals(NivelAcessoEnum.FULL.toString())){
             for (int i = 0; i < qtdArquivos; i++){
-                if(arquivos.get(i).getStatus().getId() == 2 || arquivos.get(i).getStatus().getId() == 3 || arquivos.get(i).getStatus().getId() == 99){
+                if(arquivos.get(i).getStatus().equals(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao()) || arquivos.get(i).getStatus().equals(StatusArquivo.BRONZE_ZONE.getDescricao()) || arquivos.get(i).getStatus().equals(StatusArquivo.NAO_APROVADO_PELA_SILVER.getDescricao())){
                     arq.add(arquivos.get(i));
                 }
             }
@@ -104,9 +105,9 @@ public class HomeService {
         List<Arquivo> arq = new ArrayList<>();
         List<ResponseArquivosDTO> arquivosSz = new ArrayList<>();
 
-        if(nivel.equals(Niveis.S.toString()) || nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
+        if(nivel.equals(NivelAcessoEnum.S.toString()) || nivel.equals(NivelAcessoEnum.MASTER.toString()) || nivel.equals(NivelAcessoEnum.FULL.toString())){
             for (int i = 0; i < qtdArquivos; i++){
-                if(arquivos.get(i).getStatus().getId() == 4 || arquivos.get(i).getStatus().getId() == 5){
+                if(arquivos.get(i).getStatus().equals(StatusArquivo.AGUARDANDO_APROVACAO_SILVER.getDescricao()) || arquivos.get(i).getStatus().equals(StatusArquivo.SILVER_ZONE.getDescricao())){
                     arq.add(arquivos.get(i));
                 }
             }
@@ -124,7 +125,7 @@ public class HomeService {
     @Transactional(rollbackFor = CustomException.class)
     public void deleteFile(RequestBodyDeleteFileDTO request) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Usuario> userBD = usuarioRepository.findById(request.getUsuario());
+        Optional<Usuario> userBD = usuarioRepository.findByEmail(request.getUsuario());
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
             throw new CustomException("Usuário [" + request.getUsuario() + "] não existe", HttpStatus.NOT_FOUND);
@@ -132,7 +133,7 @@ public class HomeService {
 
         boolean hasPermission = false;
         for (NivelAcesso nvlAccess: userBD.get().getNiveisAcesso()) {
-            if (Objects.equals(nvlAccess.getNivel(), "MASTER")){
+            if (Objects.equals(nvlAccess.getNivel(), NivelAcessoEnum.MASTER.toString()) || Objects.equals(nvlAccess.getNivel(), NivelAcessoEnum.FULL.toString())){
                 hasPermission = true;
             }
         }
@@ -142,12 +143,15 @@ public class HomeService {
         }
 
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
+        //TODO: receber organização
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
         if (arqBD.isEmpty()) {
             //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
             throw new CustomException("Arquivo [" + request.getNomeArquivo() + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]", HttpStatus.NOT_FOUND);
         }
 
-        arquivoRepository.delete(arqBD.get());
+        Arquivo arq = arqBD.get();
+        arq.setAtivo(false);
+        arquivoRepository.save(arq);
     }
 }

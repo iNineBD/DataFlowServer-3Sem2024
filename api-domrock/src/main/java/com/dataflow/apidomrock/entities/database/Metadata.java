@@ -23,7 +23,10 @@ public class Metadata {
     private String nome;
     private String valorPadrao;
     private String descricao;
-    private Boolean ativo;
+
+    @Column(name = "isAtivo")
+    private Boolean isAtivo;
+    private String tipo;
 
     @ManyToOne
     @JoinColumn(name = "arquivo_id")
@@ -33,8 +36,4 @@ public class Metadata {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_metadado")
     private List<Restricao> restricoes;
-
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "nome_tipo")
-    private Tipo nomeTipo;
 }

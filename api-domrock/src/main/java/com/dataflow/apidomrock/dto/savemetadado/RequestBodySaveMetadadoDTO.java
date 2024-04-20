@@ -1,7 +1,6 @@
 package com.dataflow.apidomrock.dto.savemetadado;
 
 import com.dataflow.apidomrock.entities.database.Restricao;
-import com.dataflow.apidomrock.entities.database.Tipo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,9 +17,5 @@ public class RequestBodySaveMetadadoDTO {
     private String valorPadrao;
     private String descricao;
     private List<Restricao> restricoes;
-    private Tipo tipo;
-
-
-
 
 }
