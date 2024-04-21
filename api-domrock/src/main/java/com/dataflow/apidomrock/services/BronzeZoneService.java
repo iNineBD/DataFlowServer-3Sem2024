@@ -1,6 +1,8 @@
 package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
+import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
+import com.dataflow.apidomrock.dto.createHash.ResponseMetadadoDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Usuario;
@@ -34,12 +36,18 @@ public class BronzeZoneService {
             Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
             arq.setStatus(StatusArquivo.BRONZE_ZONE.getDescricao());
             arquivoRepository.save(arq);
-            logger.insert(user.get().getId(),arq.getId(),"update file", Estagio.B, Acao.APROVAR);
+            logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.APROVAR);
         } else {
             Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
             arq.setStatus(StatusArquivo.NAO_APROVADO_PELA_BRONZE.getDescricao());
             arquivoRepository.save(arq);
-            logger.insert(user.get().getId(),arq.getId(),"update file", Estagio.B, Acao.REPROVAR);
+            logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.REPROVAR);
         }
+    }
+
+    public ResponseMetadadoDTO createHash(RequestArquivoDTO request) throws CustomException{
+
+
+
     }
 }
