@@ -21,6 +21,7 @@ public class Usuario implements Serializable {
     private Integer id;
     private String email;
     private String senha;
+    private String token;
 
     @ManyToOne
     @JoinColumn (name="cnpj_organizacao", nullable=false)
