@@ -24,4 +24,7 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
     @Query("select a from Arquivo a where a.isAtivo = true")
     List<Arquivo> findArquivoByAtivo();
 
+    @Query("select a from Arquivo a where a.nomeArquivo = :nomeArquivo")
+    Arquivo findByNomeArquivo(String nomeArquivo);
+
 }
