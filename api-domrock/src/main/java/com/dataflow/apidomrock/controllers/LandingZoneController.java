@@ -30,8 +30,8 @@ public class LandingZoneController {
 
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
-    public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter) throws IOException, CustomException {
-        ResponseUploadCSVDTO response = lzService.processUploadCSV(multipartFile, delimiter);
+    public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter, @RequestParam(required = false) boolean header) throws IOException, CustomException {
+        ResponseUploadCSVDTO response = lzService.processUploadCSV(multipartFile, delimiter, header);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 

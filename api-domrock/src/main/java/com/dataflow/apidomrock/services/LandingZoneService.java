@@ -3,7 +3,6 @@ package com.dataflow.apidomrock.services;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.entitiesdto.RestricaoDTO;
-import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
 import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.database.*;
@@ -44,15 +43,21 @@ public class LandingZoneService {
     Logger logger;
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
-    public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter) throws IOException, CustomException {
+    public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter, boolean header) throws IOException, CustomException {
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
         Boolean isCSV = Validate.validateprocessUploadCSV(multipartFile, delimiter);
         if (isCSV) {
-            return ProcessFiles.processCSVFile(multipartFile, delimiter);
+            if (header){
+                return ProcessFiles.processCSVFileWithHeader(multipartFile, delimiter, header);
+            }
+            return ProcessFiles.processCSVFileNotHeader(multipartFile, delimiter, header);
         } else {
-            return ProcessFiles.processExcelFile(multipartFile);
+            if (header){
+                return ProcessFiles.processExcelFileWithHeader(multipartFile);
+            }
+            return ProcessFiles.processExcelFileWithOutHeader(multipartFile);
         }
     }
 
@@ -74,6 +79,7 @@ public class LandingZoneService {
             arquivo.setNomeArquivo(request.getNomeArquivo());
             arquivo.setStatus(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao());
             arquivo.setOrganizacao(userBD.get().getOrganizacao());
+            arquivo.setAtivo(true);
             arquivoRepository.save(arquivo);
             arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
             logger.insert(userBD.get().getId(), arqBD.get().getId(), "Insert file", Estagio.LZ, Acao.INSERIR);
@@ -81,21 +87,17 @@ public class LandingZoneService {
         else {
             logger.insert(userBD.get().getId(), arqBD.get().getId(), "Update file", Estagio.LZ, Acao.ALTERAR);
         }
+
+        metadataRepository.deleteAllByArquivo(arqBD.get());
         //METADADO "CAPTURADO" PELO JSON, ELE JOGA AS INFORMAÇÕES NO OBJETO METADADO
         for (MetadataDTO metadadoJson : request.getMetadados()) {
-            Optional<Metadata> metaBD = metadataRepository.findByNameAndFile(arqBD.get().getId(), metadadoJson.getNome());
             Metadata newMetadado = new Metadata();
-
-            // SE O METADADO JA EXISTIR, ELE PEGA O VALOR ANTIGO, DELETA E INSERE O NOVO
-            if (metaBD.isPresent()) {
-                newMetadado.setID(metaBD.get().getID());
-                restricaoRepository.deleteAll(metaBD.get().getRestricoes());
-            }
 
             //SE O METADADO NÃO EXISTIR, ELE PEGA TODOS OS METADADOS CAPTURADOS E INSERE NA BASE
             newMetadado.setNome(metadadoJson.getNome());
             newMetadado.setArquivo(arqBD.get());
             newMetadado.setIsAtivo(metadadoJson.getAtivo());
+            newMetadado.setExemplo(metadadoJson.getSampleValue());
             if (!metadadoJson.getAtivo()) {
                 metadataRepository.save(newMetadado);
                 continue;
