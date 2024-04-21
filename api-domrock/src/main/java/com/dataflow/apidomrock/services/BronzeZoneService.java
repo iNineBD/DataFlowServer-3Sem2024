@@ -2,6 +2,7 @@ package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
+import com.dataflow.apidomrock.dto.createHash.ResponseMetaDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetadadoDTO;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
@@ -55,7 +56,7 @@ public class BronzeZoneService {
         }
     }
 
-    public List<MetadataDTO> createHash(RequestArquivoDTO request) throws CustomException{
+    public List<ResponseMetaDTO> createHash(RequestArquivoDTO request) throws CustomException{
 
         Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
 
@@ -63,7 +64,7 @@ public class BronzeZoneService {
 
         List<Metadata> meta = metadataRepository.findByArquivo(arq.getId());
 
-        List<MetadataDTO> metaDTO = meta.stream().map(MetadataDTO::new).toList();
+        List<ResponseMetaDTO> metaDTO = meta.stream().map(ResponseMetaDTO::new).toList();
 
         return metaDTO;
 

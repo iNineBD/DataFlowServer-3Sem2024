@@ -7,5 +7,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record ResponseMetadadoDTO(@JsonAlias("Metadados") List<MetadataDTO> meta) {
+public record ResponseMetadadoDTO(@JsonAlias("Metadados") List<ResponseMetaDTO> meta) {
 }

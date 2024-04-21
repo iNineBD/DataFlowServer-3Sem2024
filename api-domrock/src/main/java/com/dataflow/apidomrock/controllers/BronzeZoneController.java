@@ -2,6 +2,7 @@ package com.dataflow.apidomrock.controllers;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
+import com.dataflow.apidomrock.dto.createHash.ResponseMetaDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetadadoDTO;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
@@ -43,7 +44,7 @@ public class BronzeZoneController {
 
     @PostMapping("/createHash")
     public ResponseEntity<ResponseCustomDTO<ResponseMetadadoDTO>> createHash(@RequestBody RequestArquivoDTO request) throws  CustomException{
-        List<MetadataDTO> metadados = bronzeZoneService.createHash(request);
+        List<ResponseMetaDTO> metadados = bronzeZoneService.createHash(request);
         ResponseMetadadoDTO response = new ResponseMetadadoDTO(metadados);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",response));
     }
