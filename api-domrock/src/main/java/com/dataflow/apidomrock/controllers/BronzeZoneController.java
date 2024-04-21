@@ -48,4 +48,9 @@ public class BronzeZoneController {
         ResponseMetadadoDTO response = new ResponseMetadadoDTO(metadados);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",response));
     }
+
+//    @PostMapping("/saveHash")
+//    public ResponseEntity<ResponseCustomDTO<String>> saveHash(@RequestBody ){
+//
+//    }
 }
