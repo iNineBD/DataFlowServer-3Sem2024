@@ -1,6 +1,7 @@
 package com.dataflow.apidomrock.controllers;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
+import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
@@ -28,9 +29,14 @@ public class BronzeZoneController {
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 
-    @PutMapping("/save")
+    @PutMapping("/validation")
     public ResponseEntity<ResponseCustomDTO<String>> setStatusBz(@RequestBody RequestBodySetStatusBzDTO request) throws CustomException {
         bronzeZoneService.updateStatus(request);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
+    }
+
+    @PostMapping("/createHash")
+    public ResponseEntity<ResponseCustomDTO<RequestArquivoDTO>> createHash(@RequestBody RequestArquivoDTO request) throws  CustomException{
+
     }
 }

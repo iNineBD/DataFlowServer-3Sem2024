@@ -28,7 +28,7 @@ public class BronzeZoneService {
 
     public void updateStatus (RequestBodySetStatusBzDTO request) throws CustomException {
 
-        Optional<Usuario> user = usuarioRepository.findByEmail(request.email());
+        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
 
         if (request.salvar()) {
             Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());

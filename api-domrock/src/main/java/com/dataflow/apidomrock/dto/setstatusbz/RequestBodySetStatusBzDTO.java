@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record RequestBodySetStatusBzDTO(@JsonAlias("email") String email,
+public record RequestBodySetStatusBzDTO(@JsonAlias("usuario") String usuario,
                                         @JsonAlias("arquivo") String arquivo,
                                         @JsonAlias("aprovado") boolean salvar) {
 }
