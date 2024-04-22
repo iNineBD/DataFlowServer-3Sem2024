@@ -1,6 +1,7 @@
 package com.dataflow.apidomrock.repository;
 
 import com.dataflow.apidomrock.entities.database.Arquivo;
+import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import jakarta.transaction.Transactional;
@@ -34,4 +35,6 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
     @Query(value = "insert into hash(id_arquivo,id_metadado) values (?1,?2)", nativeQuery = true)
     void saveHash(int idArquivo, int idMetadado);
 
+    @Query("select a.hash from Arquivo a where a.id = :idArquivo")
+    List<Metadata> findByMetadataHash(int idArquivo);
 }

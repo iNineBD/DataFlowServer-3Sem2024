@@ -4,7 +4,10 @@ import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetaDTO;
 import com.dataflow.apidomrock.dto.savehash.RequestHashDTO;
+import com.dataflow.apidomrock.dto.savehash.RequestMetadadoDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
+import com.dataflow.apidomrock.dto.visualizeHash.RequestVisualizeHashDTO;
+import com.dataflow.apidomrock.dto.visualizeHash.ResponseHashDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Usuario;
@@ -101,6 +104,29 @@ public class BronzeZoneService {
             }
         }else{
             throw new CustomException("Nenhum metadado foi selecionado para compor o hash", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public List<RequestMetadadoDTO> visualizeHash(RequestVisualizeHashDTO request) throws CustomException {
+
+        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
+
+        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+
+        if(user.isPresent()){
+            if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj())){
+
+                List<Metadata> metaNoHash = arquivoRepository.findByMetadataHash(arquivo.getId());
+
+                List<RequestMetadadoDTO> metaDTO = metaNoHash.stream().map(RequestMetadadoDTO::new).toList();
+
+                return metaDTO;
+
+            }else{
+                throw new CustomException("O arquivo ["+ arquivo.getNomeArquivo() + "] não pertence a organização [" + arquivo.getOrganizacao().getNome(), HttpStatus.BAD_REQUEST);
+            }
+        }else {
+            throw new CustomException("O usuário ["+ user.get().getEmail() + "] não foi localizado", HttpStatus.BAD_REQUEST);
         }
     }
 }

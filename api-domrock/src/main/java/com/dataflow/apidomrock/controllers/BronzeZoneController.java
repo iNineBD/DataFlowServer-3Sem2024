@@ -8,7 +8,10 @@ import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.savehash.RequestHashDTO;
+import com.dataflow.apidomrock.dto.savehash.RequestMetadadoDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
+import com.dataflow.apidomrock.dto.visualizeHash.RequestVisualizeHashDTO;
+import com.dataflow.apidomrock.dto.visualizeHash.ResponseHashDTO;
 import com.dataflow.apidomrock.services.BronzeZoneService;
 import com.dataflow.apidomrock.services.GlobalServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +54,12 @@ public class BronzeZoneController {
     public ResponseEntity<ResponseCustomDTO<String>> saveHash(@RequestBody RequestHashDTO request) throws CustomException {
         bronzeZoneService.save(request);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",null));
+    }
+
+    @PostMapping("/visualize")
+    public ResponseEntity<ResponseCustomDTO<ResponseHashDTO>> visualizeHash(@RequestBody RequestVisualizeHashDTO request) throws CustomException {
+        List<RequestMetadadoDTO> metadadosHash = bronzeZoneService.visualizeHash(request);
+        ResponseHashDTO response = new ResponseHashDTO(request.nomeArquivo(), request.usuario(), metadadosHash);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",response));
     }
 }
