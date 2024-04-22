@@ -11,7 +11,7 @@ import java.util.List;
 @ToString
 public class UsuarioDTO {
     private String emailUsuario;
-    private String nivelAcesso;
+    private List<String> nivelAcesso;
     private String cnpj;
     private String organização;
 }
