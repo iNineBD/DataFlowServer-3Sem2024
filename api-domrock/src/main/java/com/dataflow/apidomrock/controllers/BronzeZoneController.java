@@ -5,11 +5,9 @@ import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetaDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetadadoDTO;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
-import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
-import com.dataflow.apidomrock.dto.homedados.ResponseArquivosDTO;
-import com.dataflow.apidomrock.dto.homedados.ResponseHomeDTO;
+import com.dataflow.apidomrock.dto.savehash.RequestHashDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
 import com.dataflow.apidomrock.services.BronzeZoneService;
 import com.dataflow.apidomrock.services.GlobalServices;
@@ -49,8 +47,9 @@ public class BronzeZoneController {
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",response));
     }
 
-//    @PostMapping("/saveHash")
-//    public ResponseEntity<ResponseCustomDTO<String>> saveHash(@RequestBody ){
-//
-//    }
+    @PostMapping("/saveHash")
+    public ResponseEntity<ResponseCustomDTO<String>> saveHash(@RequestBody RequestHashDTO request) throws CustomException {
+        bronzeZoneService.save(request);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",null));
+    }
 }

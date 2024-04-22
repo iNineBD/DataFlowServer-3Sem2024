@@ -3,8 +3,7 @@ package com.dataflow.apidomrock.services;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetaDTO;
-import com.dataflow.apidomrock.dto.createHash.ResponseMetadadoDTO;
-import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
+import com.dataflow.apidomrock.dto.savehash.RequestHashDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
@@ -16,14 +15,13 @@ import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.MetadataRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.utils.Logger;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 @Service
 public class BronzeZoneService {
@@ -32,7 +30,6 @@ public class BronzeZoneService {
     UsuarioRepository usuarioRepository;
     @Autowired
     ArquivoRepository arquivoRepository;
-
     @Autowired
     MetadataRepository metadataRepository;
 
@@ -68,5 +65,41 @@ public class BronzeZoneService {
 
         return metaDTO;
 
+    }
+
+    @Transactional(rollbackOn = CustomException.class)
+    public void save(RequestHashDTO request) throws  CustomException{
+
+        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
+
+        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+
+        int qtdMeta = request.metadados().size();
+        boolean somenteVp = true;
+
+        if(qtdMeta != 0){
+            for(int i = 0; i < qtdMeta; i++){
+                //Faz a verificação se existe algum metadado que não possui valor padrão.
+                if(request.metadados().get(i).valorPadrao().equals("")){
+                    somenteVp = false;
+                }
+            }
+            if(somenteVp){
+                throw new CustomException("Todos os metadados selecionados possuem valor padrão, escolha um que não possua para criar o hash", HttpStatus.BAD_REQUEST);
+            }else{
+                for(int j = 0; j < qtdMeta; j++){
+                    int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.getId(),request.metadados().get(j).nome());
+                    arquivoRepository.saveHash(arquivo.getId(),idMetadado);
+
+                    // Alterando o status do arquivo para validação do parceiro silver
+                    arquivo.setStatus(StatusArquivo.AGUARDANDO_APROVACAO_SILVER.getDescricao());
+                    arquivoRepository.save(arquivo);
+
+                    logger.insert(user.get().getId(),arquivo.getId(),"insert hash", Estagio.B, Acao.INSERIR);
+                }
+            }
+        }else{
+            throw new CustomException("Nenhum metadado foi selecionado para compor o hash", HttpStatus.BAD_REQUEST);
+        }
     }
 }

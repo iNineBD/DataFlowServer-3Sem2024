@@ -27,4 +27,7 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
     @Query("select a from Arquivo a where a.nomeArquivo = :nomeArquivo")
     Arquivo findByNomeArquivo(String nomeArquivo);
 
+    @Query("insert into hash(id_arquivo,id_metadata) values (:idArquivo,:idMetadado)")
+    void saveHash(int idArquivo, int idMetadado);
+
 }
