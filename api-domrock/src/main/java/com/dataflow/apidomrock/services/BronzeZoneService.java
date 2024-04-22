@@ -89,6 +89,7 @@ public class BronzeZoneService {
             }else{
                 for(int j = 0; j < qtdMeta; j++){
                     int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.getId(),request.metadados().get(j).nome());
+
                     arquivoRepository.saveHash(arquivo.getId(),idMetadado);
 
                     // Alterando o status do arquivo para validação do parceiro silver
