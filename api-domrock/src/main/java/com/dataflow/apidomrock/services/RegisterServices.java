@@ -10,6 +10,7 @@ import com.dataflow.apidomrock.repository.NivelAcessoRepository;
 import com.dataflow.apidomrock.repository.OrganizacaoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.mail.MailService;
+import com.dataflow.apidomrock.services.utils.Encrypt;
 import com.dataflow.apidomrock.services.utils.ValidateNivelAcesso;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,13 +65,13 @@ public class RegisterServices {
     }
 
     @Transactional(rollbackFor = CustomException.class)
-    public void FirstLogin(ValidacaoDTO completionRegister) throws CustomException {
+    public void FirstLogin(ValidacaoDTO completionRegister) throws CustomException, NoSuchAlgorithmException {
         Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(completionRegister.getEmailUsuario());
         if (usuarioBD.isPresent()) {
-            if (usuarioBD.get().getSenha().isEmpty()) {
+            if (usuarioBD.get().getSenha() == null) {
                 Usuario usuario = new Usuario();
                 if (usuarioBD.get().getToken().equals(completionRegister.getToken())) {
-                    usuarioBD.get().setSenha(completionRegister.getSenha());
+                    usuarioBD.get().setSenha(Encrypt.encrypt(completionRegister.getSenha()));
                     usuarioBD.get().setNome(completionRegister.getNome());
                     usuarioRepository.save(usuarioBD.get());
                 } else {
