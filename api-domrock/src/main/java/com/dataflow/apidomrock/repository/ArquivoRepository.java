@@ -39,6 +39,7 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
     List<Metadata> findByMetadataHash(int idArquivo);
 
     @Modifying
-    @Query("delete from Hash h where h.arquivo.id = :idArquivo")
+    @Transactional
+    @Query(value = "delete from hash h where h.id_arquivo = ?1",nativeQuery = true)
     void deleteHash(int idArquivo);
 }
