@@ -5,6 +5,7 @@ import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetaDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetadadoDTO;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
+import com.dataflow.apidomrock.dto.editarhash.RequestEditHashDTO;
 import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.savehash.RequestHashDTO;
@@ -61,5 +62,11 @@ public class BronzeZoneController {
         List<RequestMetadadoDTO> metadadosHash = bronzeZoneService.visualizeHash(request);
         ResponseHashDTO response = new ResponseHashDTO(request.nomeArquivo(), request.usuario(), metadadosHash);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",response));
+    }
+
+    @PostMapping("/editHash")
+    public ResponseEntity<ResponseCustomDTO<String>> editarHash(@RequestBody RequestEditHashDTO request) throws CustomException{
+        bronzeZoneService.editHash(request);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",null));
     }
 }
