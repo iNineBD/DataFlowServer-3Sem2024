@@ -3,10 +3,8 @@ package com.dataflow.apidomrock.services;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.registerdto.UsuarioDTO;
 import com.dataflow.apidomrock.dto.registerdto.ValidacaoDTO;
-import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
-import com.dataflow.apidomrock.repository.NivelAcessoRepository;
 import com.dataflow.apidomrock.repository.OrganizacaoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.mail.MailService;
@@ -19,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +37,7 @@ public class RegisterServices {
         if (organizacaoBD.isEmpty()) {
             Organizacao organizacao = new Organizacao();
             organizacao.setCnpj(register.getCnpj());
-            organizacao.setNome(register.getOrganização());
+            organizacao.setNome(register.getOrganizacao());
             organizacaoRepository.save(organizacao);
             organizacaoBD = organizacaoRepository.findById(register.getCnpj());
         }
@@ -53,7 +49,7 @@ public class RegisterServices {
             usuario.setNiveisAcesso(validateNivelAcesso.nivelAcessoList(register.getNivelAcesso()));
             String token = UUID.randomUUID().toString();
             try {
-                mailService.sendToken(register.getEmailUsuario(), register.getOrganização(), token);
+                mailService.sendToken(register.getEmailUsuario(), register.getOrganizacao(), token);
             } catch (MessagingException e) {
                 throw new CustomException("Não foi possivel encaminhar o token para o email", HttpStatus.SERVICE_UNAVAILABLE);
             }

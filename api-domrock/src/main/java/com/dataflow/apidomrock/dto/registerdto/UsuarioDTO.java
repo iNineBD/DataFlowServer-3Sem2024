@@ -1,6 +1,5 @@
 package com.dataflow.apidomrock.dto.registerdto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.util.List;
@@ -13,5 +12,5 @@ public class UsuarioDTO {
     private String emailUsuario;
     private List<String> nivelAcesso;
     private String cnpj;
-    private String organização;
+    private String organizacao;
 }
