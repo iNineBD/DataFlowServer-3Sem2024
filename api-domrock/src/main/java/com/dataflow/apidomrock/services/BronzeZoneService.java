@@ -44,15 +44,23 @@ public class BronzeZoneService {
         Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
 
         if (request.salvar()) {
-            Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
-            arq.setStatus(StatusArquivo.BRONZE_ZONE.getDescricao());
-            arquivoRepository.save(arq);
-            logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.APROVAR);
+            if(!request.obs().equals("")){
+                Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
+                arq.setStatus(StatusArquivo.BRONZE_ZONE.getDescricao());
+                arquivoRepository.save(arq);
+                logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.APROVAR);
+            }else{
+                throw new CustomException("Você não pode aprovar sem o preenchimento da observação", HttpStatus.BAD_REQUEST);
+            }
         } else {
-            Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
-            arq.setStatus(StatusArquivo.NAO_APROVADO_PELA_BRONZE.getDescricao());
-            arquivoRepository.save(arq);
-            logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.REPROVAR);
+            if(!request.obs().equals("")){
+                Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
+                arq.setStatus(StatusArquivo.NAO_APROVADO_PELA_BRONZE.getDescricao());
+                arquivoRepository.save(arq);
+                logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.REPROVAR);
+            }else{
+                throw new CustomException("Você não pode reprovar sem o preenchimento da observação", HttpStatus.BAD_REQUEST);
+            }
         }
     }
 
