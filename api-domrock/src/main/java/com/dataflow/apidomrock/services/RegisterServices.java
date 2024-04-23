@@ -2,6 +2,7 @@ package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.registerdto.UsuarioDTO;
+import com.dataflow.apidomrock.dto.registerdto.ValidacaoDTO;
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
@@ -42,9 +43,7 @@ public class RegisterServices {
             organizacaoRepository.save(organizacao);
             organizacaoBD = organizacaoRepository.findById(register.getCnpj());
         }
-
         Optional<Usuario> userBD = usuarioRepository.findByEmail(register.getEmailUsuario());
-
         if (userBD.isEmpty()) {
             Usuario usuario = new Usuario();
             usuario.setEmail(register.getEmailUsuario());
@@ -60,6 +59,27 @@ public class RegisterServices {
             usuarioRepository.save(usuario);
         } else {
             throw new CustomException("Usuário [" + register.getEmailUsuario() + "] ja existe", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Transactional(rollbackFor = CustomException.class)
+    public void FirstLogin(ValidacaoDTO completionRegister) throws CustomException {
+        Optional<Usuario> usuarioBD = usuarioRepository.findByEmail(completionRegister.getEmailUsuario());
+        if (usuarioBD.isPresent()) {
+            if (usuarioBD.get().getSenha().isEmpty()) {
+                Usuario usuario = new Usuario();
+                if (usuarioBD.get().getToken().equals(completionRegister.getToken())) {
+                    usuarioBD.get().setSenha(completionRegister.getSenha());
+                    usuarioBD.get().setNome(completionRegister.getNome());
+                    usuarioRepository.save(usuarioBD.get());
+                } else {
+                    throw new CustomException("Token não foi encontrado", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                throw new CustomException("Este usuario ja possui cadastro", HttpStatus.NOT_FOUND);
+            }
+        } else {
+            throw new CustomException("Usuario " + completionRegister.getEmailUsuario() + "não foi cadastrado previamente", HttpStatus.NOT_FOUND);
         }
     }
 }
