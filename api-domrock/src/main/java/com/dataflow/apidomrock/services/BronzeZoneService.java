@@ -45,7 +45,7 @@ public class BronzeZoneService {
         Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
 
         if (request.salvar()) {
-            if(!request.obs().equals("")){
+            if(!request.obs().isEmpty()){
                 Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
                 arq.setStatus(StatusArquivo.BRONZE_ZONE.getDescricao());
                 arquivoRepository.save(arq);
@@ -54,7 +54,7 @@ public class BronzeZoneService {
                 throw new CustomException("Você não pode aprovar sem o preenchimento da observação", HttpStatus.BAD_REQUEST);
             }
         } else {
-            if(!request.obs().equals("")){
+            if(!request.obs().isEmpty()){
                 Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
                 arq.setStatus(StatusArquivo.NAO_APROVADO_PELA_BRONZE.getDescricao());
                 arquivoRepository.save(arq);
@@ -67,15 +67,17 @@ public class BronzeZoneService {
 
     public List<ResponseMetaDTO> createHash(RequestArquivoDTO request) throws CustomException{
 
-        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
-
         Arquivo arq = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 
-        List<Metadata> meta = metadataRepository.findByArquivo(arq.getId());
+        if (!arq.getMetadados().isEmpty()) {
+            List<Metadata> meta = metadataRepository.findByArquivo(arq.getId());
 
-        List<ResponseMetaDTO> metaDTO = meta.stream().map(ResponseMetaDTO::new).toList();
+            List<ResponseMetaDTO> metaDTO = meta.stream().map(ResponseMetaDTO::new).toList();
 
-        return metaDTO;
+            return metaDTO;
+        }else{
+            throw new CustomException("No arquivo ["+arq.getNomeArquivo()+"] não existem metadados para criar o hash", HttpStatus.BAD_REQUEST);
+        }
 
     }
 
@@ -92,7 +94,7 @@ public class BronzeZoneService {
         if(qtdMeta != 0){
             for(int i = 0; i < qtdMeta; i++){
                 //Faz a verificação se existe algum metadado que não possui valor padrão.
-                if(request.metadados().get(i).valorPadrao().equals("")){
+                if(request.metadados().get(i).valorPadrao().isEmpty()){
                     somenteVp = false;
                 }
             }
@@ -141,38 +143,11 @@ public class BronzeZoneService {
 
     @Transactional(rollbackOn = CustomException.class)
     public void editHash(RequestEditHashDTO request) throws CustomException{
-        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
 
         Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+        arquivoRepository.deleteHash(arquivo.getId());
 
-        int qtdMeta = request.metadados().size();
-        boolean somenteVp = true;
-
-        if(qtdMeta != 0){
-            for(int i = 0; i < qtdMeta; i++){
-                //Faz a verificação se existe algum metadado que não possui valor padrão.
-                if(request.metadados().get(i).valorPadrao().equals("")){
-                    somenteVp = false;
-                }
-            }
-            if(somenteVp){
-                throw new CustomException("Todos os metadados selecionados possuem valor padrão, escolha um que não possua para criar o hash", HttpStatus.BAD_REQUEST);
-            }else{
-                arquivoRepository.deleteHash(arquivo.getId());
-                for(int j = 0; j < qtdMeta; j++) {
-                    int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.getId(), request.metadados().get(j).nome());
-
-                    arquivoRepository.saveHash(arquivo.getId(), idMetadado);
-
-                    // Alterando o status do arquivo para validação do parceiro silver
-                    arquivo.setStatus(StatusArquivo.AGUARDANDO_APROVACAO_SILVER.getDescricao());
-                    arquivoRepository.save(arquivo);
-
-                    logger.insert(user.get().getId(), arquivo.getId(), "insert hash", Estagio.B, Acao.INSERIR);
-                }
-            }
-        }else{
-            throw new CustomException("Nenhum metadado foi selecionado para compor o hash", HttpStatus.BAD_REQUEST);
-        }
+        RequestHashDTO requestNova = new RequestHashDTO(request);
+        save(requestNova);
     }
 }

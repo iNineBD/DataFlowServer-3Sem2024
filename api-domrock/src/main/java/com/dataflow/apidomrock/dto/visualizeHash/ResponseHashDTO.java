@@ -1,5 +1,6 @@
 package com.dataflow.apidomrock.dto.visualizeHash;
 
+import com.dataflow.apidomrock.dto.editarhash.RequestEditHashDTO;
 import com.dataflow.apidomrock.dto.savehash.RequestMetadadoDTO;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Usuario;
