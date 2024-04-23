@@ -9,6 +9,7 @@ import com.dataflow.apidomrock.repository.OrganizacaoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.mail.MailService;
 import com.dataflow.apidomrock.services.utils.Encrypt;
+import com.dataflow.apidomrock.services.utils.Validate;
 import com.dataflow.apidomrock.services.utils.ValidateNivelAcesso;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class RegisterServices {
 
     @Transactional(rollbackFor = CustomException.class)
     public void registerInDatabase(UsuarioDTO register) throws CustomException {
+        if (!Validate.validarCNPJ(register.getCnpj())){
+            throw new CustomException("O CNPJ inserido é inválido", HttpStatus.BAD_REQUEST);
+        }
         Optional<Organizacao> organizacaoBD = organizacaoRepository.findById(register.getCnpj());
         if (organizacaoBD.isEmpty()) {
             Organizacao organizacao = new Organizacao();
