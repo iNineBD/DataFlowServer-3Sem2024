@@ -18,9 +18,9 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    public void sendPass(String para, String org, String pass) throws MessagingException {
+    public void sendToken(String para, String org, String pass) throws MessagingException {
 
-        String[] cc = {"joaomatheuslamao9@gmail.com", "eduninjas@hotmail.com"};
+        String[] cc = {"joaomatheuslamao9@gmail.com", "eduninjas@hotmail.com", "anaraquelysmachado29@gmail.com"};
 
         String envio = "<html>" +
                 "<body style='font-family: Arial, sans-serif; font-size: 15px;'>" +

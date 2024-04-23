@@ -35,7 +35,7 @@ public class HealthCheckController {
     @PostMapping("/mail")
     public ResponseEntity<ResponseCustomDTO<String>> sendMail() throws MessagingException {
 
-        mail.sendPass("anaraquelysmachado29@gmail.com", "iNine",UUID.randomUUID().toString());
+        mail.sendToken("anaraquelysmachado29@gmail.com", "iNine",UUID.randomUUID().toString());
 
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Email enviado", null));
     }

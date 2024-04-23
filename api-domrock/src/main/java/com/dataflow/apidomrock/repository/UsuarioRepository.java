@@ -15,4 +15,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     NivelAcesso getNivelUsuario(String emailUsuario);
 
     Optional<Usuario> findByEmail(String email);
+    @Query("select u.token from Usuario u where u.token = :token")
+    Optional<Usuario> findByToken(String token);
 }
