@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
+
 @RestController
 @RequestMapping(value = "/register")
 @CrossOrigin("*")
@@ -21,7 +23,7 @@ public class RegisterController {
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
     @PostMapping("/validacao")
-    public ResponseEntity<ResponseCustomDTO<String>> finishingRegisterUserInDataBase(@RequestBody ValidacaoDTO validacaoDTO) throws CustomException{
+    public ResponseEntity<ResponseCustomDTO<String>> finishingRegisterUserInDataBase(@RequestBody ValidacaoDTO validacaoDTO) throws CustomException, NoSuchAlgorithmException {
         registerServices.FirstLogin(validacaoDTO);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
