@@ -40,6 +40,9 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "delete from hash h where h.id_arquivo = ?1",nativeQuery = true)
+    @Query(value = "delete from hash h where h.id_arquivo = ?1", nativeQuery = true)
     void deleteHash(int idArquivo);
+
+    @Query("select l.observacao from Log l where l.arquivo.id = :idArquivo and l.arquivo.status = 'NÃO APROVADO PELA SILVER'")
+    String findObservacao(int idArquivo);
 }

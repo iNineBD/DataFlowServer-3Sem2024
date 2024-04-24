@@ -141,6 +141,27 @@ public class BronzeZoneService {
         }
     }
 
+    public String visualzeObs(RequestVisualizeHashDTO request) throws CustomException {
+
+        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
+
+        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+
+        if(user.isPresent()){
+            if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj())){
+
+                String obs = arquivoRepository.findObservacao(arquivo.getId());
+
+                return obs;
+
+            }else{
+                throw new CustomException("O arquivo ["+ arquivo.getNomeArquivo() + "] não pertence a organização [" + arquivo.getOrganizacao().getNome(), HttpStatus.BAD_REQUEST);
+            }
+        }else {
+            throw new CustomException("O usuário ["+ user.get().getEmail() + "] não foi localizado", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @Transactional(rollbackOn = CustomException.class)
     public void editHash(RequestEditHashDTO request) throws CustomException{
 

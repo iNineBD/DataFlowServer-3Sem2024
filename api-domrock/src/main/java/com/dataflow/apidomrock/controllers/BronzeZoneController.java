@@ -60,7 +60,8 @@ public class BronzeZoneController {
     @PostMapping("/visualize")
     public ResponseEntity<ResponseCustomDTO<ResponseHashDTO>> visualizeHash(@RequestBody RequestVisualizeHashDTO request) throws CustomException {
         List<RequestMetadadoDTO> metadadosHash = bronzeZoneService.visualizeHash(request);
-        ResponseHashDTO response = new ResponseHashDTO(request.nomeArquivo(), request.usuario(), metadadosHash);
+        String observacao = bronzeZoneService.visualzeObs(request);
+        ResponseHashDTO response = new ResponseHashDTO(request.nomeArquivo(), request.usuario(), metadadosHash,observacao);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",response));
     }
 
