@@ -87,7 +87,8 @@ public class LandingZoneService {
         else {
             logger.insert(userBD.get().getId(), arqBD.get().getId(), "Update file", Estagio.LZ, Acao.ALTERAR);
         }
-
+        arqBD.get().setStatus(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao());
+        arqBD.get().setAtivo(true);
         metadataRepository.deleteAllByArquivo(arqBD.get());
         //METADADO "CAPTURADO" PELO JSON, ELE JOGA AS INFORMAÇÕES NO OBJETO METADADO
         for (MetadataDTO metadadoJson : request.getMetadados()) {
