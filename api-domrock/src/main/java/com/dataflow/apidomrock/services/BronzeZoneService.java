@@ -65,7 +65,7 @@ public class BronzeZoneService {
         }
     }
 
-    public List<ResponseMetaDTO> createHash(RequestArquivoDTO request) throws CustomException{
+    public List<ResponseMetaDTO> selectMetadadosToHash(RequestArquivoDTO request) throws CustomException{
 
         Arquivo arq = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 

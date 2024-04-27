@@ -46,7 +46,7 @@ public class BronzeZoneController {
 
     @PostMapping("/createHash")
     public ResponseEntity<ResponseCustomDTO<ResponseMetadadoDTO>> createHash(@RequestBody RequestArquivoDTO request) throws  CustomException{
-        List<ResponseMetaDTO> metadados = bronzeZoneService.createHash(request);
+        List<ResponseMetaDTO> metadados = bronzeZoneService.selectMetadadosToHash(request);
         ResponseMetadadoDTO response = new ResponseMetadadoDTO(metadados);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",response));
     }
