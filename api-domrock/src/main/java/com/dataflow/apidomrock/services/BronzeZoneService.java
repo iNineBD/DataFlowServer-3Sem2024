@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,6 +131,43 @@ public class BronzeZoneService {
                 List<Metadata> metaNoHash = arquivoRepository.findByMetadataHash(arquivo.getId());
 
                 List<RequestMetadadoDTO> metaDTO = metaNoHash.stream().map(RequestMetadadoDTO::new).toList();
+
+                return metaDTO;
+
+            }else{
+                throw new CustomException("O arquivo ["+ arquivo.getNomeArquivo() + "] não pertence a organização [" + arquivo.getOrganizacao().getNome(), HttpStatus.BAD_REQUEST);
+            }
+        }else {
+            throw new CustomException("O usuário ["+ user.get().getEmail() + "] não foi localizado", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public List<RequestMetadadoDTO> visualizeMetadadosForaHash(RequestVisualizeHashDTO request) throws CustomException {
+
+        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
+
+        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+
+        if(user.isPresent()){
+            if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj())){
+                List<Metadata> metadados = metadataRepository.findByArquivo(arquivo.getId());
+
+                List<Metadata> metadadosNoHash = arquivoRepository.findByMetadataHash(arquivo.getId());
+                List<Metadata> metaForaDoHash = new ArrayList<>();
+
+                int qtdMetadados = metadados.size();
+
+                int qtdMetaNoHash = metadadosNoHash.size();
+
+                for(int i = 0; i < qtdMetaNoHash; i++){
+                    for(int j = 0; j < qtdMetadados; j++){
+                        if((metadados.get(j).getID() != metadadosNoHash.get(i).getID()) && metadados.get(j).getIsAtivo()){
+                            metaForaDoHash.add(metadados.get(j));
+                        }
+                    }
+                }
+
+                List<RequestMetadadoDTO> metaDTO = metaForaDoHash.stream().map(RequestMetadadoDTO::new).toList();
 
                 return metaDTO;
 
