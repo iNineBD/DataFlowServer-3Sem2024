@@ -7,7 +7,5 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ResponseHomeDTO(@JsonAlias("nivelAcesso") String nivel,
-                              @JsonAlias("landing") List<ResponseArquivosDTO> arquivosLanding,
-                              @JsonAlias("bronze") List<ResponseArquivosDTO> arquivosBronze,
-                              @JsonAlias("silver") List<ResponseArquivosDTO> arquivosSilver) {
+                              @JsonAlias("arquivos") List<ResponseArquivosDTO> allArquivos) {
 }
