@@ -1,7 +1,6 @@
 package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
-import com.dataflow.apidomrock.dto.showzones.AcessoZonas;
 import com.dataflow.apidomrock.dto.showzones.RequestDadosDTO;
 import com.dataflow.apidomrock.dto.showzones.ResponseNavigationDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
@@ -30,51 +29,60 @@ public class NavigationServices {
 
         Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 
-        AcessoZonas acessoLz = null;
-        AcessoZonas acessoBz = null;
-        AcessoZonas acessoSz = null;
+        boolean acessoLz;
+        boolean acessoBz;
+        boolean acessoSz;
         if(arquivo != null) {
             if (arquivo.getStatus().equals(StatusArquivo.AGUARDANDO_APROVACAO_SILVER.getDescricao()) || arquivo.getStatus().equals(StatusArquivo.SILVER_ZONE.getDescricao())) {
                 if (usuario.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || usuario.getNivel().equals(NivelAcessoEnum.FULL.toString())) {
-                    acessoLz = new AcessoZonas(true, true);
-                    acessoBz = new AcessoZonas(true, true);
-                    acessoSz = new AcessoZonas(true, true);
+                    acessoLz = true;
+                    acessoBz = true;
+                    acessoSz = true;
                 } else if (usuario.getNivel().equals(NivelAcessoEnum.S.toString())) {
-                    acessoLz = new AcessoZonas(false, false);
-                    acessoBz = new AcessoZonas(false, false);
-                    acessoSz = new AcessoZonas(true, true);
-                } else {
-                    acessoLz = new AcessoZonas(false, false);
-                    acessoBz = new AcessoZonas(false, false);
-                    acessoSz = new AcessoZonas(false, false);
+                    acessoLz = false;
+                    acessoBz = false;
+                    acessoSz = true;
+                } else if(usuario.getNivel().equals(NivelAcessoEnum.B.toString())){
+                    acessoLz = false;
+                    acessoBz = true;
+                    acessoSz = false;
+                }else {
+                    acessoLz = false;
+                    acessoBz = false;
+                    acessoSz = false;
                 }
             } else if (arquivo.getStatus().equals(StatusArquivo.NAO_APROVADO_PELA_SILVER.getDescricao()) || arquivo.getStatus().equals(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao()) || arquivo.getStatus().equals(StatusArquivo.BRONZE_ZONE.getDescricao())) {
                 if (usuario.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || usuario.getNivel().equals(NivelAcessoEnum.FULL.toString())) {
-                    acessoLz = new AcessoZonas(true, true);
-                    acessoBz = new AcessoZonas(true, true);
-                    acessoSz = new AcessoZonas(false, true);
+                    acessoLz = true;
+                    acessoBz = true;
+                    acessoSz = false;
                 } else if (usuario.getNivel().equals(NivelAcessoEnum.B.toString())) {
-                    acessoLz = new AcessoZonas(false, false);
-                    acessoBz = new AcessoZonas(true, true);
-                    acessoSz = new AcessoZonas(false, false);
-                } else {
-                    acessoLz = new AcessoZonas(false, false);
-                    acessoBz = new AcessoZonas(false, false);
-                    acessoSz = new AcessoZonas(false, false);
+                    acessoLz = false;
+                    acessoBz = true;
+                    acessoSz = false;
+                }else if(usuario.getNivel().equals(NivelAcessoEnum.LZ.toString())){
+                    acessoLz = true;
+                    acessoBz = false;
+                    acessoSz = false;
+                }
+                else {
+                    acessoLz = false;
+                    acessoBz = false;
+                    acessoSz = false;
                 }
             } else {
                 if (usuario.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || usuario.getNivel().equals(NivelAcessoEnum.FULL.toString())) {
-                    acessoLz = new AcessoZonas(true, true);
-                    acessoBz = new AcessoZonas(false, true);
-                    acessoSz = new AcessoZonas(false, true);
+                    acessoLz = true;
+                    acessoBz = false;
+                    acessoSz = false;
                 } else if (usuario.getNivel().equals(NivelAcessoEnum.LZ.toString())) {
-                    acessoLz = new AcessoZonas(true, true);
-                    acessoBz = new AcessoZonas(false, false);
-                    acessoSz = new AcessoZonas(false, false);
+                    acessoLz = true;
+                    acessoBz = false;
+                    acessoSz = false;
                 } else {
-                    acessoLz = new AcessoZonas(false, false);
-                    acessoBz = new AcessoZonas(false, false);
-                    acessoSz = new AcessoZonas(false, false);
+                    acessoLz = false;
+                    acessoBz = false;
+                    acessoSz = false;
                 }
             }
 
