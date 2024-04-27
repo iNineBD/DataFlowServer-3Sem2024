@@ -52,7 +52,7 @@ public class NavigationServices {
                 if (usuario.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || usuario.getNivel().equals(NivelAcessoEnum.FULL.toString())) {
                     acessoLz = new AcessoZonas(true, true);
                     acessoBz = new AcessoZonas(true, true);
-                    acessoSz = new AcessoZonas(false, false);
+                    acessoSz = new AcessoZonas(false, true);
                 } else if (usuario.getNivel().equals(NivelAcessoEnum.B.toString())) {
                     acessoLz = new AcessoZonas(false, false);
                     acessoBz = new AcessoZonas(true, true);
@@ -65,8 +65,8 @@ public class NavigationServices {
             } else {
                 if (usuario.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || usuario.getNivel().equals(NivelAcessoEnum.FULL.toString())) {
                     acessoLz = new AcessoZonas(true, true);
-                    acessoBz = new AcessoZonas(false, false);
-                    acessoSz = new AcessoZonas(false, false);
+                    acessoBz = new AcessoZonas(false, true);
+                    acessoSz = new AcessoZonas(false, true);
                 } else if (usuario.getNivel().equals(NivelAcessoEnum.LZ.toString())) {
                     acessoLz = new AcessoZonas(true, true);
                     acessoBz = new AcessoZonas(false, false);
@@ -80,7 +80,7 @@ public class NavigationServices {
 
             return new ResponseNavigationDTO(request.usuario(), acessoLz, acessoBz, acessoSz);
         }else {
-            throw new CustomException("O arquivo ["+ arquivo.getNomeArquivo() + "] não existe", HttpStatus.BAD_REQUEST);
+            throw new CustomException("O arquivo ["+ request.nomeArquivo() + "] não existe", HttpStatus.BAD_REQUEST);
         }
 
     }
