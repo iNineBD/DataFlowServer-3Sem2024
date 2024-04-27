@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bronze")
-@CrossOrigin
+@CrossOrigin("*")
 public class BronzeZoneController {
 
     @Autowired
