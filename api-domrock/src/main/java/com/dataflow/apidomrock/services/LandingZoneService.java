@@ -90,6 +90,8 @@ public class LandingZoneService {
         arqBD.get().setStatus(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao());
         arqBD.get().setAtivo(true);
         metadataRepository.deleteAllByArquivo(arqBD.get());
+
+        boolean todos_metados_com_vlr_padrao = true;
         //METADADO "CAPTURADO" PELO JSON, ELE JOGA AS INFORMAÇÕES NO OBJETO METADADO
         for (MetadataDTO metadadoJson : request.getMetadados()) {
             Metadata newMetadado = new Metadata();
@@ -104,6 +106,7 @@ public class LandingZoneService {
                 continue;
             }
             newMetadado.setDescricao(metadadoJson.getDescricao());
+            if (metadadoJson.getValorPadrao().isEmpty()) todos_metados_com_vlr_padrao = false;
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
 
             // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
@@ -137,6 +140,10 @@ public class LandingZoneService {
             //ADICIONANDO AS RESTRIÇOES NO METADADO
             newMetadado.setRestricoes(newRestricoes);
             metadataRepository.save(newMetadado);
+        }
+
+        if (todos_metados_com_vlr_padrao){
+            throw new CustomException("Todos os metadados estão com \"Valor Padrão\" definidos. Isso não é permitido", HttpStatus.BAD_REQUEST);
         }
     }
 }
