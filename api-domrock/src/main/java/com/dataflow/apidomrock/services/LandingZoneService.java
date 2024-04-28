@@ -106,7 +106,7 @@ public class LandingZoneService {
                 continue;
             }
             newMetadado.setDescricao(metadadoJson.getDescricao());
-            if (metadadoJson.getValorPadrao().isEmpty()) todos_metados_com_vlr_padrao = false;
+            if (metadadoJson.getValorPadrao() != null && !metadadoJson.getValorPadrao().equals("")) todos_metados_com_vlr_padrao = false;
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
 
             // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
