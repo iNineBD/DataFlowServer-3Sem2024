@@ -114,7 +114,7 @@ public class LandingZoneService {
                 throw new CustomException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo", HttpStatus.BAD_REQUEST);
             }
 
-            if (metadadoJson.getNomeTipo().equals("Booleano") && (metadadoJson.getValorPadrao() != null || !metadadoJson.getValorPadrao().equals(""))){
+            if (metadadoJson.getNomeTipo().equals("Booleano") && (metadadoJson.getValorPadrao() != null && !metadadoJson.getValorPadrao().equals(""))){
                 if (!metadadoJson.getValorPadrao().equalsIgnoreCase("true") && !metadadoJson.getValorPadrao().equalsIgnoreCase("false")){
                     throw new CustomException("O campo ["+metadadoJson.getNome()+"], por ser BOOLEANO, não pode ter seu Valor Padrão diferente de \"true\" e \"false\"", HttpStatus.BAD_REQUEST);
                 }
