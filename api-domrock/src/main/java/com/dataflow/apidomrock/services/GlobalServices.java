@@ -7,7 +7,6 @@ import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
-import com.dataflow.apidomrock.repository.MetadataRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +29,7 @@ public class GlobalServices {
     @Transactional(rollbackFor = CustomException.class)
     public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Usuario> userBD = usuarioRepository.findByEmail(user);
+        Optional<Usuario> userBD = usuarioRepository.findByEmailCustom(user);
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
             throw new CustomException("Usuário [" + user + "] não existe", HttpStatus.NOT_FOUND);
