@@ -106,12 +106,18 @@ public class LandingZoneService {
                 continue;
             }
             newMetadado.setDescricao(metadadoJson.getDescricao());
-            if (metadadoJson.getValorPadrao() != null || !metadadoJson.getValorPadrao().equals("")) todos_metados_com_vlr_padrao = false;
+            if (metadadoJson.getValorPadrao() == null || metadadoJson.getValorPadrao().equals("")) todos_metados_com_vlr_padrao = false;
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
 
             // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
             if (metadadoJson.getNomeTipo() == null || metadadoJson.getNomeTipo().isEmpty()){
                 throw new CustomException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo", HttpStatus.BAD_REQUEST);
+            }
+
+            if (metadadoJson.getNomeTipo().equals("Booleano")){
+                if (!metadadoJson.getValorPadrao().equalsIgnoreCase("true") && !metadadoJson.getValorPadrao().equalsIgnoreCase("false")){
+                    throw new CustomException("O campo ["+metadadoJson.getNome()+"], por ser BOOLEANO, não pode ter seu Valor Padrão diferente de \"true\" e \"false\"", HttpStatus.BAD_REQUEST);
+                }
             }
 
             newMetadado.setTipo(metadadoJson.getNomeTipo());
