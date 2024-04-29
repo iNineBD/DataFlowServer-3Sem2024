@@ -43,7 +43,7 @@ public class BronzeZoneService {
 
     public void updateStatus (RequestBodySetStatusBzDTO request) throws CustomException {
 
-        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
+        Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
         if (request.salvar()) {
             if(!request.obs().isEmpty()){
@@ -85,7 +85,7 @@ public class BronzeZoneService {
     @Transactional(rollbackOn = CustomException.class)
     public void save(RequestHashDTO request) throws  CustomException{
 
-        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
+        Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
         Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 
@@ -121,7 +121,7 @@ public class BronzeZoneService {
 
     public List<RequestMetadadoDTO> visualizeHash(RequestVisualizeHashDTO request) throws CustomException {
 
-        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
+        Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
         Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 
@@ -144,7 +144,7 @@ public class BronzeZoneService {
 
     public List<RequestMetadadoDTO> visualizeMetadadosForaHash(RequestVisualizeHashDTO request) throws CustomException {
 
-        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
+        Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
         Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 
@@ -181,7 +181,7 @@ public class BronzeZoneService {
 
     public String visualzeObs(RequestVisualizeHashDTO request) throws CustomException {
 
-        Optional<Usuario> user = usuarioRepository.findByEmail(request.usuario());
+        Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
         Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 
