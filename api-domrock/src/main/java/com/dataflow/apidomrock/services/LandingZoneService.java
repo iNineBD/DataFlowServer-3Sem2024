@@ -65,7 +65,7 @@ public class LandingZoneService {
     public void updateMetadadosInDatabase(RequestBodyUpdateMetaDTO request) throws CustomException {
 
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Usuario> userBD = usuarioRepository.findByEmail(request.getUsuario());
+        Optional<Usuario> userBD = usuarioRepository.findByEmailCustom(request.getUsuario());
 
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {

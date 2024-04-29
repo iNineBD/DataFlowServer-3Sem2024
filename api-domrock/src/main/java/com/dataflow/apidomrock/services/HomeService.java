@@ -7,7 +7,6 @@ import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.entities.enums.Acao;
-import com.dataflow.apidomrock.entities.enums.Estagio;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
@@ -44,7 +43,7 @@ public class HomeService {
     }
 
     public List<Arquivo> getArquivosUsuario(String emailUsuario){
-        Optional<Usuario> usuario = usuarioRepository.findByEmail(emailUsuario);
+        Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(emailUsuario);
         String nivel = getNivel(emailUsuario);
         if(usuario.isPresent()){
             if(nivel.equals(NivelAcessoEnum.MASTER.toString()) || nivel.equals(NivelAcessoEnum.FULL.toString())){
@@ -73,7 +72,7 @@ public class HomeService {
     @Transactional(rollbackFor = CustomException.class)
     public void deleteFile(RequestBodyDeleteFileDTO request) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Usuario> userBD = usuarioRepository.findByEmail(request.getUsuario());
+        Optional<Usuario> userBD = usuarioRepository.findByEmailCustom(request.getUsuario());
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
             throw new CustomException("Usuário [" + request.getUsuario() + "] não existe", HttpStatus.NOT_FOUND);

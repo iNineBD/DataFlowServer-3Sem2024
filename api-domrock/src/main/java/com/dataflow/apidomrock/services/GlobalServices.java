@@ -29,7 +29,7 @@ public class GlobalServices {
     @Transactional(rollbackFor = CustomException.class)
     public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Usuario> userBD = usuarioRepository.findByEmail(user);
+        Optional<Usuario> userBD = usuarioRepository.findByEmailCustom(user);
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
             throw new CustomException("Usuário [" + user + "] não existe", HttpStatus.NOT_FOUND);
