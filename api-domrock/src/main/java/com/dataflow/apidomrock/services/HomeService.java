@@ -59,71 +59,14 @@ public class HomeService {
         }
     }
 
-    public List<ResponseArquivosDTO> arquivosLanding(String nivel, List<Arquivo> arquivos){
-        int qtdArquivos = arquivos.size();
-        List<Arquivo> arq = new ArrayList<>();
-        List<ResponseArquivosDTO> arquivosLz = new ArrayList<>();
+    public List<ResponseArquivosDTO> arquivosHome(List<Arquivo> arquivos){
 
-        if(nivel.equals(NivelAcessoEnum.LZ.toString()) || nivel.equals(NivelAcessoEnum.MASTER.toString()) || nivel.equals(NivelAcessoEnum.FULL.toString())){
-            for (int i = 0; i < qtdArquivos; i++) {
-                if (arquivos.get(i).getStatus().equals(StatusArquivo.NAO_APROVADO_PELA_BRONZE.getDescricao())) {
-                    arq.add(arquivos.get(i));
-                }
-            }
-
-            arquivosLz = arq.stream()
+        List<ResponseArquivosDTO> arq = arquivos.stream()
                     .map(ResponseArquivosDTO::new)
                     .collect(Collectors.toList());
 
-            return arquivosLz;
-        }else {
-            return arquivosLz;
-        }
+            return arq;
 
-    }
-
-    public List<ResponseArquivosDTO> arquivosBronze(String nivel, List<Arquivo> arquivos){
-        int qtdArquivos = arquivos.size();
-        List<Arquivo> arq = new ArrayList<>();
-        List<ResponseArquivosDTO> arquivosBz = new ArrayList<>();
-
-        if(nivel.equals(NivelAcessoEnum.B.toString()) || nivel.equals(NivelAcessoEnum.MASTER.toString()) || nivel.equals(NivelAcessoEnum.FULL.toString())){
-            for (int i = 0; i < qtdArquivos; i++){
-                if(arquivos.get(i).getStatus().equals(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao()) || arquivos.get(i).getStatus().equals(StatusArquivo.BRONZE_ZONE.getDescricao()) || arquivos.get(i).getStatus().equals(StatusArquivo.NAO_APROVADO_PELA_SILVER.getDescricao())){
-                    arq.add(arquivos.get(i));
-                }
-            }
-
-            arquivosBz = arq.stream()
-                    .map(ResponseArquivosDTO::new)
-                    .collect(Collectors.toList());
-
-            return arquivosBz;
-        }else{
-            return arquivosBz;
-        }
-    }
-
-    public List<ResponseArquivosDTO> arquivosSilver(String nivel, List<Arquivo> arquivos){
-        int qtdArquivos = arquivos.size();
-        List<Arquivo> arq = new ArrayList<>();
-        List<ResponseArquivosDTO> arquivosSz = new ArrayList<>();
-
-        if(nivel.equals(NivelAcessoEnum.S.toString()) || nivel.equals(NivelAcessoEnum.MASTER.toString()) || nivel.equals(NivelAcessoEnum.FULL.toString())){
-            for (int i = 0; i < qtdArquivos; i++){
-                if(arquivos.get(i).getStatus().equals(StatusArquivo.AGUARDANDO_APROVACAO_SILVER.getDescricao()) || arquivos.get(i).getStatus().equals(StatusArquivo.SILVER_ZONE.getDescricao())){
-                    arq.add(arquivos.get(i));
-                }
-            }
-
-            arquivosSz = arq.stream()
-                    .map(ResponseArquivosDTO::new)
-                    .collect(Collectors.toList());
-
-            return arquivosSz;
-        }else{
-            return arquivosSz;
-        }
     }
 
     @Transactional(rollbackFor = CustomException.class)

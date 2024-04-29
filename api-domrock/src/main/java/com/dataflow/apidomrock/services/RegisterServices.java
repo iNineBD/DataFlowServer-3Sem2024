@@ -9,6 +9,7 @@ import com.dataflow.apidomrock.repository.OrganizacaoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.mail.MailService;
 import com.dataflow.apidomrock.services.utils.Encrypt;
+import com.dataflow.apidomrock.services.utils.Validate;
 import com.dataflow.apidomrock.services.utils.ValidateNivelAcesso;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,14 @@ public class RegisterServices {
 
     @Transactional(rollbackFor = CustomException.class)
     public void registerInDatabase(UsuarioDTO register) throws CustomException {
+        if (!Validate.validarCNPJ(register.getCnpj())){
+            throw new CustomException("O CNPJ inserido é inválido", HttpStatus.BAD_REQUEST);
+        }
         Optional<Organizacao> organizacaoBD = organizacaoRepository.findById(register.getCnpj());
         if (organizacaoBD.isEmpty()) {
             Organizacao organizacao = new Organizacao();
             organizacao.setCnpj(register.getCnpj());
-            organizacao.setNome(register.getOrganização());
+            organizacao.setNome(register.getOrganizacao());
             organizacaoRepository.save(organizacao);
             organizacaoBD = organizacaoRepository.findById(register.getCnpj());
         }
@@ -51,7 +55,7 @@ public class RegisterServices {
             usuario.setNiveisAcesso(validateNivelAcesso.nivelAcessoList(register.getNivelAcesso()));
             String token = UUID.randomUUID().toString();
             try {
-                mailService.sendToken(register.getEmailUsuario(), register.getOrganização(), token);
+                mailService.sendToken(register.getEmailUsuario(), register.getOrganizacao(), token);
             } catch (MessagingException e) {
                 throw new CustomException("Não foi possivel encaminhar o token para o email", HttpStatus.SERVICE_UNAVAILABLE);
             }

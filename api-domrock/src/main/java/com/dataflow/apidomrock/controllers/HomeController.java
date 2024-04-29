@@ -25,12 +25,10 @@ public class HomeController {
     @PostMapping("/files/find")
     public ResponseEntity<ResponseCustomDTO<ResponseHomeDTO>> homeDados(@RequestBody RequestBodyUsuarioDTO usuario) throws IOException {
         String nivel = homeService.getNivel(usuario.email());
-        List<Arquivo> arquivos =  homeService.getArquivosUsuario(usuario.email());
-        List<ResponseArquivosDTO> arquivosLanding = homeService.arquivosLanding(nivel,arquivos);
-        List<ResponseArquivosDTO> arquivosBronze = homeService.arquivosBronze(nivel, arquivos);
-        List<ResponseArquivosDTO> arquivosSilver = homeService.arquivosSilver(nivel, arquivos);
+        List<Arquivo> arquivosFiltrados =  homeService.getArquivosUsuario(usuario.email());
+        List<ResponseArquivosDTO> arquivos = homeService.arquivosHome(arquivosFiltrados);
 
-        ResponseHomeDTO response = new ResponseHomeDTO(nivel,arquivosLanding,arquivosBronze,arquivosSilver);
+        ResponseHomeDTO response = new ResponseHomeDTO(nivel,arquivos);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 

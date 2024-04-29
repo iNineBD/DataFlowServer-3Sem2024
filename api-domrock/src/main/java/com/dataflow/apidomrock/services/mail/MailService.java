@@ -20,7 +20,7 @@ public class MailService {
 
     public void sendToken(String para, String org, String pass) throws MessagingException {
 
-        String[] cc = {"joaomatheuslamao9@gmail.com", "eduninjas@hotmail.com", "anaraquelysmachado29@gmail.com"};
+        String[] cc = {"joao.lamao@fatec.sp.gov.br", "eduardo.paula01@fatec.sp.gov.br", "ana.machado28@fatec.sp.gov.br", "andre.oliveira138@fatec.sp.gov.br", "lucas.oliveira321@fatec.sp.gov.br", "beatriz.bonatto@fatec.sp.gov.br", "naiara.santos3@fatec.sp.gov.br"};
 
         String envio = "<html>" +
                 "<body style='font-family: Arial, sans-serif; font-size: 15px;'>" +

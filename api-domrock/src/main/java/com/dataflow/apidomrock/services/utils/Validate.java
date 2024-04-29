@@ -29,6 +29,7 @@ public class Validate {
 
 
     public static Boolean isInteger(String str) {
+
         if (str == null || str.isEmpty()) {
             return true;
         }
@@ -39,5 +40,47 @@ public class Validate {
             }
         }
         return true;
+    }
+
+
+    public static boolean validarCNPJ(String cnpj) {
+
+        cnpj = cnpj.replaceAll("[^0-9]", "");
+
+        if (cnpj.length() != 14) {
+            return false;
+        }
+
+        int soma = 0;
+        int peso = 2;
+        for (int i = 11; i >= 0; i--) {
+            int digito = Character.getNumericValue(cnpj.charAt(i));
+            soma += digito * peso;
+            peso++;
+            if (peso == 10) {
+                peso = 2;
+            }
+        }
+        int resto = soma % 11;
+        int digitoVerificador1 = (resto < 2) ? 0 : (11 - resto);
+
+        if (Character.getNumericValue(cnpj.charAt(12)) != digitoVerificador1) {
+            return false;
+        }
+
+        soma = 0;
+        peso = 2;
+        for (int i = 12; i >= 0; i--) {
+            int digito = Character.getNumericValue(cnpj.charAt(i));
+            soma += digito * peso;
+            peso++;
+            if (peso == 10) {
+                peso = 2;
+            }
+        }
+        resto = soma % 11;
+        int digitoVerificador2 = (resto < 2) ? 0 : (11 - resto);
+
+        return Character.getNumericValue(cnpj.charAt(13)) == digitoVerificador2;
     }
 }
