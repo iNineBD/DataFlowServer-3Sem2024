@@ -7,13 +7,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     @Query("select u.niveisAcesso from Usuario u where u.email = :emailUsuario")
-    NivelAcesso getNivelUsuario(String emailUsuario);
+    List<NivelAcesso> getNivelUsuario(String emailUsuario);
     @Query("select u from Usuario u where u.email = :email")
     Optional<Usuario> findByEmailCustom(String email);
     @Query("select u.token from Usuario u where u.token = :token")

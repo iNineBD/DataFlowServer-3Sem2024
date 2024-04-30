@@ -35,28 +35,33 @@ public class HomeService {
     @Autowired
     Logger logger;
 
-    public String getNivel(String emailUsuario){
-        NivelAcesso nivel = usuarioRepository.getNivelUsuario(emailUsuario);
+    public List<NivelAcesso> getNivel(String emailUsuario){
+        List<NivelAcesso> nivel = usuarioRepository.getNivelUsuario(emailUsuario);
 
-        return nivel.getNivel().toUpperCase();
+        return nivel;
 
     }
 
     public List<Arquivo> getArquivosUsuario(String emailUsuario){
         Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(emailUsuario);
-        String nivel = getNivel(emailUsuario);
+        List<NivelAcesso> nivel = getNivel(emailUsuario);
+        List<Arquivo> arquivos = new ArrayList<>();
         if(usuario.isPresent()){
-            if(nivel.equals(NivelAcessoEnum.MASTER.toString()) || nivel.equals(NivelAcessoEnum.FULL.toString())){
-                return arquivoRepository.findArquivoByAtivo();
-            }else {
-                String organizacao = usuario.get().getOrganizacao().getNome();
+            int qtdNivelAcesso = nivel.size();
+            for(int i = 0; i < qtdNivelAcesso; i++){
+                if(nivel.get(i).getNivel().equals(NivelAcessoEnum.MASTER.toString()) || nivel.get(i).getNivel().equals(NivelAcessoEnum.FULL.toString())){
+                    arquivos = arquivoRepository.findArquivoByAtivo();
+                }else {
+                    String organizacao = usuario.get().getOrganizacao().getNome();
 
-                return arquivoRepository.findByOrganizacao(organizacao);
+                    arquivos = arquivoRepository.findByOrganizacao(organizacao);
+                }
             }
-
         }else{
             throw new RuntimeException("Usuário não cadastrado");
         }
+
+        return arquivos;
     }
 
     public List<ResponseArquivosDTO> arquivosHome(List<Arquivo> arquivos){
