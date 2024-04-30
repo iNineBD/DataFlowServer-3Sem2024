@@ -12,6 +12,7 @@ import com.dataflow.apidomrock.services.utils.Encrypt;
 import com.dataflow.apidomrock.services.utils.Validate;
 import com.dataflow.apidomrock.services.utils.ValidateNivelAcesso;
 import jakarta.mail.MessagingException;
+import jakarta.mail.SendFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -57,6 +58,8 @@ public class RegisterServices {
             String token = UUID.randomUUID().toString();
             try {
                 mailService.sendToken(register.getEmailUsuario(), register.getOrganizacao(), token);
+            } catch (SendFailedException e) {
+                throw new CustomException("Ops, parece que há algum problema com o email inserido.", HttpStatus.BAD_REQUEST);
             } catch (MessagingException e) {
                 throw new CustomException("Não foi possivel encaminhar o token para o email", HttpStatus.SERVICE_UNAVAILABLE);
             }
