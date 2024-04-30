@@ -39,13 +39,14 @@ public class RegisterServices {
         if (!Validate.validarCNPJ(register.getCnpj())){
             throw new CustomException("O CNPJ inserido é inválido", HttpStatus.BAD_REQUEST);
         }
-        Optional<Organizacao> organizacaoBD = organizacaoRepository.findById(register.getCnpj());
+        String cnpj = register.getCnpj().replaceAll("[^0-9]", "");
+        Optional<Organizacao> organizacaoBD = organizacaoRepository.findById(cnpj);
         if (organizacaoBD.isEmpty()) {
             Organizacao organizacao = new Organizacao();
-            organizacao.setCnpj(register.getCnpj());
+            organizacao.setCnpj(cnpj);
             organizacao.setNome(register.getOrganizacao());
             organizacaoRepository.save(organizacao);
-            organizacaoBD = organizacaoRepository.findById(register.getCnpj());
+            organizacaoBD = organizacaoRepository.findById(cnpj);
         }
         Optional<Usuario> userBD = usuarioRepository.findByEmailCustom(register.getEmailUsuario());
         if (userBD.isEmpty()) {
