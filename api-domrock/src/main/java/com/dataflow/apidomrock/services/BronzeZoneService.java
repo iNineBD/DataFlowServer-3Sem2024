@@ -150,21 +150,28 @@ public class BronzeZoneService {
 
         if(user.isPresent()){
             if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj())){
-                List<Metadata> metadados = metadataRepository.findByArquivo(arquivo.getId());
+                List<Metadata> metaForaDoHash = metadataRepository.findByArquivo(arquivo.getId());
 
                 List<Metadata> metadadosNoHash = arquivoRepository.findByMetadataHash(arquivo.getId());
-                List<Metadata> metaForaDoHash = new ArrayList<>();
 
-                int qtdMetadados = metadados.size();
+                List<Integer> remover = new ArrayList<>();
+
+                int qtdMetadados = metaForaDoHash.size();
 
                 int qtdMetaNoHash = metadadosNoHash.size();
 
-                for(int i = 0; i < qtdMetadados; i++){
-                    for(int j = 0; j < qtdMetaNoHash; j++){
-                        if((metadados.get(i).getID() != metadadosNoHash.get(j).getID()) && metadados.get(i).getIsAtivo()){
-                            metaForaDoHash.add(metadados.get(j));
+                for( int i = 0; i < qtdMetadados;i++){
+                    for(int j = 0; j < qtdMetaNoHash;j++){
+                        if(metaForaDoHash.get(i).getID().equals(metadadosNoHash.get(j).getID()) && metaForaDoHash.get(i).getIsAtivo()){
+                            remover.add(i);
                         }
                     }
+                }
+
+                int qtdARemover = remover.size() - 1;
+
+                for(int i = qtdARemover; i >= 0; i--){
+                    metaForaDoHash.remove(remover.get(i).intValue());
                 }
 
                 List<RequestMetadadoDTO> metaDTO = metaForaDoHash.stream().map(RequestMetadadoDTO::new).toList();
