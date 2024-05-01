@@ -3,12 +3,13 @@ package com.dataflow.apidomrock.services;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
-import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.Metadata;
-import com.dataflow.apidomrock.entities.database.NivelAcesso;
-import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.database.*;
+import com.dataflow.apidomrock.entities.enums.Acao;
+import com.dataflow.apidomrock.entities.enums.Estagio;
 import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
+import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
+import com.dataflow.apidomrock.repository.LogRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,9 @@ public class GlobalServices {
 
     @Autowired
     UsuarioRepository usuarioRepository;
+
+    @Autowired
+    LogRepository logRepository;
 
     @Transactional(rollbackFor = CustomException.class)
     public ResponseBodyGetMetadadosDTO getMetadadosInDatabase(String user, String nomeArquivo) throws CustomException {
@@ -59,6 +63,16 @@ public class GlobalServices {
         for (Metadata metadata : arqBD.get().getMetadados()) {
             temp.add(new MetadataDTO(metadata));
         }
-        return new ResponseBodyGetMetadadosDTO(user, nomeArquivo, temp);
+        return new ResponseBodyGetMetadadosDTO(user, nomeArquivo, arqBD.get().getId(), temp);
+    }
+    @Transactional(rollbackFor = CustomException.class)
+    public String getLastObs(Integer arquivoID, Estagio estagio, Acao acao) throws CustomException {
+
+        Optional<Log> register = logRepository.findLastObsInFile(arquivoID, estagio.getDescricao(), acao.toString());
+
+        if (register.isPresent()) {
+            return register.get().getObservacao();
+        }
+        return "Sem observações recentes";
     }
 }
