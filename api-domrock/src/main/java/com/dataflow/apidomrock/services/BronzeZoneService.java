@@ -46,14 +46,10 @@ public class BronzeZoneService {
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
         if (request.salvar()) {
-            if(!request.obs().isEmpty()){
-                Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
-                arq.setStatus(StatusArquivo.BRONZE_ZONE.getDescricao());
-                arquivoRepository.save(arq);
-                logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.APROVAR);
-            }else{
-                throw new CustomException("Você não pode aprovar sem o preenchimento da observação", HttpStatus.BAD_REQUEST);
-            }
+            Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
+            arq.setStatus(StatusArquivo.BRONZE_ZONE.getDescricao());
+            arquivoRepository.save(arq);
+            logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.APROVAR);
         } else {
             if(!request.obs().isEmpty()){
                 Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
