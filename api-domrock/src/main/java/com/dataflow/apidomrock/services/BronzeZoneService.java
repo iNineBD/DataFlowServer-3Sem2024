@@ -159,9 +159,9 @@ public class BronzeZoneService {
 
                 int qtdMetaNoHash = metadadosNoHash.size();
 
-                for(int i = 0; i < qtdMetaNoHash; i++){
-                    for(int j = 0; j < qtdMetadados; j++){
-                        if((metadados.get(j).getID() != metadadosNoHash.get(i).getID()) && metadados.get(j).getIsAtivo()){
+                for(int i = 0; i < qtdMetadados; i++){
+                    for(int j = 0; j < qtdMetaNoHash; j++){
+                        if((metadados.get(i).getID() != metadadosNoHash.get(j).getID()) && metadados.get(i).getIsAtivo()){
                             metaForaDoHash.add(metadados.get(j));
                         }
                     }
