@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,6 +93,8 @@ public class LandingZoneService {
         metadataRepository.deleteAllByArquivo(arqBD.get());
 
         boolean todos_metados_com_vlr_padrao = true;
+
+        HashMap<String, Boolean> nomes_colunas = new HashMap<String, Boolean>();
         //METADADO "CAPTURADO" PELO JSON, ELE JOGA AS INFORMAÇÕES NO OBJETO METADADO
         for (MetadataDTO metadadoJson : request.getMetadados()) {
             Metadata newMetadado = new Metadata();
@@ -105,6 +108,10 @@ public class LandingZoneService {
                 metadataRepository.save(newMetadado);
                 continue;
             }
+            if (nomes_colunas.get(metadadoJson.getNome())){
+                throw new CustomException("O nome do metadado ["+metadadoJson.getNome()+"] já está sendo usado!", HttpStatus.BAD_REQUEST);
+            }
+            nomes_colunas.put(metadadoJson.getNome(), Boolean.TRUE);
             newMetadado.setDescricao(metadadoJson.getDescricao());
             if (metadadoJson.getValorPadrao() == null || metadadoJson.getValorPadrao().equals("")) todos_metados_com_vlr_padrao = false;
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
