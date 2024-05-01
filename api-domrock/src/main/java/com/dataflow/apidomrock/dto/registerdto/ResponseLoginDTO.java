@@ -5,5 +5,5 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-public record ResponseLoginDTO(String token, String nomeUsuario, String email) {
+public record ResponseLoginDTO(String token, String nomeUsuario, String email, boolean isMaster) {
 }

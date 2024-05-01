@@ -48,6 +48,7 @@ public class RegisterController {
         var auth = this.authenticationManager.authenticate(usernamePassword);
         Usuario u = (Usuario) auth.getPrincipal();
         var token = tokenService.generateToken((Usuario) auth.getPrincipal());
-        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", new ResponseLoginDTO(token, u.getNome(), u.getEmail())));
+
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", new ResponseLoginDTO(token, u.getNome(), u.getEmail(), (u.getNiveisAcesso().get(0).getNivel().equals("MASTER")))));
     }
 }
