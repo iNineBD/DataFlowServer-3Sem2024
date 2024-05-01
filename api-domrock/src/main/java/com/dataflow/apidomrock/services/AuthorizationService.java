@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
         @Override
         public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
             UserDetails userDetails = usuarioRepository.findByEmail(email);
+            if (userDetails == null) {
+                throw new UsernameNotFoundException(email);
+            }
             return userDetails;
         }
     }

@@ -3,6 +3,7 @@ package com.dataflow.apidomrock.controllers.exceptions;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,6 +59,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     //Exceção para erro interno generico
     public ResponseEntity<ResponseCustomDTO<Object>> handleException(RuntimeException ex) {
+        if (ex.getMessage().contains("Usuário inexistente ou senha inválida")) {
+            ResponseCustomDTO<Object> customResponse = new ResponseCustomDTO<>(ex.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(customResponse);
+        }
         ResponseCustomDTO<Object> customResponse = new ResponseCustomDTO<>("Ocorreu um erro inesperado: "+ex.getMessage(), null);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customResponse);
     }
@@ -66,6 +71,13 @@ public class GlobalExceptionHandler {
     //Exceção para erro interno generico
     public ResponseEntity<ResponseCustomDTO<Object>> handleSQLException(SQLException ex) {
         ResponseCustomDTO<Object> customResponse = new ResponseCustomDTO<>("Ocorreu algum erro interno na base: " +ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customResponse);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    //Exceção para erro interno generico
+    public ResponseEntity<ResponseCustomDTO<Object>> handleAuthException(UsernameNotFoundException ex) {
+        ResponseCustomDTO<Object> customResponse = new ResponseCustomDTO<>("Usuário ou senha inválidos: " +ex.getMessage(), null);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(customResponse);
     }
 }

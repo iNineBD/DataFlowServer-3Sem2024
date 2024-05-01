@@ -5,7 +5,9 @@ import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
+import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,18 @@ public class GlobalServices {
         if (userBD.isEmpty()) {
             throw new CustomException("Usuário [" + user + "] não existe", HttpStatus.NOT_FOUND);
         }
+
+        boolean havePermission = false;
+        for (NivelAcesso n : userBD.get().getNiveisAcesso()){
+            if (n.getNivel().equals(NivelAcessoEnum.LZ.toString()) || n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString())){
+                havePermission = true;
+            }
+        }
+
+        if (!havePermission) {
+            throw new CustomException("Você não tem permissão para acessar o recurso", HttpStatus.UNAUTHORIZED);
+        }
+
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getCnpj());
         if (arqBD.isEmpty()) {
