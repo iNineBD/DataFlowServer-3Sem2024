@@ -108,7 +108,7 @@ public class LandingZoneService {
                 metadataRepository.save(newMetadado);
                 continue;
             }
-            if (nomes_colunas.get(metadadoJson.getNome())){
+            if (nomes_colunas.get(metadadoJson.getNome()) != null){
                 throw new CustomException("O nome do metadado ["+metadadoJson.getNome()+"] já está sendo usado!", HttpStatus.BAD_REQUEST);
             }
             nomes_colunas.put(metadadoJson.getNome(), Boolean.TRUE);
