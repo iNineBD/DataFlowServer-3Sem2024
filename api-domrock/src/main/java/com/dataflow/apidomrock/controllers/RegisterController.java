@@ -3,6 +3,7 @@ package com.dataflow.apidomrock.controllers;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.registerdto.AutenticacaoDTO;
+import com.dataflow.apidomrock.dto.registerdto.ResponseLoginDTO;
 import com.dataflow.apidomrock.dto.registerdto.UsuarioDTO;
 import com.dataflow.apidomrock.dto.registerdto.ValidacaoDTO;
 import com.dataflow.apidomrock.entities.database.Usuario;
@@ -42,10 +43,11 @@ public class RegisterController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseCustomDTO<String>> userLogin(@RequestBody @Validated AutenticacaoDTO autenticacaoDTO) throws CustomException, CustomException {
+    public ResponseEntity<ResponseCustomDTO<ResponseLoginDTO>> userLogin(@RequestBody @Validated AutenticacaoDTO autenticacaoDTO) throws CustomException, CustomException {
         var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(), autenticacaoDTO.getSenha());
         var auth = this.authenticationManager.authenticate(usernamePassword);
+        Usuario u = (Usuario) auth.getPrincipal();
         var token = tokenService.generateToken((Usuario) auth.getPrincipal());
-        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", token));
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", new ResponseLoginDTO(token, u.getNome(), u.getEmail())));
     }
 }
