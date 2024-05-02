@@ -188,7 +188,7 @@ public class LandingZoneService {
 
         Optional<Arquivo> arqBD = Optional.empty();
         if (isFullAndMaster){
-            List<Arquivo> temp = arquivoRepository.fingByNomeArquivo(nomeArquivo);
+            List<Arquivo> temp = arquivoRepository.findAllByNomeArquivo(nomeArquivo);
             if (!temp.isEmpty()){
                 arqBD = Optional.of(temp.getFirst());
             }
