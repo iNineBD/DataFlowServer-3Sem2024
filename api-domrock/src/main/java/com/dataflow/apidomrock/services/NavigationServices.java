@@ -47,6 +47,8 @@ public class NavigationServices {
                         acessoSz = true;
                     } else if (usuario.get(i).getNivel().equals(NivelAcessoEnum.B.toString())) {
                         acessoBz = true;
+                    }else if(usuario.get(i).getNivel().equals(NivelAcessoEnum.LZ.toString())){
+                        acessoLz = true;
                     }
                 } else if (arquivo.getStatus().equals(StatusArquivo.NAO_APROVADO_PELA_SILVER.getDescricao()) || arquivo.getStatus().equals(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao()) || arquivo.getStatus().equals(StatusArquivo.BRONZE_ZONE.getDescricao())) {
                     if (usuario.get(i).getNivel().equals(NivelAcessoEnum.MASTER.toString()) || usuario.get(i).getNivel().equals(NivelAcessoEnum.FULL.toString())) {
