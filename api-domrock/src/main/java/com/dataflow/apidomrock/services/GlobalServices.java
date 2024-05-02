@@ -41,17 +41,6 @@ public class GlobalServices {
             throw new CustomException("Usuário [" + user + "] não existe", HttpStatus.NOT_FOUND);
         }
 
-        boolean havePermission = false;
-        for (NivelAcesso n : userBD.get().getNiveisAcesso()){
-            if (n.getNivel().equals(NivelAcessoEnum.LZ.toString()) || n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString())){
-                havePermission = true;
-            }
-        }
-
-        if (!havePermission) {
-            throw new CustomException("Você não tem permissão para acessar o recurso", HttpStatus.UNAUTHORIZED);
-        }
-
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getCnpj());
         if (arqBD.isEmpty()) {

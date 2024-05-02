@@ -30,6 +30,8 @@ public class LandingZoneController {
 
     @Autowired
     GlobalServices globalServices;
+    @Autowired
+    private LandingZoneService landingZoneService;
 
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
@@ -46,7 +48,7 @@ public class LandingZoneController {
 
     @PostMapping( "/search")
     public ResponseEntity<ResponseCustomDTO<ResponseCompleteGetMetadadosLandingDTO>> getMetadadosInDataBase(@RequestBody RequestBodyGetMetadadosDTO request) throws CustomException {
-        ResponseBodyGetMetadadosDTO response = globalServices.getMetadadosInDatabase(request.getUsuario(), request.getNomeArquivo());
+        ResponseBodyGetMetadadosDTO response = landingZoneService.getMetadados(request.getUsuario(), request.getNomeArquivo());
 
         String lastOBS = globalServices.getLastObs(response.getIdArquivo(), Estagio.B, Acao.REPROVAR);
 

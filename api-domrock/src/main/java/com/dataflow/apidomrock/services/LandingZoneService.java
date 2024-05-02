@@ -3,11 +3,13 @@ package com.dataflow.apidomrock.services;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.entitiesdto.RestricaoDTO;
+import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
 import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.entities.enums.Acao;
 import com.dataflow.apidomrock.entities.enums.Estagio;
+import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.*;
 import com.dataflow.apidomrock.services.utils.Logger;
@@ -158,5 +160,53 @@ public class LandingZoneService {
         if (todos_metados_com_vlr_padrao){
             throw new CustomException("Todos os metadados estão com \"Valor Padrão\" definidos. Isso não é permitido", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Transactional(rollbackFor = CustomException.class)
+    public ResponseBodyGetMetadadosDTO getMetadados(String user, String nomeArquivo) throws CustomException {
+        //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
+        Optional<Usuario> userBD = usuarioRepository.findByEmailCustom(user);
+        //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
+        if (userBD.isEmpty()) {
+            throw new CustomException("Usuário [" + user + "] não existe", HttpStatus.NOT_FOUND);
+        }
+
+        boolean havePermission = false;
+        boolean isFullAndMaster = false;
+        for (NivelAcesso n : userBD.get().getNiveisAcesso()){
+            if (n.getNivel().equals(NivelAcessoEnum.LZ.toString()) || n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString())){
+                havePermission = true;
+            }
+            if (n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString())){
+                isFullAndMaster = true;
+            }
+        }
+
+        if (!havePermission) {
+            throw new CustomException("Você não tem permissão para acessar o recurso", HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<Arquivo> arqBD = Optional.empty();
+        if (isFullAndMaster){
+            List<Arquivo> temp = arquivoRepository.fingByNomeArquivo(nomeArquivo);
+            if (!temp.isEmpty()){
+                arqBD = Optional.of(temp.getFirst());
+            }
+        } else {
+            //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
+            arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getCnpj());
+        }
+
+
+        if (arqBD.isEmpty()) {
+            //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
+            throw new CustomException("Arquivo [" + nomeArquivo + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]", HttpStatus.NOT_FOUND);
+        }
+
+        List<MetadataDTO> temp = new ArrayList<>();
+        for (Metadata metadata : arqBD.get().getMetadados()) {
+            temp.add(new MetadataDTO(metadata));
+        }
+        return new ResponseBodyGetMetadadosDTO(user, nomeArquivo, arqBD.get().getId(), temp);
     }
 }
