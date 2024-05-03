@@ -14,6 +14,7 @@ import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.entities.enums.Acao;
 import com.dataflow.apidomrock.entities.enums.Estagio;
+import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.MetadataRepository;
@@ -122,7 +123,7 @@ public class BronzeZoneService {
         Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 
         if(user.isPresent()){
-            if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj())){
+            if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.MASTER.toString()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.FULL.toString())){
 
                 List<Metadata> metaNoHash = arquivoRepository.findByMetadataHash(arquivo.getId());
 
@@ -145,7 +146,7 @@ public class BronzeZoneService {
         Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 
         if(user.isPresent()){
-            if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj())){
+            if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.MASTER.toString()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.FULL.toString())){
                 List<Metadata> metaForaDoHash = metadataRepository.findByArquivo(arquivo.getId());
 
                 List<Metadata> metadadosNoHash = arquivoRepository.findByMetadataHash(arquivo.getId());
@@ -189,7 +190,7 @@ public class BronzeZoneService {
         Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
 
         if(user.isPresent()){
-            if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj())){
+            if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.MASTER.toString()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.FULL.toString())){
 
                 String obs = arquivoRepository.findObservacao(arquivo.getId());
 
