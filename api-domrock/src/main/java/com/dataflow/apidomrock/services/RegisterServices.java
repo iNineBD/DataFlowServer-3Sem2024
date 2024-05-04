@@ -5,6 +5,7 @@ import com.dataflow.apidomrock.dto.registerdto.UsuarioDTO;
 import com.dataflow.apidomrock.dto.registerdto.ValidacaoDTO;
 import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
 import com.dataflow.apidomrock.repository.OrganizacaoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.mail.MailService;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,9 +39,30 @@ public class RegisterServices {
 
     @Transactional(rollbackFor = CustomException.class)
     public void registerInDatabase(UsuarioDTO register) throws CustomException {
-        if (!Validate.validarCNPJ(register.getCnpj())){
-            throw new CustomException("O CNPJ inserido é inválido", HttpStatus.BAD_REQUEST);
+
+        List<String> nvl = register.getNivelAcesso();
+        boolean isFull = false;
+        for (String nivelAcesso : nvl) {
+            if (nivelAcesso.equalsIgnoreCase(NivelAcessoEnum.FULL.toString())) {
+                isFull = true;
+            }
         }
+
+        if (isFull){
+            Optional<Usuario> master = usuarioRepository.findByEmailCustom("master@gmail.com");
+            if (master.isEmpty()){
+                throw new CustomException("Organização MASTER não identificada", HttpStatus.BAD_REQUEST);
+            }
+
+            register.setCnpj(master.get().getOrganizacao().getCnpj());
+
+        } else {
+            if (!Validate.validarCNPJ(register.getCnpj())){
+                throw new CustomException("O CNPJ inserido é inválido", HttpStatus.BAD_REQUEST);
+            }
+        }
+
+
         String cnpj = register.getCnpj().replaceAll("[^0-9]", "");
         Optional<Organizacao> organizacaoBD = organizacaoRepository.findById(cnpj);
         if (organizacaoBD.isEmpty()) {
