@@ -5,6 +5,7 @@ import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseCompleteGetMetadadosLandingDTO;
+import com.dataflow.apidomrock.dto.processuploadcsv.RequetsUploadCSVDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
 import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.enums.Acao;
@@ -35,8 +36,9 @@ public class LandingZoneController {
 
     //Metodo que é executado quando o client manda um POST no /landind/upload
     @PostMapping( "/upload")
-    public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter, @RequestParam(required = false) boolean header) throws IOException, CustomException {
-        ResponseUploadCSVDTO response = lzService.processUploadCSV(multipartFile, delimiter, header);
+    public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter, @RequestParam(required = false) boolean header, @RequestParam String email) throws IOException, CustomException {
+        System.out.println(email);
+        ResponseUploadCSVDTO response = lzService.processUploadCSV(multipartFile, delimiter, header, email);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 

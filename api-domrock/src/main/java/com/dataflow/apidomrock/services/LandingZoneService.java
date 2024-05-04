@@ -46,10 +46,24 @@ public class LandingZoneService {
     Logger logger;
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
-    public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter, boolean header) throws IOException, CustomException {
+    public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter, boolean header, String email) throws IOException, CustomException {
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
+
+        Optional<Usuario> userBD =  usuarioRepository.findByEmailCustom(email);
+        if (userBD.isEmpty()) {
+            throw new CustomException("O usuário ["+email+"] não existe.", HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean havePermision = false;
+        for (NivelAcesso nvl : userBD.get().getNiveisAcesso()){
+            if (nvl.getNivel().equals(NivelAcessoEnum.LZ.toString()) || nvl.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || nvl.getNivel().equals(NivelAcessoEnum.FULL.toString())){havePermision = true;}
+        }
+
+        if (!havePermision) {
+            throw new CustomException("O usuário ["+email+"] não tem permissão para realizar ação", HttpStatus.UNAUTHORIZED);
+        }
         Boolean isCSV = Validate.validateprocessUploadCSV(multipartFile, delimiter);
         if (isCSV) {
             if (header){
