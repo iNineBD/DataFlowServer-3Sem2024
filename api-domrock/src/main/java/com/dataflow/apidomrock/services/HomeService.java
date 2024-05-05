@@ -52,7 +52,7 @@ public class HomeService {
                 if(nivel.get(i).getNivel().equals(NivelAcessoEnum.MASTER.toString()) || nivel.get(i).getNivel().equals(NivelAcessoEnum.FULL.toString())){
                     arquivos = arquivoRepository.findArquivoByAtivo();
                 }else {
-                    String organizacao = usuario.get().getOrganizacao().getNome();
+                    String organizacao = usuario.get().getOrganizacao().getCnpj();
 
                     arquivos = arquivoRepository.findByOrganizacao(organizacao);
                 }

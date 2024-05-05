@@ -23,8 +23,8 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
     @Query(value = "SELECT a FROM Arquivo a where a.nomeArquivo = :nomeArquivo and a.organizacao.nome = :orgName")
     Optional<Arquivo> findByNameAndOrganizationName(String nomeArquivo, String orgName);
 
-    @Query("select a from Arquivo a where a.organizacao.nome = :organizacao and a.isAtivo = true")
-    List<Arquivo> findByOrganizacao(String organizacao);
+    @Query("select a from Arquivo a where a.organizacao.cnpj = :cnpj and a.isAtivo = true")
+    List<Arquivo> findByOrganizacao(String cnpj);
 
     @Query("select a from Arquivo a where a.isAtivo = true")
     List<Arquivo> findArquivoByAtivo();
