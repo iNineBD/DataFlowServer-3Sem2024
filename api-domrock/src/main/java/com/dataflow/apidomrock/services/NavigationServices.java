@@ -5,6 +5,7 @@ import com.dataflow.apidomrock.dto.showzones.RequestDadosDTO;
 import com.dataflow.apidomrock.dto.showzones.ResponseNavigationDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
+import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NavigationServices {
@@ -27,9 +29,19 @@ public class NavigationServices {
 
     public ResponseNavigationDTO searchAndShowAccess (RequestDadosDTO request) throws CustomException {
 
-        List<NivelAcesso> usuario = usuarioRepository.getNivelUsuario(request.usuario());
+        Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
+        if (user.isEmpty()) {
+            throw new CustomException("Ocorreu um erro inesperado ao buscar o arquivo.", HttpStatus.BAD_REQUEST);
+        }
 
-        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+        Optional<Arquivo> arquivoBD = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), user.get().getOrganizacao().getCnpj());
+        if (arquivoBD.isEmpty()){
+            throw new CustomException("Ocorreu um erro inesperado ao buscar o arquivo.", HttpStatus.BAD_REQUEST);
+        }
+
+        Arquivo arquivo = arquivoBD.get();
+
+        List<NivelAcesso> usuario = usuarioRepository.getNivelUsuario(request.usuario());
 
         boolean acessoLz = false;
         boolean acessoBz = false;
