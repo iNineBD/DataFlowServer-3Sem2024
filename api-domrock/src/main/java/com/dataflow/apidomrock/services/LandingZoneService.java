@@ -130,6 +130,19 @@ public class LandingZoneService {
             nomes_colunas.put(metadadoJson.getNome(), Boolean.TRUE);
             newMetadado.setDescricao(metadadoJson.getDescricao());
             if (metadadoJson.getValorPadrao() == null || metadadoJson.getValorPadrao().equals("")) todos_metados_com_vlr_padrao = false;
+
+            if (metadadoJson.getNomeTipo().equals("Inteiro")){
+                if (!Validate.isInteger(metadadoJson.getValorPadrao())){
+                    throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número, pois o mesmo é INTEIRO", HttpStatus.BAD_REQUEST);
+                }
+            }
+
+            if (metadadoJson.getNomeTipo().equals("Decimal")){
+                if (!Validate.isDouble(metadadoJson.getValorPadrao())){
+                    throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número decimal, pois o mesmo é DECIMAL", HttpStatus.BAD_REQUEST);
+                }
+            }
+
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
 
             // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
@@ -158,17 +171,7 @@ public class LandingZoneService {
                     throw new CustomException("O campo [Tamanho Máximo] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número inteiro", HttpStatus.BAD_REQUEST);
                 }
 
-                if (metadadoJson.getNomeTipo().equals("Inteiro")){
-                    if (restricaoJson.getNome().equals("valorPadrao") && !Validate.isInteger(restricaoJson.getValor())){
-                        throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número, pois o mesmo é INTEIRO", HttpStatus.BAD_REQUEST);
-                    }
-                }
 
-                if (metadadoJson.getNomeTipo().equals("Decimal")){
-                    if (restricaoJson.getNome().equals("valorPadrao") && !Validate.isDouble(restricaoJson.getValor())){
-                        throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número decimal, pois o mesmo é DECIMAL", HttpStatus.BAD_REQUEST);
-                    }
-                }
 
                 // SE A RESTRIÇÃO ESTIVER VAZIA, O PROGRAMA CONTINUA
                 if (restricaoJson.getValor() == null || restricaoJson.getValor().isEmpty()){

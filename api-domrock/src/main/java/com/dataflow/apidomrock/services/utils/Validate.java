@@ -53,7 +53,7 @@ public class Validate {
             if (Character.isDigit(c)) {
                 continue;
             }
-            if (c == '.' && !decimalPointEncountered) {
+            if ((c == '.' || c == ',') && !decimalPointEncountered) {
                 decimalPointEncountered = true;
                 continue;
             }
