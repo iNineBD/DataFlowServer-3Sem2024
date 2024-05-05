@@ -42,6 +42,30 @@ public class Validate {
         return true;
     }
 
+    public static Boolean isDouble(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        boolean decimalPointEncountered = false;
+        int length = str.length();
+        for (int i = 0; i < length; i++) {
+            char c = str.charAt(i);
+            if (Character.isDigit(c)) {
+                continue;
+            }
+            if (c == '.' && !decimalPointEncountered) {
+                decimalPointEncountered = true;
+                continue;
+            }
+            if (c == '-' && i == 0) {
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
+
 
     public static boolean validarCNPJ(String cnpj) {
 

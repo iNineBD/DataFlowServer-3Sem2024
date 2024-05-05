@@ -153,9 +153,23 @@ public class LandingZoneService {
                         continue;
                     }
                 }
+
                 if (restricaoJson.getNome().equals("tamanhoMaximo") && !Validate.isInteger(restricaoJson.getValor())){
                     throw new CustomException("O campo [Tamanho Máximo] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número inteiro", HttpStatus.BAD_REQUEST);
                 }
+
+                if (metadadoJson.getNomeTipo().equals("Inteiro")){
+                    if (restricaoJson.getNome().equals("valorPadrao") && !Validate.isInteger(restricaoJson.getValor())){
+                        throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número, pois o mesmo é INTEIRO", HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                if (metadadoJson.getNomeTipo().equals("Decimal")){
+                    if (restricaoJson.getNome().equals("valorPadrao") && !Validate.isDouble(restricaoJson.getValor())){
+                        throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número decimal, pois o mesmo é DECIMAL", HttpStatus.BAD_REQUEST);
+                    }
+                }
+
                 // SE A RESTRIÇÃO ESTIVER VAZIA, O PROGRAMA CONTINUA
                 if (restricaoJson.getValor() == null || restricaoJson.getValor().isEmpty()){
                     continue;
