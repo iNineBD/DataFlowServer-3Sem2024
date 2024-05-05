@@ -6,9 +6,12 @@ import com.dataflow.apidomrock.dto.homedados.ResponseArquivosDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
 import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.enums.Acao;
+import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
-import com.dataflow.apidomrock.services.utils.Niveis;
+import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
+import com.dataflow.apidomrock.services.utils.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,102 +32,52 @@ public class HomeService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    Logger logger;
 
-    public String getNivel(String emailUsuario){
-        NivelAcesso nivel = usuarioRepository.getNivelUsuario(emailUsuario);
+    public List<NivelAcesso> getNivel(String emailUsuario){
+        List<NivelAcesso> nivel = usuarioRepository.getNivelUsuario(emailUsuario);
 
-        return nivel.getNivel().toUpperCase();
+        return nivel;
 
     }
 
     public List<Arquivo> getArquivosUsuario(String emailUsuario){
-        Optional<Usuario> usuario = usuarioRepository.findById(emailUsuario);
-        String nivel = getNivel(emailUsuario);
+        Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(emailUsuario);
+        List<NivelAcesso> nivel = getNivel(emailUsuario);
+        List<Arquivo> arquivos = new ArrayList<>();
         if(usuario.isPresent()){
-            if(nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
-                return arquivoRepository.findAll();
-            }else {
-                String organizacao = usuario.get().getOrganizacao().getNome();
+            int qtdNivelAcesso = nivel.size();
+            for(int i = 0; i < qtdNivelAcesso; i++){
+                if(nivel.get(i).getNivel().equals(NivelAcessoEnum.MASTER.toString()) || nivel.get(i).getNivel().equals(NivelAcessoEnum.FULL.toString())){
+                    arquivos = arquivoRepository.findArquivoByAtivo();
+                }else {
+                    String organizacao = usuario.get().getOrganizacao().getCnpj();
 
-                return arquivoRepository.findByOrganizacao(organizacao);
+                    arquivos = arquivoRepository.findByOrganizacao(organizacao);
+                }
             }
-
         }else{
             throw new RuntimeException("Usuário não cadastrado");
         }
+
+        return arquivos;
     }
 
-    public List<ResponseArquivosDTO> arquivosLanding(String nivel, List<Arquivo> arquivos){
-        int qtdArquivos = arquivos.size();
-        List<Arquivo> arq = new ArrayList<>();
-        List<ResponseArquivosDTO> arquivosLz = new ArrayList<>();
+    public List<ResponseArquivosDTO> arquivosHome(List<Arquivo> arquivos){
 
-        if(nivel.equals(Niveis.LZ.toString()) || nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
-            for (int i = 0; i < qtdArquivos; i++) {
-                if (arquivos.get(i).getStatus().getId() == 1 || arquivos.get(i).getStatus().getId() == 98) {
-                    arq.add(arquivos.get(i));
-                }
-            }
-
-            arquivosLz = arq.stream()
+        List<ResponseArquivosDTO> arq = arquivos.stream()
                     .map(ResponseArquivosDTO::new)
                     .collect(Collectors.toList());
 
-            return arquivosLz;
-        }else {
-            return arquivosLz;
-        }
+            return arq;
 
-    }
-
-    public List<ResponseArquivosDTO> arquivosBronze(String nivel, List<Arquivo> arquivos){
-        int qtdArquivos = arquivos.size();
-        List<Arquivo> arq = new ArrayList<>();
-        List<ResponseArquivosDTO> arquivosBz = new ArrayList<>();
-
-        if(nivel.equals(Niveis.B.toString()) || nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
-            for (int i = 0; i < qtdArquivos; i++){
-                if(arquivos.get(i).getStatus().getId() == 2 || arquivos.get(i).getStatus().getId() == 3 || arquivos.get(i).getStatus().getId() == 99){
-                    arq.add(arquivos.get(i));
-                }
-            }
-
-            arquivosBz = arq.stream()
-                    .map(ResponseArquivosDTO::new)
-                    .collect(Collectors.toList());
-
-            return arquivosBz;
-        }else{
-            return arquivosBz;
-        }
-    }
-
-    public List<ResponseArquivosDTO> arquivosSilver(String nivel, List<Arquivo> arquivos){
-        int qtdArquivos = arquivos.size();
-        List<Arquivo> arq = new ArrayList<>();
-        List<ResponseArquivosDTO> arquivosSz = new ArrayList<>();
-
-        if(nivel.equals(Niveis.S.toString()) || nivel.equals(Niveis.MASTER.toString()) || nivel.equals(Niveis.FULL.toString())){
-            for (int i = 0; i < qtdArquivos; i++){
-                if(arquivos.get(i).getStatus().getId() == 4 || arquivos.get(i).getStatus().getId() == 5){
-                    arq.add(arquivos.get(i));
-                }
-            }
-
-            arquivosSz = arq.stream()
-                    .map(ResponseArquivosDTO::new)
-                    .collect(Collectors.toList());
-
-            return arquivosSz;
-        }else{
-            return arquivosSz;
-        }
     }
 
     @Transactional(rollbackFor = CustomException.class)
     public void deleteFile(RequestBodyDeleteFileDTO request) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Usuario> userBD = usuarioRepository.findById(request.getUsuario());
+        Optional<Usuario> userBD = usuarioRepository.findByEmailCustom(request.getUsuario());
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
         if (userBD.isEmpty()) {
             throw new CustomException("Usuário [" + request.getUsuario() + "] não existe", HttpStatus.NOT_FOUND);
@@ -132,22 +85,26 @@ public class HomeService {
 
         boolean hasPermission = false;
         for (NivelAcesso nvlAccess: userBD.get().getNiveisAcesso()) {
-            if (Objects.equals(nvlAccess.getNivel(), "MASTER")){
+            if (Objects.equals(nvlAccess.getNivel(), NivelAcessoEnum.MASTER.toString()) || Objects.equals(nvlAccess.getNivel(), NivelAcessoEnum.FULL.toString())){
                 hasPermission = true;
             }
         }
-
         if (!hasPermission){
             throw new CustomException("Usuário [" + request.getUsuario() + "] não tem permissão para executar a ação", HttpStatus.UNAUTHORIZED);
         }
 
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getNome());
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganizationName(request.getNomeArquivo(), request.getUsuarioOrg());
         if (arqBD.isEmpty()) {
             //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
             throw new CustomException("Arquivo [" + request.getNomeArquivo() + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]", HttpStatus.NOT_FOUND);
         }
 
-        arquivoRepository.delete(arqBD.get());
+        Arquivo arq = arqBD.get();
+        arq.setAtivo(false);
+        arquivoRepository.save(arq);
+
+
+        logger.insert(userBD.get().getId(), arq.getId(), "Delete file", Logger.getEstagioByStatus(arq.getStatus()), Acao.EXCLUIR);
     }
 }

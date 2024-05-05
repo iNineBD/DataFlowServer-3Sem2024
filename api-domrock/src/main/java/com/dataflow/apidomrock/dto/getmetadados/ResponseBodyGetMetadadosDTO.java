@@ -13,6 +13,7 @@ import java.util.List;
 public class ResponseBodyGetMetadadosDTO {
     private String usuario;
     private String nomeArquivo;
+    private Integer idArquivo;
     private List<MetadataDTO> metadados;
 }
 

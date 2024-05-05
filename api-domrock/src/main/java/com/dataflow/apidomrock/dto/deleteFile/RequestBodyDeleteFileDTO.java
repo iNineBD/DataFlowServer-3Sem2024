@@ -10,4 +10,5 @@ import lombok.*;
 public class RequestBodyDeleteFileDTO {
     private String usuario;
     private String nomeArquivo;
+    private String usuarioOrg;
 }
