@@ -111,7 +111,7 @@ public class RegisterServices {
                 throw new CustomException("Este usuario ja possui cadastro", HttpStatus.NOT_FOUND);
             }
         } else {
-            throw new CustomException("Usuario " + completionRegister.getEmailUsuario() + "não foi cadastrado previamente", HttpStatus.NOT_FOUND);
+            throw new CustomException("Usuário " + completionRegister.getEmailUsuario() + " não foi cadastrado previamente", HttpStatus.NOT_FOUND);
         }
     }
 }
