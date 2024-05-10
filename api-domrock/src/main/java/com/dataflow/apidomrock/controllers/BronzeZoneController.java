@@ -53,7 +53,7 @@ public class BronzeZoneController {
 
     @PostMapping("/saveHash")
     public ResponseEntity<ResponseCustomDTO<String>> saveHash(@RequestBody RequestHashDTO request) throws CustomException {
-        bronzeZoneService.save(request);
+        bronzeZoneService.save(request,false);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",null));
     }
 
