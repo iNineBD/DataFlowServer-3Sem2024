@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestFileAnalyticDTO {
-    private String fileName;
-    private String orgName;
+    private String searchType;
+    private String cnpj;
 }
