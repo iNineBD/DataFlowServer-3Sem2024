@@ -2,13 +2,17 @@ package com.dataflow.apidomrock.controllers;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
-import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
-import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
+import com.dataflow.apidomrock.dto.gethash.ResponseHashToSilverDTO;
+import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
+import com.dataflow.apidomrock.dto.visualizeHash.ResponseHashDTO;
+import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.services.SilverZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/silver")
@@ -19,8 +23,9 @@ public class SilverZoneController {
     SilverZoneService silverZoneService;
 
     @PostMapping( "/search")
-    public ResponseEntity<ResponseCustomDTO<ResponseBodyGetMetadadosDTO>> getHash(@RequestBody RequestBodyGetMetadadosDTO request) throws CustomException {
-        ResponseBodyGetMetadadosDTO response = globalServices.getMetadadosInDatabase(request.getUsuario(), request.getNomeArquivo());
+    public ResponseEntity<ResponseCustomDTO<ResponseHashToSilverDTO>> getHash(@RequestBody ResquestHashToSilverDTO request) throws CustomException {
+        List<String> hash = silverZoneService.getMetadadosNoHash(request);
+        ResponseHashToSilverDTO response = new ResponseHashToSilverDTO(request.nomeArquivo(),request.usuario(),hash);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 
