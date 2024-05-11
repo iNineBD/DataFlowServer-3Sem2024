@@ -40,16 +40,16 @@ public class SilverZoneService {
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
         if (request.salvar()) {
-            Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
-            arq.setStatus(StatusArquivo.SILVER_ZONE.getDescricao());
-            arquivoRepository.save(arq);
-            logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.S, Acao.APROVAR);
+            Optional<Arquivo> arq =  arquivoRepository.findByNameAndOrganization(request.arquivo(), request.cnpj());
+            arq.get().setStatus(StatusArquivo.SILVER_ZONE.getDescricao());
+            arquivoRepository.save(arq.get());
+            logger.insert(user.get().getId(),arq.get().getId(),request.obs(), Estagio.S, Acao.APROVAR);
         } else {
             if(!request.obs().isEmpty()){
-                Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
-                arq.setStatus(StatusArquivo.NAO_APROVADO_PELA_SILVER.getDescricao());
-                arquivoRepository.save(arq);
-                logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.S, Acao.REPROVAR);
+                Optional<Arquivo> arq =  arquivoRepository.findByNameAndOrganization(request.arquivo(), request.cnpj());
+                arq.get().setStatus(StatusArquivo.NAO_APROVADO_PELA_SILVER.getDescricao());
+                arquivoRepository.save(arq.get());
+                logger.insert(user.get().getId(),arq.get().getId(),request.obs(), Estagio.S, Acao.REPROVAR);
             }else{
                 throw new CustomException("Você não pode reprovar sem o preenchimento da observação", HttpStatus.BAD_REQUEST);
             }
@@ -60,7 +60,7 @@ public class SilverZoneService {
 
         Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.usuario());
 
-        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(),usuario.get().getOrganizacao().getCnpj());
+        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpjOrg());
 
         if(usuario.isEmpty()){
             throw new CustomException("Ocorreu um erro inesperado ao buscar o usuario", HttpStatus.BAD_REQUEST);
