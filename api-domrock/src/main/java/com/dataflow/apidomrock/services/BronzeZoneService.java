@@ -108,9 +108,9 @@ public class BronzeZoneService {
                     arquivo.setStatus(StatusArquivo.AGUARDANDO_APROVACAO_SILVER.getDescricao());
                     arquivoRepository.save(arquivo);
                     if(isUpdate){
-                        logger.insert(user.get().getId(), arquivo.getId(), "O metadado " + metadataRepository.findById(idMetadado).get().getNome() + " foi inserido no hash", Estagio.B, Acao.ALTERAR);
+                        logger.insert(user.get().getId(), arquivo.getId(), "O metadado " + metadataRepository.findById(idMetadado).get().getNome() + " foi inserido no hash", Estagio.B, Acao.INSERIR);
                     }else{
-                        logger.insert(user.get().getId(), arquivo.getId(), "O hash foi criado com o metadado " + metadataRepository.findById(idMetadado).get().getNome(), Estagio.B, Acao.ALTERAR);
+                        logger.insert(user.get().getId(), arquivo.getId(), "O novo metadado para compor o hash é o " + metadataRepository.findById(idMetadado).get().getNome(), Estagio.B, Acao.ALTERAR);
                     }
                 }
             }
