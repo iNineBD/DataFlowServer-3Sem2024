@@ -132,13 +132,13 @@ public class LandingZoneService {
             if (metadadoJson.getValorPadrao() == null || metadadoJson.getValorPadrao().equals("")) todos_metados_com_vlr_padrao = false;
 
             if (metadadoJson.getNomeTipo().equals("Inteiro")){
-                if (!Validate.isInteger(metadadoJson.getValorPadrao())){
+                if (!Validate.isInteger(metadadoJson.getValorPadrao()) && metadadoJson.getValorPadrao() != null){
                     throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número, pois o mesmo é INTEIRO", HttpStatus.BAD_REQUEST);
                 }
             }
 
             if (metadadoJson.getNomeTipo().equals("Decimal")){
-                if (!Validate.isDouble(metadadoJson.getValorPadrao())){
+                if (!Validate.isDouble(metadadoJson.getValorPadrao()) && metadadoJson.getValorPadrao() != null){
                     throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número decimal, pois o mesmo é DECIMAL", HttpStatus.BAD_REQUEST);
                 }
             }
