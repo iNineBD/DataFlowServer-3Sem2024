@@ -3,6 +3,7 @@ package com.dataflow.apidomrock.controllers;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.gethash.ResponseHashToSilverDTO;
+import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
 import com.dataflow.apidomrock.dto.visualizeHash.ResponseHashDTO;
@@ -24,7 +25,7 @@ public class SilverZoneController {
 
     @PostMapping( "/search")
     public ResponseEntity<ResponseCustomDTO<ResponseHashToSilverDTO>> getHash(@RequestBody ResquestHashToSilverDTO request) throws CustomException {
-        List<String> hash = silverZoneService.getMetadadosNoHash(request);
+        List<ResponseNomeMetadataDTO> hash = silverZoneService.getMetadadosNoHash(request);
         ResponseHashToSilverDTO response = new ResponseHashToSilverDTO(request.nomeArquivo(),request.usuario(),hash);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }

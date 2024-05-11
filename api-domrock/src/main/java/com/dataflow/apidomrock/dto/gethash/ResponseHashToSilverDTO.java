@@ -10,5 +10,5 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ResponseHashToSilverDTO(@JsonAlias("nomeArquivo") String nomeArquivo,
                                       @JsonAlias("usuario") String usuario,
-                                      @JsonAlias("metadados") List<String> metadadosNoHash) {
+                                      @JsonAlias("metadados") List<ResponseNomeMetadataDTO> metadadosNoHash) {
 }

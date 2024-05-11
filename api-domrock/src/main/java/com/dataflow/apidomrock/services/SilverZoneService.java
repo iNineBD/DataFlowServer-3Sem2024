@@ -2,6 +2,7 @@ package com.dataflow.apidomrock.services;
 
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
+import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
 import com.dataflow.apidomrock.entities.database.Arquivo;
@@ -54,7 +55,7 @@ public class SilverZoneService {
         }
     }
 
-    public List<String> getMetadadosNoHash(ResquestHashToSilverDTO request) throws CustomException {
+    public List<ResponseNomeMetadataDTO> getMetadadosNoHash(ResquestHashToSilverDTO request) throws CustomException {
 
         Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.usuario());
 
@@ -67,16 +68,11 @@ public class SilverZoneService {
             if(arquivo.isEmpty()){
                 throw new CustomException("Ocorreu um erro inesperado ao buscar o arquivo", HttpStatus.BAD_REQUEST);
             }else {
-                List<Metadata> metadadosHash = arquivoRepository.findByMetadataHash(arquivo.get().getId());
+                List<Metadata> metadadosNoHash = arquivoRepository.findByMetadataHash(arquivo.get().getId());
 
-                List<String> metadadosNoHash = new ArrayList<>();
-                int qtdMetadadosHash = metadadosHash.size();
+                List<ResponseNomeMetadataDTO> metadados = metadadosNoHash.stream().map(ResponseNomeMetadataDTO::new).toList();
 
-                for(int i = 0; i < qtdMetadadosHash; i++){
-                    metadadosNoHash.add(metadadosHash.get(i).getNome());
-                }
-
-                return metadadosNoHash;
+                return metadados;
             }
 
         }
