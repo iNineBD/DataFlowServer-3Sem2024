@@ -6,6 +6,7 @@ import com.dataflow.apidomrock.dto.gethash.ResponseHashToSilverDTO;
 import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
+import com.dataflow.apidomrock.dto.setstatussz.RequestBodySetStatusSz;
 import com.dataflow.apidomrock.dto.visualizeHash.ResponseHashDTO;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.services.SilverZoneService;
@@ -31,7 +32,7 @@ public class SilverZoneController {
     }
 
     @PutMapping("/validation")
-    public ResponseEntity<ResponseCustomDTO<String>> setStatusSz(@RequestBody RequestBodySetStatusBzDTO request) throws CustomException {
+    public ResponseEntity<ResponseCustomDTO<String>> setStatusSz(@RequestBody RequestBodySetStatusSz request) throws CustomException {
         silverZoneService.updateStatus(request);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }

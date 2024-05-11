@@ -5,6 +5,7 @@ import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
+import com.dataflow.apidomrock.dto.setstatussz.RequestBodySetStatusSz;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Usuario;
@@ -34,7 +35,7 @@ public class SilverZoneService {
     @Autowired
     Logger logger;
 
-    public void updateStatus (RequestBodySetStatusBzDTO request) throws CustomException {
+    public void updateStatus (RequestBodySetStatusSz request) throws CustomException {
 
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
