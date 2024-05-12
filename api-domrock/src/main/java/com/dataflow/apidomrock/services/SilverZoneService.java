@@ -17,6 +17,7 @@ import com.dataflow.apidomrock.services.utils.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,23 +34,27 @@ public class SilverZoneService {
     @Autowired
     Logger logger;
 
+    @Transactional(rollbackFor = CustomException.class)
     public void updateStatus (RequestBodySetStatusSz request) throws CustomException {
 
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
-
-        if (request.salvar()) {
-            Optional<Arquivo> arq =  arquivoRepository.findByNameAndOrganization(request.arquivo(), request.cnpj());
-            arq.get().setStatus(StatusArquivo.SILVER_ZONE.getDescricao());
-            arquivoRepository.save(arq.get());
-            logger.insert(user.get().getId(),arq.get().getId(),request.obs(), Estagio.S, Acao.APROVAR);
-        } else {
-            if(!request.obs().isEmpty()){
+        if(user.isEmpty()){
+            throw new CustomException("Ocorreu um erro inesperado ao buscar o usuario", HttpStatus.BAD_REQUEST);
+        }else{
+            if (request.salvar()) {
                 Optional<Arquivo> arq =  arquivoRepository.findByNameAndOrganization(request.arquivo(), request.cnpj());
-                arq.get().setStatus(StatusArquivo.NAO_APROVADO_PELA_SILVER.getDescricao());
+                arq.get().setStatus(StatusArquivo.SILVER_ZONE.getDescricao());
                 arquivoRepository.save(arq.get());
-                logger.insert(user.get().getId(),arq.get().getId(),request.obs(), Estagio.S, Acao.REPROVAR);
-            }else{
-                throw new CustomException("Você não pode reprovar sem o preenchimento da observação", HttpStatus.BAD_REQUEST);
+                logger.insert(user.get().getId(),arq.get().getId(),request.obs(), Estagio.S, Acao.APROVAR);
+            } else {
+                if(!request.obs().isEmpty()){
+                    Optional<Arquivo> arq =  arquivoRepository.findByNameAndOrganization(request.arquivo(), request.cnpj());
+                    arq.get().setStatus(StatusArquivo.NAO_APROVADO_PELA_SILVER.getDescricao());
+                    arquivoRepository.save(arq.get());
+                    logger.insert(user.get().getId(),arq.get().getId(),request.obs(), Estagio.S, Acao.REPROVAR);
+                }else{
+                    throw new CustomException("Você não pode reprovar sem o preenchimento da observação", HttpStatus.BAD_REQUEST);
+                }
             }
         }
     }
