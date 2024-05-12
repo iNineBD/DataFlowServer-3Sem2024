@@ -1,6 +1,7 @@
 package com.dataflow.apidomrock.repository;
 
 import com.dataflow.apidomrock.entities.database.NivelAcesso;
+import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Query("select u.token from Usuario u where u.token = :token")
     Optional<Usuario> findByToken(String token);
     UserDetails findByEmail(String email);
+
+    Integer countAllByOrganizacao(Organizacao organizacao);
 }
