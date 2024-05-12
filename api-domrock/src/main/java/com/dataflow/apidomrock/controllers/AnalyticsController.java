@@ -2,6 +2,8 @@ package com.dataflow.apidomrock.controllers;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.fileAllOrganizations.OrganizationDTO;
+import com.dataflow.apidomrock.dto.fileAnalytics.MetricsFilesDTO;
+import com.dataflow.apidomrock.dto.fileAnalytics.MetricsUsersDTO;
 import com.dataflow.apidomrock.dto.fileAnalytics.RequestFileAnalyticDTO;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.fileAnalytics.ResponseFileAnalyticDTO;
@@ -22,8 +24,13 @@ public class AnalyticsController {
     private AnalyticsService analyticsService;
 
     @PostMapping("/files")
-    public ResponseEntity<ResponseCustomDTO<ResponseFileAnalyticDTO>> fileAnalytc(@RequestBody RequestFileAnalyticDTO request) throws CustomException {
+    public ResponseEntity<ResponseCustomDTO<ResponseFileAnalyticDTO<MetricsFilesDTO>>> fileAnalytc(@RequestBody RequestFileAnalyticDTO request) throws CustomException {
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", analyticsService.fileAnalytc(request.getSearchType(), request.getCnpj())));
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<ResponseCustomDTO<ResponseFileAnalyticDTO<MetricsUsersDTO>>> findAllUsers() throws CustomException {
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", new ResponseFileAnalyticDTO<>(analyticsService.findAllUsers())));
     }
 
     @GetMapping("/organizations")

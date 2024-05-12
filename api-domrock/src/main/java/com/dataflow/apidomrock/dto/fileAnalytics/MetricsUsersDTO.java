@@ -9,7 +9,7 @@ import java.util.Map;
 @Getter
 @Setter
 @AllArgsConstructor
-public class Metrics {
+public class MetricsUsersDTO {
     private String organizacao;
-    private Map<String, Integer> etapas;
+    private Integer qtd;
 }

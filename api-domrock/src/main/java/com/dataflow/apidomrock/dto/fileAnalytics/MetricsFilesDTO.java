@@ -2,17 +2,14 @@ package com.dataflow.apidomrock.dto.fileAnalytics;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
-public class ResponseFileAnalyticDTO <T> {
-
-    private List<T> metricas;
-
+public class MetricsFilesDTO {
+    private String organizacao;
+    private Map<String, Integer> etapas;
 }
