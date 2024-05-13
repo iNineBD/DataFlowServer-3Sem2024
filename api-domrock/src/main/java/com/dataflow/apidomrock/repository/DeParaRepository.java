@@ -12,6 +12,6 @@ public interface DeParaRepository extends JpaRepository<DePara, Integer> {
 
     @Transactional
     @Modifying
-    @Query("insert into depara(metadado_id,de,para) values(:idMetadado,:de,:para)")
+    @Query(value = "insert into depara(metadado_id,de,para) values(?1,?2,?3)",nativeQuery = true)
     void saveDePara(int idMetadado, String de, String para);
 }
