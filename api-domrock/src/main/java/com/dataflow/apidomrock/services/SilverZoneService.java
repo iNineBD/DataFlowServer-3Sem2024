@@ -6,6 +6,8 @@ import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
 import com.dataflow.apidomrock.dto.getmetadadostotepara.MetadadosDePara;
 import com.dataflow.apidomrock.dto.getmetadadostotepara.RequestMetaToDePara;
+import com.dataflow.apidomrock.dto.savedepara.MetadadosToDePara;
+import com.dataflow.apidomrock.dto.savedepara.RequestSaveDePara;
 import com.dataflow.apidomrock.dto.setstatussz.RequestBodySetStatusSz;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
@@ -14,6 +16,8 @@ import com.dataflow.apidomrock.entities.enums.Acao;
 import com.dataflow.apidomrock.entities.enums.Estagio;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
+import com.dataflow.apidomrock.repository.DeParaRepository;
+import com.dataflow.apidomrock.repository.MetadataRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.utils.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,12 @@ public class SilverZoneService {
 
     @Autowired
     ArquivoRepository arquivoRepository;
+
+    @Autowired
+    MetadataRepository metadataRepository;
+
+    @Autowired
+    DeParaRepository deParaRepository;
 
     @Autowired
     Logger logger;
@@ -123,8 +133,41 @@ public class SilverZoneService {
                 return metadadosDisponiveis;
             }
         }
+    }
+
+    @Transactional(rollbackFor = CustomException.class)
+    public void saveDePara(RequestSaveDePara request) throws CustomException{
+
+        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
+
+        Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.email());
+
+        if(usuario.isEmpty()){
+            throw new CustomException("Ocorreu um erro ao buscar o usuario",HttpStatus.BAD_REQUEST);
+        }else {
+            if(arquivo.isEmpty()){
+                throw new CustomException("Ocorreu um erro ao buscar o arquivo",HttpStatus.BAD_REQUEST);
+            }else {
+
+                List<MetadadosToDePara> metadados = request.metadados();
+
+                int qtdMetadado = metadados.size();
 
 
+                for(int i = 0; i < qtdMetadado; i++){
+                    int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.get().getId(),metadados.get(i).nome());
+                    int qtdDePara = metadados.get(i).deParas().size();
+
+                    for(int j = 0; j < qtdDePara; j++){
+                        String de = metadados.get(i).deParas().get(j).de();
+                        String para = metadados.get(i).deParas().get(j).para();
+
+                        deParaRepository.saveDePara(idMetadado, de, para);
+                    }
+                    logger.insert(usuario.get().getId(),arquivo.get().getId(),"Inserido de para do metadado" + metadados.get(i).nome(),Estagio.S, Acao.INSERIR);
+                }
+            }
+        }
     }
 
 }

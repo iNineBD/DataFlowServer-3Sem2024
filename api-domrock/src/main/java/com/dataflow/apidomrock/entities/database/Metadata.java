@@ -36,6 +36,6 @@ public class Metadata {
     private List<Restricao> restricoes;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_metadado_dePara")
+    @JoinColumn(name = "metadado_id")
     private List<DePara> deParas;
 }

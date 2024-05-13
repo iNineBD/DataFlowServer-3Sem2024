@@ -23,7 +23,7 @@ public class DePara {
     private String para;
 
     @ManyToOne
-    @JoinColumn(name = "id_metadado_dePara")
+    @JoinColumn(name = "metadado_id")
     private Metadata metadado;
 
 
