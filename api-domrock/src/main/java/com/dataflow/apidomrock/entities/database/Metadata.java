@@ -34,4 +34,8 @@ public class Metadata {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_metadado")
     private List<Restricao> restricoes;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_metadado_dePara")
+    private List<DePara> deParas;
 }
