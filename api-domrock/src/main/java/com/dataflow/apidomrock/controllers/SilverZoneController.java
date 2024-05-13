@@ -5,6 +5,9 @@ import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.gethash.ResponseHashToSilverDTO;
 import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
+import com.dataflow.apidomrock.dto.getmetadadostotepara.MetadadosDePara;
+import com.dataflow.apidomrock.dto.getmetadadostotepara.RequestMetaToDePara;
+import com.dataflow.apidomrock.dto.getmetadadostotepara.ResponseMetaToDePara;
 import com.dataflow.apidomrock.dto.setstatussz.RequestBodySetStatusSz;
 import com.dataflow.apidomrock.services.SilverZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,14 @@ public class SilverZoneController {
     public ResponseEntity<ResponseCustomDTO<String>> setStatusSz(@RequestBody RequestBodySetStatusSz request) throws CustomException {
         silverZoneService.updateStatus(request);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ResponseCustomDTO<ResponseMetaToDePara>> getMetadadosToDePara(@RequestBody RequestMetaToDePara request) throws CustomException {
+        List<MetadadosDePara> metadadosNoDePara = silverZoneService.getMetadadosToDePara(request);
+        ResponseMetaToDePara response = new ResponseMetaToDePara(request.email(),request.arquivo(),request.cnpj(),metadadosNoDePara);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",response));
+
     }
 
 }
