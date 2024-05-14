@@ -2,6 +2,7 @@ package com.dataflow.apidomrock.services;
 
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
+import com.dataflow.apidomrock.dto.editdepara.RequestEditDePara;
 import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
 import com.dataflow.apidomrock.dto.getmetadadostotepara.MetadadosDePara;
@@ -209,6 +210,34 @@ public class SilverZoneService {
 
             }
         }
+    }
+
+    @Transactional(rollbackFor = CustomException.class)
+    public void editDePara(RequestEditDePara request) throws CustomException{
+
+        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(),request.cnpj());
+
+        Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.email());
+
+        if(usuario.isEmpty()){
+            throw new CustomException("Ocorreu um erro ao buscar o usuário",HttpStatus.BAD_REQUEST);
+        }else {
+            if (arquivo.isEmpty()){
+                throw new CustomException("Ocorreu um erro ao buscar o arquivo",HttpStatus.BAD_REQUEST);
+            }else {
+                List<Metadata> metadata = metadataRepository.findByArquivoAndMetadadoIsAtivo(arquivo.get().getId());
+                int qtdMetadados = metadata.size();
+
+                for(int i = 0; i <qtdMetadados; i++){
+                    int idMetadado = metadata.get(i).getID();
+                    deParaRepository.deleteDePara(idMetadado);
+                }
+
+                RequestSaveDePara requestSaveDePara = new RequestSaveDePara(request);
+                saveDePara(requestSaveDePara);
+            }
+        }
+
     }
 
 }

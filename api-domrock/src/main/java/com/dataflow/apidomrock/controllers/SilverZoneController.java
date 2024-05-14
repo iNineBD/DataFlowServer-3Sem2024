@@ -2,6 +2,7 @@ package com.dataflow.apidomrock.controllers;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
+import com.dataflow.apidomrock.dto.editdepara.RequestEditDePara;
 import com.dataflow.apidomrock.dto.gethash.ResponseHashToSilverDTO;
 import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
@@ -60,7 +61,12 @@ public class SilverZoneController {
         List<MetadadosDeParaVisualize> metadadosNoDePara = silverZoneService.visualizeDePara(request);
         ResponseDeParas response = new ResponseDeParas(request.email(),request.arquivo(),request.cnpj(),metadadosNoDePara);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso",response));
+    }
 
+    @PostMapping("/edit")
+    public ResponseEntity<ResponseCustomDTO<String>> editDePara(@RequestBody RequestEditDePara request) throws CustomException {
+        silverZoneService.editDePara(request);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamente efetuado com sucesso", null));
     }
 
 }
