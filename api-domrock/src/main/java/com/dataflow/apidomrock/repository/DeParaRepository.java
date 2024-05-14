@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface DeParaRepository extends JpaRepository<DePara, Integer> {
 
@@ -14,4 +16,7 @@ public interface DeParaRepository extends JpaRepository<DePara, Integer> {
     @Modifying
     @Query(value = "insert into depara(metadado_id,de,para) values(?1,?2,?3)",nativeQuery = true)
     void saveDePara(int idMetadado, String de, String para);
+
+    @Query("select d.de, d.para from depara d where d.id = :idMetadado")
+    List<DePara> findByIdMetadado(int idMetadado);
 }

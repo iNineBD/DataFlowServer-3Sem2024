@@ -9,7 +9,11 @@ import com.dataflow.apidomrock.dto.getmetadadostotepara.RequestMetaToDePara;
 import com.dataflow.apidomrock.dto.savedepara.MetadadosToDePara;
 import com.dataflow.apidomrock.dto.savedepara.RequestSaveDePara;
 import com.dataflow.apidomrock.dto.setstatussz.RequestBodySetStatusSz;
+import com.dataflow.apidomrock.dto.visualizeDePara.DeParasVisualize;
+import com.dataflow.apidomrock.dto.visualizeDePara.MetadadosDeParaVisualize;
+import com.dataflow.apidomrock.dto.visualizeDePara.RequestDadosToDePara;
 import com.dataflow.apidomrock.entities.database.Arquivo;
+import com.dataflow.apidomrock.entities.database.DePara;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.entities.enums.Acao;
@@ -166,6 +170,41 @@ public class SilverZoneService {
                     }
                     logger.insert(usuario.get().getId(),arquivo.get().getId(),"Inserido de para do metadado" + metadados.get(i).nome(),Estagio.S, Acao.INSERIR);
                 }
+            }
+        }
+    }
+
+    public List<MetadadosDeParaVisualize> visualizeDePara(RequestDadosToDePara request) throws CustomException{
+
+        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.arquivo(), request.cnpj());
+
+        Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.email());
+
+        if(usuario.isEmpty()){
+            throw new CustomException("Ocorreu um erro ao buscar o usuário",HttpStatus.BAD_REQUEST);
+        }else {
+            if(arquivo.isEmpty()){
+                throw new CustomException("Ocorreu um erro ao buscar o arquivo",HttpStatus.BAD_REQUEST);
+            }else {
+                List<Metadata> metadadosAtivos = metadataRepository.findByArquivoAndMetadadoIsAtivo(arquivo.get().getId());
+
+                List<MetadadosDeParaVisualize> metadadosDeParas = new ArrayList<>();
+                int qtdMetaAtivos = metadadosAtivos.size();
+
+                for(int i = 0; i < qtdMetaAtivos;i++){
+                    int idMetadado = metadadosAtivos.get(i).getID();
+
+                    List<DePara> lista = deParaRepository.findByIdMetadado(idMetadado);
+
+                    List<DeParasVisualize> deParas = lista.stream().map(DeParasVisualize::new).toList();
+
+                    MetadadosDeParaVisualize temp = new MetadadosDeParaVisualize(deParas,metadadosAtivos.get(i).getNome());
+
+                    metadadosDeParas.add(temp);
+
+                }
+                return metadadosDeParas;
+
             }
         }
     }
