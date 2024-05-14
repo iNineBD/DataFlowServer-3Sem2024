@@ -7,7 +7,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record MetadadosDeParaVisualize(@JsonAlias("nome") String nome,
-                                       @JsonAlias("deParas") List<DeParasVisualize> deParas) {
+                                       @JsonAlias("deParas") List<DeParasVisualize> dePara) {
 
     public MetadadosDeParaVisualize(List<DeParasVisualize> dePara, String nomeMetadado){
         this(nomeMetadado, dePara);

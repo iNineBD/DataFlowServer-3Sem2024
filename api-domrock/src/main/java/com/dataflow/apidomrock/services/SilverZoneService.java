@@ -196,11 +196,13 @@ public class SilverZoneService {
 
                     List<DePara> lista = deParaRepository.findByIdMetadado(idMetadado);
 
-                    List<DeParasVisualize> deParas = lista.stream().map(DeParasVisualize::new).toList();
+                    if(lista.size() > 0){
+                        List<DeParasVisualize> deParas = lista.stream().map(DeParasVisualize::new).toList();
 
-                    MetadadosDeParaVisualize temp = new MetadadosDeParaVisualize(deParas,metadadosAtivos.get(i).getNome());
+                        MetadadosDeParaVisualize temp = new MetadadosDeParaVisualize(deParas,metadadosAtivos.get(i).getNome());
 
-                    metadadosDeParas.add(temp);
+                        metadadosDeParas.add(temp);
+                    }
 
                 }
                 return metadadosDeParas;
