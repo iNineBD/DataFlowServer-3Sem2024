@@ -122,7 +122,10 @@ public class SilverZoneService {
 
                 for (int i = 0; i < qtdMetadados; i++) {
                     for (int j = 0; j < qtdMetadadosNoDePara; j++) {
-                        if (metadados.get(i).getNome().equals(metadadosNoDePara.get(j).nome()) && metadados.get(i).getIsAtivo()) {
+                        if (metadados.get(i).getNome().equals(metadadosNoDePara.get(j).nome()) ) {
+                            metadadosParaExcluir.add(i);
+                        }
+                        if(metadados.get(i).getIsAtivo()){
                             metadadosParaExcluir.add(i);
                         }
                     }
