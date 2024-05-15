@@ -80,7 +80,7 @@ public class BronzeZoneService {
     }
 
     @Transactional(rollbackOn = CustomException.class)
-    public void save(RequestHashDTO request) throws  CustomException{
+    public void save(RequestHashDTO request, Boolean isUpdate) throws  CustomException{
 
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
@@ -107,8 +107,11 @@ public class BronzeZoneService {
                     // Alterando o status do arquivo para validação do parceiro silver
                     arquivo.setStatus(StatusArquivo.AGUARDANDO_APROVACAO_SILVER.getDescricao());
                     arquivoRepository.save(arquivo);
-
-                    logger.insert(user.get().getId(), arquivo.getId(), "insert hash", Estagio.B, Acao.INSERIR);
+                    if(isUpdate){
+                        logger.insert(user.get().getId(), arquivo.getId(), "O metadado " + metadataRepository.findById(idMetadado).get().getNome() + " foi inserido no hash", Estagio.B, Acao.INSERIR);
+                    }else{
+                        logger.insert(user.get().getId(), arquivo.getId(), "O novo metadado para compor o hash é o " + metadataRepository.findById(idMetadado).get().getNome(), Estagio.B, Acao.ALTERAR);
+                    }
                 }
             }
         }else{
@@ -159,11 +162,12 @@ public class BronzeZoneService {
 
                 for( int i = 0; i < qtdMetadados;i++){
                     for(int j = 0; j < qtdMetaNoHash;j++){
-                        if(metaForaDoHash.get(i).getID().equals(metadadosNoHash.get(j).getID())){
-                            remover.add(i);
-                        }if(!metaForaDoHash.get(i).getIsAtivo()){
+                        if(metaForaDoHash.get(i).getID() == (metadadosNoHash.get(j).getID())){
                             remover.add(i);
                         }
+                    }
+                    if(!metaForaDoHash.get(i).getIsAtivo()){
+                        remover.add(i);
                     }
                 }
 
@@ -213,6 +217,6 @@ public class BronzeZoneService {
         arquivoRepository.deleteHash(arquivo.getId());
 
         RequestHashDTO requestNova = new RequestHashDTO(request);
-        save(requestNova);
+        save(requestNova, true);
     }
 }
