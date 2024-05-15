@@ -3,6 +3,7 @@ package com.dataflow.apidomrock.controllers;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.editdepara.RequestEditDePara;
+import com.dataflow.apidomrock.dto.excluirdepara.RequestExcluirDePara;
 import com.dataflow.apidomrock.dto.gethash.ResponseHashToSilverDTO;
 import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
@@ -68,5 +69,11 @@ public class SilverZoneController {
         silverZoneService.editDePara(request);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamente efetuado com sucesso", null));
     }
+
+//    @PostMapping("/excluir")
+//    public ResponseEntity<ResponseCustomDTO<String>> excluirDePara(@RequestBody RequestExcluirDePara request) throws CustomException {
+//        silverZoneService.excluirDePara(request);
+//        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamente efetuado com sucesso", null));
+//    }
 
 }
