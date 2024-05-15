@@ -70,10 +70,10 @@ public class SilverZoneController {
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamente efetuado com sucesso", null));
     }
 
-//    @PostMapping("/excluir")
-//    public ResponseEntity<ResponseCustomDTO<String>> excluirDePara(@RequestBody RequestExcluirDePara request) throws CustomException {
-//        silverZoneService.excluirDePara(request);
-//        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamente efetuado com sucesso", null));
-//    }
+    @PostMapping("/excluir")
+    public ResponseEntity<ResponseCustomDTO<String>> excluirDePara(@RequestBody RequestExcluirDePara request) throws CustomException {
+        silverZoneService.excluirDePara(request);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamente efetuado com sucesso", null));
+    }
 
 }
