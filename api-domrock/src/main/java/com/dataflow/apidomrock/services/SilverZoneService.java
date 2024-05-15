@@ -125,15 +125,15 @@ public class SilverZoneService {
                         if (metadados.get(i).getNome().equals(metadadosNoDePara.get(j).nome()) ) {
                             metadadosParaExcluir.add(i);
                         }
-                        if(!metadados.get(i).getIsAtivo()){
-                            metadadosParaExcluir.add(i);
-                        }
+                    }
+                    if(!metadados.get(i).getIsAtivo()){
+                        metadadosParaExcluir.add(i);
                     }
                 }
 
-                int qtdMetadadosExcluir = metadadosParaExcluir.size();
+                int qtdMetadadosExcluir = metadadosParaExcluir.size() -1;
 
-                for (int i = 0; i < qtdMetadadosExcluir; i++) {
+                for (int i = qtdMetadadosExcluir; i >= 0; i--) {
                     metadados.remove(metadadosParaExcluir.get(i).intValue());
                 }
 
