@@ -125,7 +125,7 @@ public class SilverZoneService {
                         if (metadados.get(i).getNome().equals(metadadosNoDePara.get(j).nome()) ) {
                             metadadosParaExcluir.add(i);
                         }
-                        if(metadados.get(i).getIsAtivo()){
+                        if(!metadados.get(i).getIsAtivo()){
                             metadadosParaExcluir.add(i);
                         }
                     }
