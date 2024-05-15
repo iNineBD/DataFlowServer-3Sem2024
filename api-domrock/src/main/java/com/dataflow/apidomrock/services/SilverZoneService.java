@@ -242,7 +242,7 @@ public class SilverZoneService {
     }
 
     @Transactional(rollbackFor = CustomException.class)
-    public void excluirDepara(RequestExcluirDePara request) throws CustomException {
+    public void excluirDePara(RequestExcluirDePara request) throws CustomException {
 
         Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
 
@@ -259,8 +259,8 @@ public class SilverZoneService {
 
                 for (int i = 0; i < qtdMetadados; i++) {
                     int idMetadado = metadata.get(i).getID();
-                    int
-                    deParaRepository.deleteDePara(idMetadado);
+                    String de = metadata.get(i).getDeParas().get(i).getDe();
+                    deParaRepository.deleteDeParaCustom(idMetadado, de);
                 }
 
             }

@@ -24,4 +24,9 @@ public interface DeParaRepository extends JpaRepository<DePara, Integer> {
     @Modifying
     @Query(value = "delete from depara d where d.metadado_id = ?1", nativeQuery = true)
     void deleteDePara(int idMetado);
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from depara d where d.metadado_id = ?1 and d.de = de", nativeQuery = true)
+    void deleteDeParaCustom(int idMetado, String de);
 }
