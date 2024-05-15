@@ -162,11 +162,12 @@ public class BronzeZoneService {
 
                 for( int i = 0; i < qtdMetadados;i++){
                     for(int j = 0; j < qtdMetaNoHash;j++){
-                        if(metaForaDoHash.get(i).getID().equals(metadadosNoHash.get(j).getID())){
-                            remover.add(i);
-                        }if(!metaForaDoHash.get(i).getIsAtivo()){
+                        if(metaForaDoHash.get(i).getID() == (metadadosNoHash.get(j).getID())){
                             remover.add(i);
                         }
+                    }
+                    if(!metaForaDoHash.get(i).getIsAtivo()){
+                        remover.add(i);
                     }
                 }
 
