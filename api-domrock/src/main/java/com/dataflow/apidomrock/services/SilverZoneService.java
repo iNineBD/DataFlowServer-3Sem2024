@@ -262,8 +262,14 @@ public class SilverZoneService {
 
                 for (int i = 0; i < qtdMetadados; i++) {
                     int idMetadado = metadata.get(i).getID();
-                    String de = metadata.get(i).getDeParas().get(i).getDe();
-                    deParaRepository.deleteDeParaCustom(idMetadado, de);
+                    int qtdDeParas = metadata.get(i).getDeParas().size();
+                    int j = 0;
+                    while(qtdDeParas > j){
+                        String de = metadata.get(i).getDeParas().get(j).getDe();
+
+                        deParaRepository.deleteDeParaCustom(idMetadado, de);
+                        j++;
+                    }
                 }
 
             }
