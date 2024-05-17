@@ -180,12 +180,12 @@ public class SilverZoneService {
                             throw new CustomException("Existe algum valor que o DE é igual ao PARA, por favor revise", HttpStatus.BAD_REQUEST);
                         } else {
                             deParaRepository.saveDePara(idMetadado, de.toUpperCase(), para.toUpperCase());
-                            arquivo.get().setStatus(StatusArquivo.FINALIZADO.getDescricao());
                         }
 
                     }
                     logger.insert(usuario.get().getId(), arquivo.get().getId(), "Inserido de para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.INSERIR);
                 }
+                arquivo.get().setStatus(StatusArquivo.FINALIZADO.getDescricao());
             }
         }
     }
