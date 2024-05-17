@@ -180,6 +180,7 @@ public class SilverZoneService {
                             throw new CustomException("Existe algum valor que o DE é igual ao PARA, por favor revise", HttpStatus.BAD_REQUEST);
                         } else {
                             deParaRepository.saveDePara(idMetadado, de.toUpperCase(), para.toUpperCase());
+                            arquivo.get().setStatus(StatusArquivo.FINALIZADO.getDescricao());
                         }
 
                     }
