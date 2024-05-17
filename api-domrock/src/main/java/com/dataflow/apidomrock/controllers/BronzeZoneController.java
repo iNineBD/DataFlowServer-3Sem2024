@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/bronze", produces = "application/json", consumes = "application/json")
+@RequestMapping("/bronze")
 @CrossOrigin("*")
 @Tag(name = "BronzeZone", description = "Operações de manipulação de hashs na zona bronze")
 public class BronzeZoneController {

@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
-@RequestMapping(value = "/home", produces = "application/json", consumes = "application/json")
+@RequestMapping("/home")
 @CrossOrigin("*")
 @Tag(name = "Home", description = "Retorna os arquivos do usuário")
 public class HomeController {
