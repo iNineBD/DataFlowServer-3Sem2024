@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 //swagger imports
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 //java imports
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/bronze", produces = "application/json", consumes = "application/json")
 @CrossOrigin("*")
+@Tag(name = "BronzeZone", description = "Operações de manipulação de hashs na zona bronze")
 public class BronzeZoneController {
 
     @Autowired
