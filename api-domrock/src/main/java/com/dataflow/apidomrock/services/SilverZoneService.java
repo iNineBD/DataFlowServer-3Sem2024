@@ -175,9 +175,9 @@ public class SilverZoneService {
                         int deOuParaExiste = deParaRepository.buscaQtdDeParaIguais(de,para,idMetadado);
 
                         if(deOuParaExiste > 0){
-                            throw new CustomException("Existem valores DE ou PARA repetidos no mesmo metadado, por favor revise!", HttpStatus.BAD_REQUEST);
+                            throw new CustomException("Existem valores DE ou PARA repetidos no mesmo metadado, por favor revise", HttpStatus.BAD_REQUEST);
                         } else if (de.trim().equalsIgnoreCase(para.trim())) {
-                            throw new CustomException("Existe algum valor que o DE é igual ao PARA, por favor revise!", HttpStatus.BAD_REQUEST);
+                            throw new CustomException("Existe algum valor que o DE é igual ao PARA, por favor revise", HttpStatus.BAD_REQUEST);
                         } else {
                             deParaRepository.saveDePara(idMetadado, de.toUpperCase(), para.toUpperCase());
                         }
