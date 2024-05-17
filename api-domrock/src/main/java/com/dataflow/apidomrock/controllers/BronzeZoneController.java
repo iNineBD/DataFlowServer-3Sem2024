@@ -1,5 +1,6 @@
 package com.dataflow.apidomrock.controllers;
 
+//internal imports
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetaDTO;
@@ -15,14 +16,16 @@ import com.dataflow.apidomrock.dto.visualizeHash.RequestVisualizeHashDTO;
 import com.dataflow.apidomrock.dto.visualizeHash.ResponseHashDTO;
 import com.dataflow.apidomrock.services.BronzeZoneService;
 import com.dataflow.apidomrock.services.GlobalServices;
+
+//spring imports
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+//swagger imports
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+//java imports
 import java.util.List;
 
 @RestController
