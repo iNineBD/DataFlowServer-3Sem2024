@@ -28,7 +28,7 @@ import java.io.IOException;
 
 //Esta classe é o controller da landing zone
 @RestController
-@RequestMapping(value = "/landing")
+@RequestMapping(value = "/landing", consumes = "application/json", produces = "application/json")
 @CrossOrigin("*")
 @Tag(name = "LandingZone", description = "Operações de manipulação de arquivos na landing zone")
 public class LandingZoneController {
