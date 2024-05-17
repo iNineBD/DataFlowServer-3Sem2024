@@ -3,6 +3,7 @@ package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.editdepara.RequestEditDePara;
+import com.dataflow.apidomrock.dto.excluirdepara.MetadadosExcluirDePara;
 import com.dataflow.apidomrock.dto.excluirdepara.RequestExcluirDePara;
 import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
@@ -168,10 +169,19 @@ public class SilverZoneService {
                     int qtdDePara = metadados.get(i).deParas().size();
 
                     for (int j = 0; j < qtdDePara; j++) {
-                        String de = metadados.get(i).deParas().get(j).de();
-                        String para = metadados.get(i).deParas().get(j).para();
+                        String de = String.valueOf(metadados.get(i).deParas().get(j).de());
+                        String para = String.valueOf(metadados.get(i).deParas().get(j).para());
 
-                        deParaRepository.saveDePara(idMetadado, de, para);
+                        int deOuParaExiste = deParaRepository.buscaQtdDeParaIguais(de,para);
+
+                        if(deOuParaExiste > 0){
+                            throw new CustomException("Existem valores DE ou PARA repetidos, por favor revise", HttpStatus.BAD_REQUEST);
+                        } else if (de.trim().equalsIgnoreCase(para.trim())) {
+                            throw new CustomException("Existe algum valor que o DE é igual ao PARA, por favor revise", HttpStatus.BAD_REQUEST);
+                        } else {
+                            deParaRepository.saveDePara(idMetadado, de.toUpperCase(), para.toUpperCase());
+                        }
+
                     }
                     logger.insert(usuario.get().getId(), arquivo.get().getId(), "Inserido de para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.INSERIR);
                 }
@@ -257,18 +267,16 @@ public class SilverZoneService {
             if (arquivo.isEmpty()) {
                 throw new CustomException("Ocorreu um erro ao buscar o arquivo", HttpStatus.BAD_REQUEST);
             } else {
-                List<Metadata> metadata = metadataRepository.findByArquivoAndMetadadoIsAtivo(arquivo.get().getId());
+                List<MetadadosExcluirDePara> metadata = request.metadados();
                 int qtdMetadados = metadata.size();
 
                 for (int i = 0; i < qtdMetadados; i++) {
-                    int idMetadado = metadata.get(i).getID();
-                    int qtdDeParas = metadata.get(i).getDeParas().size();
-                    int j = 0;
-                    while(qtdDeParas > j){
-                        String de = metadata.get(i).getDeParas().get(j).getDe();
+                    int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.get().getId(),metadata.get(i).nome());
+                    int qtdDePara = metadata.get(i).deParas().size();
 
+                    for(int j = 0; j < qtdDePara; j++){
+                        String de = metadata.get(i).deParas().get(j).de();
                         deParaRepository.deleteDeParaCustom(idMetadado, de);
-                        j++;
                     }
                 }
 
