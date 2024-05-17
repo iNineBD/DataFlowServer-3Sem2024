@@ -54,7 +54,7 @@ public class SilverZoneController {
     @PostMapping("/save")
     public ResponseEntity<ResponseCustomDTO<String>> saveDePara(@RequestBody RequestSaveDePara request) throws CustomException {
         silverZoneService.saveDePara(request);
-        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamente efetuado com sucesso", null));
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
 
     @PostMapping("/visualize")
@@ -67,13 +67,13 @@ public class SilverZoneController {
     @PostMapping("/edit")
     public ResponseEntity<ResponseCustomDTO<String>> editDePara(@RequestBody RequestEditDePara request) throws CustomException {
         silverZoneService.editDePara(request);
-        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamente efetuado com sucesso", null));
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
 
     @PostMapping("/excluir")
     public ResponseEntity<ResponseCustomDTO<String>> excluirDePara(@RequestBody RequestExcluirDePara request) throws CustomException {
         silverZoneService.excluirDePara(request);
-        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamente efetuado com sucesso", null));
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
 
 }

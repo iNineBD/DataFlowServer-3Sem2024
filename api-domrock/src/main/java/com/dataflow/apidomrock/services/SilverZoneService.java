@@ -172,7 +172,7 @@ public class SilverZoneService {
                         String de = String.valueOf(metadados.get(i).deParas().get(j).de());
                         String para = String.valueOf(metadados.get(i).deParas().get(j).para());
 
-                        int deOuParaExiste = deParaRepository.buscaQtdDeParaIguais(de,para);
+                        int deOuParaExiste = deParaRepository.buscaQtdDeParaIguais(de,para,idMetadado);
 
                         if(deOuParaExiste > 0){
                             throw new CustomException("Existem valores DE ou PARA repetidos, por favor revise", HttpStatus.BAD_REQUEST);
