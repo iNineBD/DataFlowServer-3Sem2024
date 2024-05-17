@@ -53,7 +53,7 @@ public class SilverZoneController {
 
     @PostMapping("/save")
     public ResponseEntity<ResponseCustomDTO<String>> saveDePara(@RequestBody RequestSaveDePara request) throws CustomException {
-        silverZoneService.saveDePara(request);
+        silverZoneService.saveDePara(request,false);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
 

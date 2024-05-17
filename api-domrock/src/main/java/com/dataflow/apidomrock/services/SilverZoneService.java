@@ -146,7 +146,7 @@ public class SilverZoneService {
     }
 
     @Transactional(rollbackFor = CustomException.class)
-    public void saveDePara(RequestSaveDePara request) throws CustomException {
+    public void saveDePara(RequestSaveDePara request, boolean isUpdate) throws CustomException {
 
         Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
 
@@ -183,9 +183,15 @@ public class SilverZoneService {
                         }
 
                     }
-                    logger.insert(usuario.get().getId(), arquivo.get().getId(), "Inserido de para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.INSERIR);
+                    if(isUpdate){
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Atualizado De Para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.ALTERAR);
+                    }else {
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Inserido De Para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.INSERIR);
+                    }
                 }
-                arquivo.get().setStatus(StatusArquivo.FINALIZADO.getDescricao());
+                if(!isUpdate){
+                    arquivo.get().setStatus(StatusArquivo.FINALIZADO.getDescricao());
+                }
             }
         }
     }
@@ -249,7 +255,7 @@ public class SilverZoneService {
                 }
 
                 RequestSaveDePara requestSaveDePara = new RequestSaveDePara(request);
-                saveDePara(requestSaveDePara);
+                saveDePara(requestSaveDePara,true);
             }
         }
 
@@ -277,8 +283,11 @@ public class SilverZoneService {
 
                     for(int j = 0; j < qtdDePara; j++){
                         String de = metadata.get(i).deParas().get(j).de();
+                        String para = metadata.get(i).deParas().get(j).para();
                         deParaRepository.deleteDeParaCustom(idMetadado, de);
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Excluído De Para do metadado" + metadata.get(i).nome()+ ", onde DE era "+ de+ " e PARA era "+ para, Estagio.S, Acao.EXCLUIR);
                     }
+
                 }
 
             }
