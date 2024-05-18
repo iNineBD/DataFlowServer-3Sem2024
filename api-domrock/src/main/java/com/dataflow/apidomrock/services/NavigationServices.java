@@ -50,7 +50,7 @@ public class NavigationServices {
         int qtdNivel = usuario.size();
         for(int i = 0; i < qtdNivel; i++) {
             if (arquivo != null) {
-                if (arquivo.getStatus().equals(StatusArquivo.AGUARDANDO_APROVACAO_SILVER.getDescricao()) || arquivo.getStatus().equals(StatusArquivo.SILVER_ZONE.getDescricao())) {
+                if (arquivo.getStatus().equals(StatusArquivo.AGUARDANDO_APROVACAO_SILVER.getDescricao()) || arquivo.getStatus().equals(StatusArquivo.SILVER_ZONE.getDescricao()) || arquivo.getStatus().equals(StatusArquivo.FINALIZADO.getDescricao())) {
                     if (usuario.get(i).getNivel().equals(NivelAcessoEnum.MASTER.toString()) || usuario.get(i).getNivel().equals(NivelAcessoEnum.FULL.toString())) {
                         acessoLz = true;
                         acessoBz = true;
