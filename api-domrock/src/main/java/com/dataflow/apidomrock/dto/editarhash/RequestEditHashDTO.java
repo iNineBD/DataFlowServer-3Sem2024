@@ -9,5 +9,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record RequestEditHashDTO(@JsonAlias("nomeArquivo") String nomeArquivo,
                                  @JsonAlias("usuario") String usuario,
-                                 @JsonAlias("metadados") List<RequestMetadadoDTO> metadados) {
+                                 @JsonAlias("metadados") List<RequestMetadadoDTO> metadados,
+                                 @JsonAlias("cnpj") String cnpj) {
 }

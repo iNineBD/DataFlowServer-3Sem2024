@@ -194,7 +194,7 @@ public class LandingZoneService {
     }
 
     @Transactional(rollbackFor = CustomException.class)
-    public ResponseBodyGetMetadadosDTO getMetadados(String user, String nomeArquivo) throws CustomException {
+    public ResponseBodyGetMetadadosDTO getMetadados(String user, String nomeArquivo, String cnpj) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Usuario> userBD = usuarioRepository.findByEmailCustom(user);
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
@@ -219,10 +219,8 @@ public class LandingZoneService {
 
         Optional<Arquivo> arqBD = Optional.empty();
         if (isFullAndMaster){
-            List<Arquivo> temp = arquivoRepository.findAllByNomeArquivo(nomeArquivo);
-            if (!temp.isEmpty()){
-                arqBD = Optional.of(temp.getFirst());
-            }
+            arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, cnpj);
+
         } else {
             //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
             arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getCnpj());

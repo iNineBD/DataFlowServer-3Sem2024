@@ -34,7 +34,7 @@ public class NavigationServices {
             throw new CustomException("Ocorreu um erro inesperado ao buscar o arquivo.", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Arquivo> arquivoBD = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), user.get().getOrganizacao().getCnpj());
+        Optional<Arquivo> arquivoBD = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpjFile());
         if (arquivoBD.isEmpty()){
             throw new CustomException("Ocorreu um erro inesperado ao buscar o arquivo.", HttpStatus.BAD_REQUEST);
         }
