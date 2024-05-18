@@ -3,6 +3,7 @@ package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.editdepara.RequestEditDePara;
+import com.dataflow.apidomrock.dto.excluirdepara.MetadadosExcluirDePara;
 import com.dataflow.apidomrock.dto.excluirdepara.RequestExcluirDePara;
 import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
@@ -122,15 +123,18 @@ public class SilverZoneService {
 
                 for (int i = 0; i < qtdMetadados; i++) {
                     for (int j = 0; j < qtdMetadadosNoDePara; j++) {
-                        if (metadados.get(i).getNome().equals(metadadosNoDePara.get(j).nome()) && metadados.get(i).getIsAtivo()) {
+                        if (metadados.get(i).getNome().equals(metadadosNoDePara.get(j).nome()) ) {
                             metadadosParaExcluir.add(i);
                         }
                     }
+                    if(!metadados.get(i).getIsAtivo()){
+                        metadadosParaExcluir.add(i);
+                    }
                 }
 
-                int qtdMetadadosExcluir = metadadosParaExcluir.size();
+                int qtdMetadadosExcluir = metadadosParaExcluir.size() -1;
 
-                for (int i = 0; i < qtdMetadadosExcluir; i++) {
+                for (int i = qtdMetadadosExcluir; i >= 0; i--) {
                     metadados.remove(metadadosParaExcluir.get(i).intValue());
                 }
 
@@ -142,7 +146,7 @@ public class SilverZoneService {
     }
 
     @Transactional(rollbackFor = CustomException.class)
-    public void saveDePara(RequestSaveDePara request) throws CustomException {
+    public void saveDePara(RequestSaveDePara request, boolean isUpdate) throws CustomException {
 
         Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
 
@@ -165,12 +169,28 @@ public class SilverZoneService {
                     int qtdDePara = metadados.get(i).deParas().size();
 
                     for (int j = 0; j < qtdDePara; j++) {
-                        String de = metadados.get(i).deParas().get(j).de();
-                        String para = metadados.get(i).deParas().get(j).para();
+                        String de = String.valueOf(metadados.get(i).deParas().get(j).de());
+                        String para = String.valueOf(metadados.get(i).deParas().get(j).para());
 
-                        deParaRepository.saveDePara(idMetadado, de, para);
+                        int deOuParaExiste = deParaRepository.buscaQtdDeParaIguais(de,para,idMetadado);
+
+                        if(deOuParaExiste > 0){
+                            throw new CustomException("Existem valores DE ou PARA repetidos no mesmo metadado, por favor revise", HttpStatus.BAD_REQUEST);
+                        } else if (de.trim().equalsIgnoreCase(para.trim())) {
+                            throw new CustomException("Existe algum valor que o DE é igual ao PARA, por favor revise", HttpStatus.BAD_REQUEST);
+                        } else {
+                            deParaRepository.saveDePara(idMetadado, de.toUpperCase(), para.toUpperCase());
+                        }
+
                     }
-                    logger.insert(usuario.get().getId(), arquivo.get().getId(), "Inserido de para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.INSERIR);
+                    if(isUpdate){
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Atualizado De Para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.ALTERAR);
+                    }else {
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Inserido De Para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.INSERIR);
+                    }
+                }
+                if(!isUpdate){
+                    arquivo.get().setStatus(StatusArquivo.FINALIZADO.getDescricao());
                 }
             }
         }
@@ -235,36 +255,43 @@ public class SilverZoneService {
                 }
 
                 RequestSaveDePara requestSaveDePara = new RequestSaveDePara(request);
-                saveDePara(requestSaveDePara);
+                saveDePara(requestSaveDePara,true);
             }
         }
 
     }
 
-//    @Transactional(rollbackFor = CustomException.class)
-//    public void excluirDepara(RequestExcluirDePara request) throws CustomException {
-//
-//        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
-//
-//        Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.email());
-//
-//        if (usuario.isEmpty()) {
-//            throw new CustomException("Ocorreu um erro ao buscar o usuário", HttpStatus.BAD_REQUEST);
-//        } else {
-//            if (arquivo.isEmpty()) {
-//                throw new CustomException("Ocorreu um erro ao buscar o arquivo", HttpStatus.BAD_REQUEST);
-//            } else {
-//                List<Metadata> metadata = metadataRepository.findByArquivoAndMetadadoIsAtivo(arquivo.get().getId());
-//                int qtdMetadados = metadata.size();
-//
-//                for (int i = 0; i < qtdMetadados; i++) {
-//                    int idMetadado = metadata.get(i).getID();
-//                    int
-//                    deParaRepository.deleteDePara(idMetadado);
-//                }
-//
-//            }
-//        }
-//
-//    }
+    @Transactional(rollbackFor = CustomException.class)
+    public void excluirDePara(RequestExcluirDePara request) throws CustomException {
+
+        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
+
+        Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.email());
+
+        if (usuario.isEmpty()) {
+            throw new CustomException("Ocorreu um erro ao buscar o usuário", HttpStatus.BAD_REQUEST);
+        } else {
+            if (arquivo.isEmpty()) {
+                throw new CustomException("Ocorreu um erro ao buscar o arquivo", HttpStatus.BAD_REQUEST);
+            } else {
+                List<MetadadosExcluirDePara> metadata = request.metadados();
+                int qtdMetadados = metadata.size();
+
+                for (int i = 0; i < qtdMetadados; i++) {
+                    int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.get().getId(),metadata.get(i).nome());
+                    int qtdDePara = metadata.get(i).deParas().size();
+
+                    for(int j = 0; j < qtdDePara; j++){
+                        String de = metadata.get(i).deParas().get(j).de();
+                        String para = metadata.get(i).deParas().get(j).para();
+                        deParaRepository.deleteDeParaCustom(idMetadado, de);
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Excluído De Para do metadado" + metadata.get(i).nome()+ ", onde DE era "+ de+ " e PARA era "+ para, Estagio.S, Acao.EXCLUIR);
+                    }
+
+                }
+
+            }
+        }
+
+    }
 }

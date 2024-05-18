@@ -7,7 +7,8 @@ public enum StatusArquivo {
     AGUARDANDO_APROVACAO_SILVER("Aguardando aprovação da Silver"),
     SILVER_ZONE("Silver Zone"),
     NAO_APROVADO_PELA_BRONZE("Não aprovado pela Bronze"),
-    NAO_APROVADO_PELA_SILVER("Não aprovado pela Silver");
+    NAO_APROVADO_PELA_SILVER("Não aprovado pela Silver"),
+    FINALIZADO("Finalizado");
 
     private final String descricao;
 

@@ -9,5 +9,5 @@ import java.util.List;
 public record RequestExcluirDePara(@JsonAlias("email") String email,
                                    @JsonAlias("arquivo") String nomeArquivo,
                                    @JsonAlias("cnpj") String cnpj,
-                                   @JsonAlias("metadados")List<MetadadosExcluirDePara> metadados) {
+                                   @JsonAlias("metadados") List<MetadadosExcluirDePara> metadados) {
 }
