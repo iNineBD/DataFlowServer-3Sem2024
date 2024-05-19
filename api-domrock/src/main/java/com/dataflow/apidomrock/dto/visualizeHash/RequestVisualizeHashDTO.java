@@ -8,5 +8,6 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record RequestVisualizeHashDTO(@JsonAlias("nomeArquivo") String nomeArquivo,
-                                      @JsonAlias("usuario") String usuario) {
+                                      @JsonAlias("usuario") String usuario,
+                                      @JsonAlias("cnpj") String cnpj) {
 }

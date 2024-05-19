@@ -1,14 +1,23 @@
 package com.dataflow.apidomrock.controllers;
 
 //internal imports
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.createHash.RequestArquivoDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetaDTO;
 import com.dataflow.apidomrock.dto.createHash.ResponseMetadadoDTO;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.editarhash.RequestEditHashDTO;
-import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
-import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.savehash.RequestHashDTO;
 import com.dataflow.apidomrock.dto.savehash.RequestMetadadoDTO;
 import com.dataflow.apidomrock.dto.setstatusbz.RequestBodySetStatusBzDTO;
@@ -17,17 +26,8 @@ import com.dataflow.apidomrock.dto.visualizeHash.ResponseHashDTO;
 import com.dataflow.apidomrock.services.BronzeZoneService;
 import com.dataflow.apidomrock.services.GlobalServices;
 
-//spring imports
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-//swagger imports
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-//java imports
-import java.util.List;
 
 @RestController
 @RequestMapping("/bronze")
@@ -41,15 +41,16 @@ public class BronzeZoneController {
     @Autowired
     BronzeZoneService bronzeZoneService;
 
-    @Operation(summary = "Busca metadados no banco de dados", method = "POST")
-    @PostMapping("/search")
-    @ApiDefaultResponses
-    public ResponseEntity<ResponseCustomDTO<ResponseBodyGetMetadadosDTO>> getMetadadosInDataBase(
-            @RequestBody RequestBodyGetMetadadosDTO request) throws CustomException {
-        ResponseBodyGetMetadadosDTO response = globalServices.getMetadadosInDatabase(request.getUsuario(),
-                request.getNomeArquivo());
-        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
-    }
+    // @PostMapping( "/search")
+    // public ResponseEntity<ResponseCustomDTO<ResponseBodyGetMetadadosDTO>>
+    // getMetadadosInDataBase(@RequestBody RequestBodyGetMetadadosDTO request)
+    // throws CustomException {
+    // ResponseBodyGetMetadadosDTO response =
+    // globalServices.getMetadadosInDatabase(request.getUsuario(),
+    // request.getNomeArquivo(), request.getFileCnpj());
+    // return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento
+    // efetuado com sucesso", response));
+    // }
 
     @PutMapping(value = "/validation", consumes = "application/json", produces = "application/json")
     @Operation(summary = "Atualiza status do arquivo na zona bronze", method = "PUT")

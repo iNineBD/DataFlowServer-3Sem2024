@@ -1,12 +1,23 @@
 package com.dataflow.apidomrock.controllers;
 
 //internal imports
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
 import com.dataflow.apidomrock.dto.getmetadados.RequestBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseBodyGetMetadadosDTO;
 import com.dataflow.apidomrock.dto.getmetadados.ResponseCompleteGetMetadadosLandingDTO;
-import com.dataflow.apidomrock.dto.processuploadcsv.RequetsUploadCSVDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
 import com.dataflow.apidomrock.dto.updatemetados.RequestBodyUpdateMetaDTO;
 import com.dataflow.apidomrock.entities.enums.Acao;
@@ -14,17 +25,8 @@ import com.dataflow.apidomrock.entities.enums.Estagio;
 import com.dataflow.apidomrock.services.GlobalServices;
 import com.dataflow.apidomrock.services.LandingZoneService;
 
-//spring imports
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-//Swagger imports
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
-//java imports
-import java.io.IOException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 //Esta classe é o controller da landing zone
 @RestController
@@ -64,13 +66,11 @@ public class LandingZoneController {
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
 
-    @Operation(summary = "Busca metadados no banco de dados", method = "POST")
-    @ApiDefaultResponses
     @PostMapping("/search")
     public ResponseEntity<ResponseCustomDTO<ResponseCompleteGetMetadadosLandingDTO>> getMetadadosInDataBase(
             @RequestBody RequestBodyGetMetadadosDTO request) throws CustomException {
         ResponseBodyGetMetadadosDTO response = landingZoneService.getMetadados(request.getUsuario(),
-                request.getNomeArquivo());
+                request.getNomeArquivo(), request.getFileCnpj());
 
         String lastOBS = globalServices.getLastObs(response.getIdArquivo(), Estagio.B, Acao.REPROVAR);
 

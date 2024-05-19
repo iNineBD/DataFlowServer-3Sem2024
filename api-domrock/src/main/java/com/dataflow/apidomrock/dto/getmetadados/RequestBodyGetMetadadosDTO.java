@@ -10,4 +10,5 @@ import lombok.*;
 public class RequestBodyGetMetadadosDTO {
     private String usuario;
     private String nomeArquivo;
+    private String fileCnpj;
 }

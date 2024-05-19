@@ -53,7 +53,9 @@ public class BronzeZoneService {
             logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.APROVAR);
         } else {
             if(!request.obs().isEmpty()){
-                Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
+                Optional<Arquivo> a = arquivoRepository.findByNameAndOrganization(request.arquivo(), request.cnpjFile());
+                if (a.isEmpty()){throw new CustomException("Arquivo não encontrado", HttpStatus.BAD_REQUEST);}
+                Arquivo arq =  a.get();
                 arq.setStatus(StatusArquivo.NAO_APROVADO_PELA_BRONZE.getDescricao());
                 arquivoRepository.save(arq);
                 logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.REPROVAR);
@@ -65,16 +67,20 @@ public class BronzeZoneService {
 
     public List<ResponseMetaDTO> selectMetadadosToHash(RequestArquivoDTO request) throws CustomException{
 
-        Arquivo arq = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+        Optional<Arquivo> arq = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
 
-        if (!arq.getMetadados().isEmpty()) {
-            List<Metadata> meta = metadataRepository.findByArquivo(arq.getId());
+        if (arq.isEmpty()){
+            throw new CustomException("O arquivo não foi encontrado", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!arq.get().getMetadados().isEmpty()) {
+            List<Metadata> meta = metadataRepository.findByArquivo(arq.get().getId());
 
             List<ResponseMetaDTO> metaDTO = meta.stream().map(ResponseMetaDTO::new).toList();
 
             return metaDTO;
         }else{
-            throw new CustomException("No arquivo ["+arq.getNomeArquivo()+"] não existem metadados para criar o hash", HttpStatus.BAD_REQUEST);
+            throw new CustomException("No arquivo [ "+arq.get().getNomeArquivo()+" ] não existem metadados para criar o hash", HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -84,7 +90,13 @@ public class BronzeZoneService {
 
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
-        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+        Optional<Arquivo> aBD = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
+
+        if (aBD.isEmpty()){
+            throw new CustomException("Arquivo não encontrado", HttpStatus.BAD_REQUEST);
+        }
+
+        Arquivo arquivo = aBD.get();
 
         int qtdMeta = request.metadados().size();
         boolean somenteVp = true;
@@ -123,7 +135,13 @@ public class BronzeZoneService {
 
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
-        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+        Optional<Arquivo> aBD = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
+
+        if (aBD.isEmpty()){
+            throw new CustomException("Arquivo não encontrado", HttpStatus.BAD_REQUEST);
+        }
+
+        Arquivo arquivo = aBD.get();
 
         if(user.isPresent()){
             if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.MASTER.toString()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.FULL.toString())){
@@ -146,7 +164,13 @@ public class BronzeZoneService {
 
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
-        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+        Optional<Arquivo> aBD = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
+
+        if (aBD.isEmpty()){
+            throw new CustomException("Arquivo não encontrado", HttpStatus.BAD_REQUEST);
+        }
+
+        Arquivo arquivo = aBD.get();
 
         if(user.isPresent()){
             if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.MASTER.toString()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.FULL.toString())){
@@ -162,11 +186,12 @@ public class BronzeZoneService {
 
                 for( int i = 0; i < qtdMetadados;i++){
                     for(int j = 0; j < qtdMetaNoHash;j++){
-                        if(metaForaDoHash.get(i).getID().equals(metadadosNoHash.get(j).getID())){
-                            remover.add(i);
-                        }if(!metaForaDoHash.get(i).getIsAtivo()){
+                        if(metaForaDoHash.get(i).getID() == (metadadosNoHash.get(j).getID())){
                             remover.add(i);
                         }
+                    }
+                    if(!metaForaDoHash.get(i).getIsAtivo()){
+                        remover.add(i);
                     }
                 }
 
@@ -192,7 +217,13 @@ public class BronzeZoneService {
 
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
 
-        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+        Optional<Arquivo> aBD = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
+
+        if (aBD.isEmpty()){
+            throw new CustomException("Arquivo não encontrado", HttpStatus.BAD_REQUEST);
+        }
+
+        Arquivo arquivo = aBD.get();
 
         if(user.isPresent()){
             if(user.get().getOrganizacao().getCnpj().equals(arquivo.getOrganizacao().getCnpj()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.MASTER.toString()) || user.get().getNiveisAcesso().getFirst().getNivel().equals(NivelAcessoEnum.FULL.toString())){
@@ -212,7 +243,14 @@ public class BronzeZoneService {
     @Transactional(rollbackOn = CustomException.class)
     public void editHash(RequestEditHashDTO request) throws CustomException{
 
-        Arquivo arquivo = arquivoRepository.findByNomeArquivo(request.nomeArquivo());
+        Optional<Arquivo> aBD = arquivoRepository.findByNameAndOrganization(request.nomeArquivo(), request.cnpj());
+
+        if (aBD.isEmpty()){
+            throw new CustomException("Arquivo não encontrado", HttpStatus.BAD_REQUEST);
+        }
+
+        Arquivo arquivo = aBD.get();
+
         arquivoRepository.deleteHash(arquivo.getId());
 
         RequestHashDTO requestNova = new RequestHashDTO(request);

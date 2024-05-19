@@ -94,7 +94,7 @@ public class HomeService {
         }
 
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
-        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganizationName(request.getNomeArquivo(), request.getUsuarioOrg());
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), request.getUsuarioOrg());
         if (arqBD.isEmpty()) {
             //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
             throw new CustomException("Arquivo [" + request.getNomeArquivo() + "] não encontrado para a organização [" + userBD.get().getOrganizacao().getNome() + "]", HttpStatus.NOT_FOUND);

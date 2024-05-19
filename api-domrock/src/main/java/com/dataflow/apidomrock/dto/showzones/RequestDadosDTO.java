@@ -5,5 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record RequestDadosDTO(@JsonAlias("email") String usuario,
-                              @JsonAlias("arquivo") String nomeArquivo) {
+                              @JsonAlias("arquivo") String nomeArquivo,
+                              @JsonAlias("cnpjFile") String cnpjFile) {
 }
