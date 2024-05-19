@@ -1,21 +1,30 @@
 package com.dataflow.apidomrock.services.utils;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
+import com.dataflow.apidomrock.dto.log.RequestLogDTO;
+import com.dataflow.apidomrock.dto.log.ResponseLog;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Log;
+import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.entities.enums.Acao;
 import com.dataflow.apidomrock.entities.enums.Estagio;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.LogRepository;
+import com.dataflow.apidomrock.repository.OrganizacaoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -27,8 +36,10 @@ public class Logger {
   private UsuarioRepository usuarioRepository;
   @Autowired
   private ArquivoRepository arquivoRepository;
+  @Autowired
+  private OrganizacaoRepository organizacaoRepository;
 
-  public void insert(Integer idUser, Integer idArquivo, String obs, Estagio estagio, Acao acao) throws CustomException {
+    public void insert(Integer idUser, Integer idArquivo, String obs, Estagio estagio, Acao acao) throws CustomException {
       Optional<Usuario> userBD = usuarioRepository.findById(idUser);
       if (userBD.isEmpty()) {
           throw new CustomException("Usuário não identificado", HttpStatus.BAD_REQUEST);
@@ -49,6 +60,26 @@ public class Logger {
 
       loggerRepository.save(log);
   }
+    public List<ResponseLog> visualizarLog (RequestLogDTO requestLogDTO)throws CustomException{
+        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(requestLogDTO.nomeArquivo(), requestLogDTO.organizacao());
+        if (arquivo.isEmpty()){
+            throw new CustomException("Arquivo não encontrado", HttpStatus.NOT_FOUND);
+        }
+        Organizacao organizacao = arquivo.get().getOrganizacao();
+        List<Log> logBD = loggerRepository.findByArquivo(arquivo.get());
+        if(logBD.isEmpty()){
+            throw new CustomException("Arquivo sem registros de alteração", HttpStatus.NOT_FOUND);
+        }
+
+        List<ResponseLog> logs = new ArrayList<>();
+        for(Log log : logBD){
+            ResponseLog responseLog = new ResponseLog(
+                    organizacao.getNome(), arquivo.get().getNomeArquivo(), LocalDateTime.from(log.getDataHora()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),log.getObservacao(),
+                    log.getEstagio(),log.getAcao(), log.getUsuario().getNome(), log.getUsuario().getEmail());
+            logs.add(responseLog);
+        }
+        return logs;
+    }
 
     public static Estagio getEstagioByStatus(String statusString) {
         // Convertendo a string para uppercase para garantir correspondência
