@@ -1,6 +1,6 @@
 package com.dataflow.apidomrock.controllers;
 
-//internal imports
+//java imports
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
