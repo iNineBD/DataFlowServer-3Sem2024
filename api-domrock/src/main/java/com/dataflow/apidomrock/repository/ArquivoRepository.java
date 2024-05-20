@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Repository
 public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
-    @Query(value = "SELECT a FROM Arquivo a where a.nomeArquivo = :nomeArquivo and a.organizacao.cnpj = :cnpjOrg")
+    @Query(value = "SELECT a FROM Arquivo a where a.nomeArquivo = :nomeArquivo and a.organizacao.cnpj = :cnpjOrg and a.isAtivo = true")
     Optional<Arquivo> findByNameAndOrganization(String nomeArquivo, String cnpjOrg);
 
     List<Arquivo> findAllByNomeArquivo(String nomeArquivo);

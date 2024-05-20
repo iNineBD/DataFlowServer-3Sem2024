@@ -45,9 +45,12 @@ public class BronzeZoneService {
     public void updateStatus (RequestBodySetStatusBzDTO request) throws CustomException {
 
         Optional<Usuario> user = usuarioRepository.findByEmailCustom(request.usuario());
+        if (user.isEmpty()){throw new CustomException("Usuário não encontrado", HttpStatus.BAD_REQUEST);}
 
         if (request.salvar()) {
-            Arquivo arq =  arquivoRepository.findByNomeArquivo(request.arquivo());
+            Optional<Arquivo> a = arquivoRepository.findByNameAndOrganization(request.arquivo(), request.cnpjFile());
+            if (a.isEmpty()){throw new CustomException("Arquivo não encontrado", HttpStatus.BAD_REQUEST);}
+            Arquivo arq =  a.get();
             arq.setStatus(StatusArquivo.BRONZE_ZONE.getDescricao());
             arquivoRepository.save(arq);
             logger.insert(user.get().getId(),arq.getId(),request.obs(), Estagio.B, Acao.APROVAR);
