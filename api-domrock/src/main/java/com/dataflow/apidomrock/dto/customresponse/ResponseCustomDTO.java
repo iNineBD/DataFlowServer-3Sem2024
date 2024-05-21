@@ -1,11 +1,13 @@
 package com.dataflow.apidomrock.dto.customresponse;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 /*
 * Essa classe contem a estrutura padrão dos nossos responses.
@@ -16,10 +18,15 @@ import java.util.UUID;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(description = "DTO para criação de header de resposta customizada")
 public class ResponseCustomDTO<T> {
+    @Schema(description = "ID do arquivo", example = "123e4567-e89b-12d3-a456-426614174000")
     private UUID transID;
+    @Schema(description = "Observação referente ao arquivo", example = "Processamento efetuado com sucesso")
     private String critica;
+    @Schema(description = "Data e hora do processo", example = "2021-08-01T12:00:00")
     private LocalDateTime serverTime;
+    @Schema(description = "Resposta da execução")
     private T response;
 
     public ResponseCustomDTO(String feedback, T response) {
