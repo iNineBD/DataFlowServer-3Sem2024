@@ -4,6 +4,7 @@ package com.dataflow.apidomrock.controllers;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,7 +48,7 @@ public class LandingZoneController {
     // Metodo que é executado quando o client manda um POST no /landind/upload
     @Operation(summary = "Processa upload de arquivo CSV", method = "POST")
     @ApiDefaultResponses
-    @PostMapping("/upload")
+    @PostMapping(value ="/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(
             @RequestParam("multipartFile") MultipartFile multipartFile,
             @RequestParam(required = false) String delimiter, @RequestParam(required = false) boolean header,
