@@ -72,7 +72,7 @@ public class AnalyticsService {
                     case NAO_APROVADO_PELA_BRONZE -> metrica.put("LZ", metrica.get("LZ") + 1);
                     case BRONZE_ZONE, AGUARDANDO_APROVACAO_BRONZE, NAO_APROVADO_PELA_SILVER ->
                             metrica.put("BZ", metrica.get("BZ") + 1);
-                    case AGUARDANDO_APROVACAO_SILVER, SILVER_ZONE -> metrica.put("SZ", metrica.get("SZ") + 1);
+                    case AGUARDANDO_APROVACAO_SILVER, SILVER_ZONE, FINALIZADO -> metrica.put("SZ", metrica.get("SZ") + 1);
                 }
             }
 
@@ -102,7 +102,7 @@ public class AnalyticsService {
                 case NAO_APROVADO_PELA_BRONZE -> metrica.put("LZ", metrica.get("LZ") + 1);
                 case BRONZE_ZONE, AGUARDANDO_APROVACAO_BRONZE, NAO_APROVADO_PELA_SILVER ->
                         metrica.put("BZ", metrica.get("BZ") + 1);
-                case AGUARDANDO_APROVACAO_SILVER, SILVER_ZONE -> metrica.put("SZ", metrica.get("SZ") + 1);
+                case AGUARDANDO_APROVACAO_SILVER, SILVER_ZONE, FINALIZADO -> metrica.put("SZ", metrica.get("SZ") + 1);
             }
         }
         metricsFilesDTOList.add(new MetricsFilesDTO(orgBD.get().getNome(), metrica));
