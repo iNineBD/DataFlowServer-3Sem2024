@@ -183,11 +183,16 @@ public class SilverZoneService {
                         }
 
                     }
+
                     if(isUpdate){
                         logger.insert(usuario.get().getId(), arquivo.get().getId(), "Atualizado De Para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.ALTERAR);
                     }else {
                         logger.insert(usuario.get().getId(), arquivo.get().getId(), "Inserido De Para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.INSERIR);
                     }
+                }
+                if(qtdMetadado == 0){
+                    arquivo.get().setStatus(StatusArquivo.SILVER_ZONE.getDescricao());
+                    logger.insert(usuario.get().getId(), arquivo.get().getId(), "O arquivo não possui mais De Para, por isso retorno a Silver", Estagio.S, Acao.ALTERAR);
                 }
                 if(!isUpdate){
                     arquivo.get().setStatus(StatusArquivo.FINALIZADO.getDescricao());
