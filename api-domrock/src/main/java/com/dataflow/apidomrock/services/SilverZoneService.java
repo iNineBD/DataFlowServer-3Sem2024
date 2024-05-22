@@ -172,16 +172,19 @@ public class SilverZoneService {
                         String de = String.valueOf(metadados.get(i).deParas().get(j).de());
                         String para = String.valueOf(metadados.get(i).deParas().get(j).para());
 
-                        int deOuParaExiste = deParaRepository.buscaQtdDeParaIguais(de,para,idMetadado);
+                        if(de.trim().isEmpty() || para.trim().isEmpty()){
+                            throw new CustomException("Existe algum valor que o DE ou PARA que está vazio, por favor revise", HttpStatus.BAD_REQUEST);
+                        }else{
+                            int deOuParaExiste = deParaRepository.buscaQtdDeParaIguais(de,idMetadado);
 
-                        if(deOuParaExiste > 0){
-                            throw new CustomException("Existem valores DE ou PARA repetidos no mesmo metadado, por favor revise", HttpStatus.BAD_REQUEST);
-                        } else if (de.trim().equalsIgnoreCase(para.trim())) {
-                            throw new CustomException("Existe algum valor que o DE é igual ao PARA, por favor revise", HttpStatus.BAD_REQUEST);
-                        } else {
-                            deParaRepository.saveDePara(idMetadado, de.toUpperCase(), para.toUpperCase());
+                            if(deOuParaExiste > 0){
+                                throw new CustomException("Existem valores DE repetidos no mesmo metadado, por favor revise", HttpStatus.BAD_REQUEST);
+                            } else if (de.trim().equalsIgnoreCase(para.trim())) {
+                                throw new CustomException("Existe algum valor que o DE é igual ao PARA, por favor revise", HttpStatus.BAD_REQUEST);
+                            }else {
+                                deParaRepository.saveDePara(idMetadado, de.toUpperCase(), para.toUpperCase());
+                            }
                         }
-
                     }
 
                     if(isUpdate){
