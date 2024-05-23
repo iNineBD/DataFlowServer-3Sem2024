@@ -188,9 +188,9 @@ public class SilverZoneService {
                     }
 
                     if(isUpdate){
-                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Atualizado De Para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.ALTERAR);
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Atualizado De Para do metadado " + metadados.get(i).nome(), Estagio.S, Acao.ALTERAR);
                     }else {
-                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Inserido De Para do metadado" + metadados.get(i).nome(), Estagio.S, Acao.INSERIR);
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Inserido De Para do metadado " + metadados.get(i).nome(), Estagio.S, Acao.INSERIR);
                     }
                 }
                 if(qtdMetadado == 0){
@@ -293,7 +293,7 @@ public class SilverZoneService {
                         String de = metadata.get(i).deParas().get(j).de();
                         String para = metadata.get(i).deParas().get(j).para();
                         deParaRepository.deleteDeParaCustom(idMetadado, de);
-                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Excluído De Para do metadado" + metadata.get(i).nome()+ ", onde DE era "+ de+ " e PARA era "+ para, Estagio.S, Acao.EXCLUIR);
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "Excluído De Para do metadado " + metadata.get(i).nome()+ ", onde DE era "+ de+ " e PARA era "+ para, Estagio.S, Acao.EXCLUIR);
                     }
 
                 }
