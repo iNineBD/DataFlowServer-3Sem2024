@@ -138,7 +138,7 @@ public class LandingZoneService {
             }
 
             if (metadadoJson.getNomeTipo().equals("Decimal")){
-                if (!Validate.isDouble(metadadoJson.getValorPadrao()) && !metadadoJson.getValorPadrao().isEmpty()){
+                if (!Validate.isDouble(metadadoJson.getValorPadrao()) && (metadadoJson.getValorPadrao() != null && !metadadoJson.getValorPadrao().isEmpty())){
                     throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número decimal, pois o mesmo é DECIMAL", HttpStatus.BAD_REQUEST);
                 }
             }
