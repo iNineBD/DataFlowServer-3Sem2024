@@ -3,12 +3,10 @@ package com.dataflow.apidomrock.services.utils;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.log.RequestLogDTO;
 import com.dataflow.apidomrock.dto.log.ResponseLog;
-import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.Log;
-import com.dataflow.apidomrock.entities.database.Organizacao;
-import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.entities.enums.Acao;
 import com.dataflow.apidomrock.entities.enums.Estagio;
+import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.LogRepository;
@@ -61,6 +59,21 @@ public class Logger {
       loggerRepository.save(log);
   }
     public List<ResponseLog> visualizarLog (RequestLogDTO requestLogDTO)throws CustomException{
+
+        Optional<Usuario> u = usuarioRepository.findByEmailCustom(requestLogDTO.email());
+        if (u.isEmpty()) {throw new CustomException("Usuario não encontrado", HttpStatus.NOT_FOUND);}
+
+        boolean hasPermission = false;
+
+        for (NivelAcesso n : u.get().getNiveisAcesso()){
+            if (n.getNivel().equals(NivelAcessoEnum.MASTER.toString())){
+                hasPermission = true;
+                break;
+            }
+        }
+
+        if (!hasPermission){throw new CustomException("Apenas usuarios MASTER tem acesso ao histórico", HttpStatus.UNAUTHORIZED);}
+
         Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(requestLogDTO.nomeArquivo(), requestLogDTO.organizacao());
         if (arquivo.isEmpty()){
             throw new CustomException("Arquivo não encontrado", HttpStatus.NOT_FOUND);

@@ -7,5 +7,6 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record RequestLogDTO(@JsonAlias("organizacao") String organizacao,
-                            @JsonAlias("nomeArquivo") String nomeArquivo){
+                            @JsonAlias("nomeArquivo") String nomeArquivo,
+                            @JsonAlias("usuario") String email){
 }
