@@ -2,7 +2,11 @@ package com.dataflow.apidomrock.controllers;
 
 //internal imports
 import java.io.IOException;
+import java.util.List;
 
+import com.dataflow.apidomrock.dto.log.RequestLogDTO;
+import com.dataflow.apidomrock.dto.log.ResponseLog;
+import com.dataflow.apidomrock.services.utils.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -78,5 +82,18 @@ public class LandingZoneController {
         ResponseCompleteGetMetadadosLandingDTO retorno = new ResponseCompleteGetMetadadosLandingDTO(response, lastOBS);
 
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", retorno));
+    }
+
+    @RestController
+    @RequestMapping("/log")
+    @CrossOrigin("*")
+    public static class LogController {
+        @Autowired
+        Logger logger;
+        @PostMapping("/visualizar")
+        public ResponseEntity<ResponseCustomDTO<List<ResponseLog>>>visualizarLog(@RequestBody RequestLogDTO requestLogDTO)throws CustomException{
+            List<ResponseLog> log = logger.visualizarLog(requestLogDTO);
+            return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", log));
+        }
     }
 }
