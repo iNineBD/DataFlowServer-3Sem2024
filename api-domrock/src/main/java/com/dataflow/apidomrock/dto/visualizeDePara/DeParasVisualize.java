@@ -4,11 +4,15 @@ import com.dataflow.apidomrock.entities.database.DePara;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public record DeParasVisualize(@JsonAlias("de") String de,
-                               @JsonAlias("para") String para) {
+import io.swagger.v3.oas.annotations.media.Schema;
 
-    public DeParasVisualize(DePara dePara){
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Schema(description = "DTO para visualização de deParas")
+public record DeParasVisualize(
+        @JsonAlias("de") @Schema(description = "Metadados pré tratamento", example = "coluna01") String de,
+        @JsonAlias("para") @Schema(description = "metados pós tratamento", example = "coluna02") String para) {
+
+    public DeParasVisualize(DePara dePara) {
         this(dePara.getDe(), dePara.getPara());
     }
 }

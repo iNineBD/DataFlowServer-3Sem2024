@@ -1,8 +1,7 @@
 package com.dataflow.apidomrock.dto.processuploadcsv;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-
-public record RequetsUploadCSVDTO(String email) {
+@Schema(name = "RequetsUploadCSVDTO", description = "Request DTO para realizar o upload de um arquivo CSV")
+public record RequetsUploadCSVDTO(@Schema(description = "E-mail do usuário", example = "user@gmail.com") String email) {
 }

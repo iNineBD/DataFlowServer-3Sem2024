@@ -1,19 +1,20 @@
 package com.dataflow.apidomrock.dto.visualizeHash;
 
-import com.dataflow.apidomrock.dto.editarhash.RequestEditHashDTO;
+import java.util.List;
+
 import com.dataflow.apidomrock.dto.savehash.RequestMetadadoDTO;
-import com.dataflow.apidomrock.entities.database.Metadata;
-import com.dataflow.apidomrock.entities.database.Usuario;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record ResponseHashDTO(@JsonAlias("nomeArquivo") String nomeArquivo,
-                              @JsonAlias("usuario") String usuario,
-                              @JsonAlias("metadados") List<RequestMetadadoDTO> metadadosNoHash,
-                              @JsonAlias("metadados") List<RequestMetadadoDTO> metadadosForaDoHash,
-                              @JsonAlias("observacao") String observacao) {
+@Schema(description = "DTO para response do hash")
+public record ResponseHashDTO(
+        @JsonAlias("nomeArquivo") @Schema(description = "Nome do arquivo", example = "arquivo01") String nomeArquivo,
+        @JsonAlias("usuario") @Schema(description = "nome do usuário", example = "Usu ario") String usuario,
+        @JsonAlias("metadados") @Schema(description = "listagem de metadados que compoem o hash", example = "coluna01, coluna02") List<RequestMetadadoDTO> metadadosNoHash,
+        @JsonAlias("metadados") @Schema(description = "Listagem de colunas que não compoem o hash ", example = "coluna03, coluna04") List<RequestMetadadoDTO> metadadosForaDoHash,
+        @JsonAlias("observacao") String observacao) {
 
 }
