@@ -182,7 +182,7 @@ public class SilverZoneService {
                             } else if (de.trim().equalsIgnoreCase(para.trim())) {
                                 throw new CustomException("Existe algum valor que o DE é igual ao PARA, por favor revise", HttpStatus.BAD_REQUEST);
                             }else {
-                                deParaRepository.saveDePara(idMetadado, de.toUpperCase(), para.toUpperCase());
+                                deParaRepository.saveDePara(idMetadado, de.toUpperCase().trim(), para.toUpperCase().trim());
                             }
                         }
                     }
@@ -287,11 +287,12 @@ public class SilverZoneService {
 
                 for (int i = 0; i < qtdMetadados; i++) {
                     int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.get().getId(),metadata.get(i).nome());
-                    int qtdDePara = metadata.get(i).deParas().size();
+                    List<DePara> deParas = deParaRepository.findByIdMetadado(idMetadado);
+                    int qtdDePara = deParas.size();
 
                     for(int j = 0; j < qtdDePara; j++){
-                        String de = metadata.get(i).deParas().get(j).de();
-                        String para = metadata.get(i).deParas().get(j).para();
+                        String de = deParas.get(j).getDe();
+                        String para = deParas.get(j).getPara();
                         deParaRepository.deleteDeParaCustom(idMetadado, de);
                         logger.insert(usuario.get().getId(), arquivo.get().getId(), "Excluído De Para do metadado " + metadata.get(i).nome()+ ", onde DE era "+ de+ " e PARA era "+ para, Estagio.S, Acao.EXCLUIR);
                     }
