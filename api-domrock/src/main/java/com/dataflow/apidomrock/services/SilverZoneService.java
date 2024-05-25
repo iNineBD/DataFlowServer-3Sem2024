@@ -296,6 +296,11 @@ public class SilverZoneService {
                         deParaRepository.deleteDeParaCustom(idMetadado, de);
                         logger.insert(usuario.get().getId(), arquivo.get().getId(), "Excluído De Para do metadado " + metadata.get(i).nome()+ ", onde DE era "+ de+ " e PARA era "+ para, Estagio.S, Acao.EXCLUIR);
                     }
+                    int qtdNova = deParas.size();
+                    if(qtdNova == 0){
+                        arquivo.get().setStatus(StatusArquivo.SILVER_ZONE.getDescricao());
+                        logger.insert(usuario.get().getId(), arquivo.get().getId(), "O arquivo não possui mais De Para, por isso retorno a Silver", Estagio.S, Acao.ALTERAR);
+                    }
 
                 }
 
