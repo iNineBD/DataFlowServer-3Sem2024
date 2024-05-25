@@ -1,16 +1,6 @@
 package com.dataflow.apidomrock.controllers;
 
 //internal imports
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.customresponse.ResponseCustomDTO;
@@ -28,9 +18,13 @@ import com.dataflow.apidomrock.dto.visualizeDePara.MetadadosDeParaVisualize;
 import com.dataflow.apidomrock.dto.visualizeDePara.RequestDadosToDePara;
 import com.dataflow.apidomrock.dto.visualizeDePara.ResponseDeParas;
 import com.dataflow.apidomrock.services.SilverZoneService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/silver")
@@ -63,20 +57,16 @@ public class SilverZoneController {
     @PostMapping("/create")
     @Operation(summary = "Busca metadados do arquivo para utilização em DePara", method = "POST")
     @ApiDefaultResponses
-    public ResponseEntity<ResponseCustomDTO<ResponseMetaToDePara>> getMetadadosToDePara(
-            @RequestBody RequestMetaToDePara request) throws CustomException {
+    public ResponseEntity<ResponseCustomDTO<ResponseMetaToDePara>> getMetadadosToDePara(@RequestBody RequestMetaToDePara request) throws CustomException {
         List<MetadadosDePara> metadadosNoDePara = silverZoneService.getMetadadosToDePara(request);
-        ResponseMetaToDePara response = new ResponseMetaToDePara(request.email(), request.arquivo(), request.cnpj(),
-                metadadosNoDePara);
+        ResponseMetaToDePara response = new ResponseMetaToDePara(request.email(), request.arquivo(), request.cnpj(), metadadosNoDePara);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
-
     }
 
     @PostMapping("/save")
     @Operation(summary = "Salva metadados para DePara", method = "POST")
     @ApiDefaultResponses
-    public ResponseEntity<ResponseCustomDTO<String>> saveDePara(@RequestBody RequestSaveDePara request)
-            throws CustomException {
+    public ResponseEntity<ResponseCustomDTO<String>> saveDePara(@RequestBody RequestSaveDePara request) throws CustomException {
         silverZoneService.saveDePara(request, false);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }

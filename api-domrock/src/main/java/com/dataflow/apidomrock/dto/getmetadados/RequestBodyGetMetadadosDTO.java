@@ -19,5 +19,5 @@ public class RequestBodyGetMetadadosDTO {
     @Schema(description = "Nome do arquivo em questão", example = "arquivo")
     private String nomeArquivo;
     @Schema(description = "Cnpj referente a organização do arquivo em questão", example = "99.205.190/0001-40")
-    private String fileCnpj;
+    private String cnpjFile;
 }

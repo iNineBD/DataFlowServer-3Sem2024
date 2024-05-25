@@ -89,6 +89,7 @@ public class LandingZoneService {
             throw new CustomException("Usuário [" + request.getUsuario() + "] não existe", HttpStatus.NOT_FOUND);
         }
 
+        boolean isUpdate = false;
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
         if (arqBD.isEmpty()) {
@@ -99,10 +100,11 @@ public class LandingZoneService {
             arquivo.setAtivo(true);
             arquivoRepository.save(arquivo);
             arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
-            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Insert file", Estagio.LZ, Acao.INSERIR);
+            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Arquivo inserido", Estagio.LZ, Acao.INSERIR);
         }
         else {
-            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Update file", Estagio.LZ, Acao.ALTERAR);
+            isUpdate  = true;
+            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Arquivo atualizado", Estagio.LZ, Acao.ALTERAR);
         }
         arqBD.get().setStatus(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao());
         arqBD.get().setAtivo(true);
@@ -121,12 +123,19 @@ public class LandingZoneService {
             newMetadado.setIsAtivo(metadadoJson.getAtivo());
             newMetadado.setExemplo(metadadoJson.getSampleValue());
             if (!metadadoJson.getAtivo()) {
+                logger.insert(userBD.get().getId(), arqBD.get().getId(), "O metadado [" + metadadoJson.getNome() + "] foi inativado", Estagio.LZ, Acao.INSERIR);
                 metadataRepository.save(newMetadado);
                 continue;
             }
             if (nomes_colunas.get(metadadoJson.getNome()) != null){
                 throw new CustomException("O nome do metadado ["+metadadoJson.getNome()+"] já está sendo usado!", HttpStatus.BAD_REQUEST);
             }
+
+            // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
+            if (metadadoJson.getNomeTipo() == null || metadadoJson.getNomeTipo().isEmpty()){
+                throw new CustomException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo", HttpStatus.BAD_REQUEST);
+            }
+
             nomes_colunas.put(metadadoJson.getNome(), Boolean.TRUE);
             newMetadado.setDescricao(metadadoJson.getDescricao());
             if (metadadoJson.getValorPadrao() == null || metadadoJson.getValorPadrao().equals("")) todos_metados_com_vlr_padrao = false;
@@ -145,10 +154,7 @@ public class LandingZoneService {
 
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
 
-            // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
-            if (metadadoJson.getNomeTipo() == null || metadadoJson.getNomeTipo().isEmpty()){
-                throw new CustomException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo", HttpStatus.BAD_REQUEST);
-            }
+
 
             if (metadadoJson.getNomeTipo().equals("Booleano") && (metadadoJson.getValorPadrao() != null && !metadadoJson.getValorPadrao().equals(""))){
                 if (!metadadoJson.getValorPadrao().equalsIgnoreCase("true") && !metadadoJson.getValorPadrao().equalsIgnoreCase("false")){
@@ -185,6 +191,7 @@ public class LandingZoneService {
             }
             //ADICIONANDO AS RESTRIÇOES NO METADADO
             newMetadado.setRestricoes(newRestricoes);
+            logger.insert(userBD.get().getId(), arqBD.get().getId(), "O metadado [" + metadadoJson.getNome() + "] foi inserido.", Estagio.LZ, Acao.INSERIR);
             metadataRepository.save(newMetadado);
         }
 
@@ -205,7 +212,7 @@ public class LandingZoneService {
         boolean havePermission = false;
         boolean isFullAndMaster = false;
         for (NivelAcesso n : userBD.get().getNiveisAcesso()){
-            if (n.getNivel().equals(NivelAcessoEnum.LZ.toString()) || n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString())){
+            if (n.getNivel().equals(NivelAcessoEnum.LZ.toString()) || n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString()) || n.getNivel().equals(NivelAcessoEnum.B.toString())){
                 havePermission = true;
             }
             if (n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString())){

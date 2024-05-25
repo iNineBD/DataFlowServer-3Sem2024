@@ -300,6 +300,7 @@ public class SilverZoneService {
                     int qtdNova = deParasNovo.size();
                     if(qtdNova == 0){
                         arquivo.get().setStatus(StatusArquivo.SILVER_ZONE.getDescricao());
+                        arquivoRepository.save(arquivo.get());
                         logger.insert(usuario.get().getId(), arquivo.get().getId(), "O arquivo não possui mais De Para, por isso retorno a Silver", Estagio.S, Acao.ALTERAR);
                     }
 

@@ -75,7 +75,7 @@ public class LandingZoneController {
     public ResponseEntity<ResponseCustomDTO<ResponseCompleteGetMetadadosLandingDTO>> getMetadadosInDataBase(
             @RequestBody RequestBodyGetMetadadosDTO request) throws CustomException {
         ResponseBodyGetMetadadosDTO response = landingZoneService.getMetadados(request.getUsuario(),
-                request.getNomeArquivo(), request.getFileCnpj());
+                request.getNomeArquivo(), request.getCnpjFile());
 
         String lastOBS = globalServices.getLastObs(response.getIdArquivo(), Estagio.B, Acao.REPROVAR);
 
