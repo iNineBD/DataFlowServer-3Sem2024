@@ -45,7 +45,7 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
     @Query(value = "delete from hash h where h.id_arquivo = ?1", nativeQuery = true)
     void deleteHash(int idArquivo);
 
-    @Query("select l.observacao from Log l where l.arquivo.id = :idArquivo and l.arquivo.status = 'Não aprovado pela Silver'")
+    @Query("select l.observacao from Log l  where l.arquivo.id = :idArquivo and l.arquivo.status = 'Não aprovado pela Silver' and l.acao = 'REPROVAR' order by l.dataHora desc limit 1")
     String findObservacao(int idArquivo);
 
     List<Arquivo> findAllByOrganizacao_Cnpj(String cnpj);
