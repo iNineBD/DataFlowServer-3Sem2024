@@ -10,3 +10,10 @@ mvn clean package
 ```bash
 mvn clean spring-boot:run
 ```
+
+## Swagger
+Documentação Swagger disponível em: 
+
+```bash
+swagger-ui/index.html#/
+```
