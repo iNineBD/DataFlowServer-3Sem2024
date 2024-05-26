@@ -41,6 +41,9 @@ public class RegisterServices {
     public void registerInDatabase(UsuarioDTO register) throws CustomException {
 
         List<String> nvl = register.getNivelAcesso();
+        if (nvl.isEmpty()) {
+            throw new CustomException("Nenhum nível de acesso foi selecionado", HttpStatus.BAD_REQUEST);
+        }
         boolean isFull = false;
         for (String nivelAcesso : nvl) {
             if (nivelAcesso.equalsIgnoreCase(NivelAcessoEnum.FULL.toString())) {

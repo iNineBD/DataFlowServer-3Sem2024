@@ -89,6 +89,7 @@ public class LandingZoneService {
             throw new CustomException("Usuário [" + request.getUsuario() + "] não existe", HttpStatus.NOT_FOUND);
         }
 
+        boolean isUpdate = false;
         //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
         if (arqBD.isEmpty()) {
@@ -99,10 +100,11 @@ public class LandingZoneService {
             arquivo.setAtivo(true);
             arquivoRepository.save(arquivo);
             arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
-            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Insert file", Estagio.LZ, Acao.INSERIR);
+            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Arquivo inserido", Estagio.LZ, Acao.INSERIR);
         }
         else {
-            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Update file", Estagio.LZ, Acao.ALTERAR);
+            isUpdate  = true;
+            logger.insert(userBD.get().getId(), arqBD.get().getId(), "Arquivo atualizado", Estagio.LZ, Acao.ALTERAR);
         }
         arqBD.get().setStatus(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao());
         arqBD.get().setAtivo(true);
@@ -121,34 +123,38 @@ public class LandingZoneService {
             newMetadado.setIsAtivo(metadadoJson.getAtivo());
             newMetadado.setExemplo(metadadoJson.getSampleValue());
             if (!metadadoJson.getAtivo()) {
+                logger.insert(userBD.get().getId(), arqBD.get().getId(), "O metadado [" + metadadoJson.getNome() + "] foi inativado", Estagio.LZ, Acao.INSERIR);
                 metadataRepository.save(newMetadado);
                 continue;
             }
             if (nomes_colunas.get(metadadoJson.getNome()) != null){
                 throw new CustomException("O nome do metadado ["+metadadoJson.getNome()+"] já está sendo usado!", HttpStatus.BAD_REQUEST);
             }
+
+            // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
+            if (metadadoJson.getNomeTipo() == null || metadadoJson.getNomeTipo().isEmpty()){
+                throw new CustomException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo", HttpStatus.BAD_REQUEST);
+            }
+
             nomes_colunas.put(metadadoJson.getNome(), Boolean.TRUE);
             newMetadado.setDescricao(metadadoJson.getDescricao());
             if (metadadoJson.getValorPadrao() == null || metadadoJson.getValorPadrao().equals("")) todos_metados_com_vlr_padrao = false;
 
             if (metadadoJson.getNomeTipo().equals("Inteiro")){
-                if (!Validate.isInteger(metadadoJson.getValorPadrao())){
+                if (!Validate.isInteger(metadadoJson.getValorPadrao()) && metadadoJson.getValorPadrao() != null){
                     throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número, pois o mesmo é INTEIRO", HttpStatus.BAD_REQUEST);
                 }
             }
 
             if (metadadoJson.getNomeTipo().equals("Decimal")){
-                if (!Validate.isDouble(metadadoJson.getValorPadrao())){
+                if (!Validate.isDouble(metadadoJson.getValorPadrao()) && (metadadoJson.getValorPadrao() != null && !metadadoJson.getValorPadrao().isEmpty())){
                     throw new CustomException("O campo [Valor Padrão] do metadado ["+ metadadoJson.getNome() + "] precisa ser um número decimal, pois o mesmo é DECIMAL", HttpStatus.BAD_REQUEST);
                 }
             }
 
             newMetadado.setValorPadrao(metadadoJson.getValorPadrao());
 
-            // SE O CAMPO "TIPO" DO METADADO FOR NULO, ELE ESTOURA ESTA "CRITICA"
-            if (metadadoJson.getNomeTipo() == null || metadadoJson.getNomeTipo().isEmpty()){
-                throw new CustomException("O tipo do metadado ["+metadadoJson.getNome()+"] não pode ser nulo", HttpStatus.BAD_REQUEST);
-            }
+
 
             if (metadadoJson.getNomeTipo().equals("Booleano") && (metadadoJson.getValorPadrao() != null && !metadadoJson.getValorPadrao().equals(""))){
                 if (!metadadoJson.getValorPadrao().equalsIgnoreCase("true") && !metadadoJson.getValorPadrao().equalsIgnoreCase("false")){
@@ -185,6 +191,7 @@ public class LandingZoneService {
             }
             //ADICIONANDO AS RESTRIÇOES NO METADADO
             newMetadado.setRestricoes(newRestricoes);
+            logger.insert(userBD.get().getId(), arqBD.get().getId(), "O metadado [" + metadadoJson.getNome() + "] foi inserido.", Estagio.LZ, Acao.INSERIR);
             metadataRepository.save(newMetadado);
         }
 
@@ -194,7 +201,7 @@ public class LandingZoneService {
     }
 
     @Transactional(rollbackFor = CustomException.class)
-    public ResponseBodyGetMetadadosDTO getMetadados(String user, String nomeArquivo) throws CustomException {
+    public ResponseBodyGetMetadadosDTO getMetadados(String user, String nomeArquivo, String cnpj) throws CustomException {
         //CONFERE SE O USUARIO QUE SUBIU O JSON JA EXISTE NA BASE
         Optional<Usuario> userBD = usuarioRepository.findByEmailCustom(user);
         //SE NÃO EXISTIR, ELE SOLTA ESTA "CRITICA"
@@ -205,7 +212,7 @@ public class LandingZoneService {
         boolean havePermission = false;
         boolean isFullAndMaster = false;
         for (NivelAcesso n : userBD.get().getNiveisAcesso()){
-            if (n.getNivel().equals(NivelAcessoEnum.LZ.toString()) || n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString())){
+            if (n.getNivel().equals(NivelAcessoEnum.LZ.toString()) || n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString()) || n.getNivel().equals(NivelAcessoEnum.B.toString())){
                 havePermission = true;
             }
             if (n.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || n.getNivel().equals(NivelAcessoEnum.FULL.toString())){
@@ -219,10 +226,8 @@ public class LandingZoneService {
 
         Optional<Arquivo> arqBD = Optional.empty();
         if (isFullAndMaster){
-            List<Arquivo> temp = arquivoRepository.findAllByNomeArquivo(nomeArquivo);
-            if (!temp.isEmpty()){
-                arqBD = Optional.of(temp.getFirst());
-            }
+            arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, cnpj);
+
         } else {
             //CONFERE SE O ARQUIVO QUE SUBIU O JSON JA EXISTE NA BASE
             arqBD = arquivoRepository.findByNameAndOrganization(nomeArquivo, userBD.get().getOrganizacao().getCnpj());

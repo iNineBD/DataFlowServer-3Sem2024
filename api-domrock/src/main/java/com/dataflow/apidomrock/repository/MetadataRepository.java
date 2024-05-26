@@ -19,6 +19,9 @@ public interface MetadataRepository extends JpaRepository<Metadata, Integer> {
     @Query("select m from Metadata m where m.arquivo.id = :idArquivo")
     List<Metadata> findByArquivo(int idArquivo);
 
+    @Query("select m from Metadata m where m.arquivo.id = :idArquivo and m.isAtivo = true")
+    List<Metadata> findByArquivoAndMetadadoIsAtivo(int idArquivo);
+
     @Query("select m.ID from Metadata m where m.arquivo.id = :idArquivo and m.nome = :nomeMetadado")
     int findByArquivoAndMetadado(int idArquivo,String nomeMetadado);
 
