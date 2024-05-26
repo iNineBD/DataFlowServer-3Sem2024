@@ -46,6 +46,6 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
     @Query("select l.observacao from Log l  where l.arquivo.id = :idArquivo and l.arquivo.status = 'Não aprovado pela Silver' and l.acao = 'REPROVAR' order by l.dataHora desc limit 1")
     String findObservacao(int idArquivo);
 
-    @Query("select a from Arquivo a where Arquivo.organizacao.cnpj = :cnpj and Arquivo.isAtivo = true")
+    @Query("select a from Arquivo a where a.organizacao.cnpj = :cnpj and a.isAtivo = true")
     List<Arquivo> findAllFiles(String cnpj);
 }
