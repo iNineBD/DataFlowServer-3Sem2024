@@ -62,7 +62,7 @@ public class AnalyticsService {
         }
 
         for (Organizacao o : orgBD) {
-            List<Arquivo> arqsBD = arquivoRepository.findAllByOrganizacao_Cnpj(o.getCnpj());
+            List<Arquivo> arqsBD = arquivoRepository.findAllByOrganizacao_CnpjAAndAndAtivo(o.getCnpj());
             if (arqsBD.isEmpty()) {
                 continue;
             }
