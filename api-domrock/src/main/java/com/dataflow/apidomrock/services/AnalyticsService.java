@@ -62,7 +62,7 @@ public class AnalyticsService {
         }
 
         for (Organizacao o : orgBD) {
-            List<Arquivo> arqsBD = arquivoRepository.findAllByOrganizacao_CnpjAAndAndAtivo(o.getCnpj());
+            List<Arquivo> arqsBD = arquivoRepository.findAllFiles(o.getCnpj());
             if (arqsBD.isEmpty()) {
                 continue;
             }
@@ -91,7 +91,7 @@ public class AnalyticsService {
             throw new CustomException("Organização não encontrada", HttpStatus.BAD_REQUEST);
         }
 
-        List<Arquivo> arqsBD = arquivoRepository.findAllByOrganizacao_Cnpj(cnpj);
+        List<Arquivo> arqsBD = arquivoRepository.findAllFiles(cnpj);
         if (arqsBD.isEmpty()) {
             metricsFilesDTOList.add(new MetricsFilesDTO(orgBD.get().getNome(), metrica));
             return metricsFilesDTOList;

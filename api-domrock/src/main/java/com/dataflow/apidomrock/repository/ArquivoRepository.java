@@ -2,8 +2,6 @@ package com.dataflow.apidomrock.repository;
 
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
-import com.dataflow.apidomrock.entities.database.Organizacao;
-import com.dataflow.apidomrock.entities.database.Usuario;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -48,5 +46,6 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Integer> {
     @Query("select l.observacao from Log l  where l.arquivo.id = :idArquivo and l.arquivo.status = 'Não aprovado pela Silver' and l.acao = 'REPROVAR' order by l.dataHora desc limit 1")
     String findObservacao(int idArquivo);
 
-    List<Arquivo> findAllByOrganizacao_CnpjAAndAndAtivo(String cnpj);
+    @Query("select a from Arquivo a where Arquivo.organizacao.cnpj = :cnpj and Arquivo.isAtivo = true")
+    List<Arquivo> findAllFiles(String cnpj);
 }
