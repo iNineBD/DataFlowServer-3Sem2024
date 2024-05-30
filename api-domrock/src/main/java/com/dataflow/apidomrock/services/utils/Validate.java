@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class Validate {
@@ -106,5 +107,10 @@ public class Validate {
         int digitoVerificador2 = (resto < 2) ? 0 : (11 - resto);
 
         return Character.getNumericValue(cnpj.charAt(13)) == digitoVerificador2;
+    }
+
+    public static String includeSufix(String input){
+        String[] a = input.split("\\.");
+        return a[0] + "_" + UUID.randomUUID().toString().substring(0,4) + "." + a[1];
     }
 }
