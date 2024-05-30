@@ -14,6 +14,7 @@ import com.dataflow.apidomrock.dto.getmetadadostotepara.RequestMetaToDePara;
 import com.dataflow.apidomrock.dto.getmetadadostotepara.ResponseMetaToDePara;
 import com.dataflow.apidomrock.dto.savedepara.RequestSaveDePara;
 import com.dataflow.apidomrock.dto.setstatussz.RequestBodySetStatusSz;
+import com.dataflow.apidomrock.dto.uploadsilver.ResponseDeParasSilver;
 import com.dataflow.apidomrock.dto.visualizeDePara.MetadadosDeParaVisualize;
 import com.dataflow.apidomrock.dto.visualizeDePara.RequestDadosToDePara;
 import com.dataflow.apidomrock.dto.visualizeDePara.ResponseDeParas;
@@ -106,8 +107,9 @@ public class SilverZoneController {
     @PostMapping("/upload")
     @Operation(summary = "Recebe o arquivo de de  paras",method = "POST")
     @ApiDefaultResponses
-    public ResponseEntity<ResponseCustomDTO<String>> uploadArquivo(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter, @RequestParam(required = false) boolean header, @RequestParam String email, @RequestParam String cnpj, @RequestParam String nomeArquivo) throws CustomException, IOException {
-        silverZoneService.upload(multipartFile, delimiter, header, email,cnpj,nomeArquivo);
-        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
+    public ResponseEntity<ResponseCustomDTO<ResponseDeParasSilver>> uploadSilver(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter, @RequestParam(required = false) boolean header, @RequestParam String email, @RequestParam String cnpj, @RequestParam String nomeArquivo) throws CustomException, IOException {
+        List<MetadadosDeParaVisualize> listaDeParas =  silverZoneService.upload(multipartFile, delimiter, header, email,cnpj,nomeArquivo);
+        ResponseDeParasSilver response = new ResponseDeParasSilver(email,nomeArquivo,cnpj,listaDeParas);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 }

@@ -317,7 +317,7 @@ public class SilverZoneService {
     }
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
-    public void upload(MultipartFile multipartFile, String delimiter, boolean header, String email, String cnpj,String nomeArquivo) throws IOException, CustomException {
+    public List<MetadadosDeParaVisualize> upload(MultipartFile multipartFile, String delimiter, boolean header, String email, String cnpj,String nomeArquivo) throws IOException, CustomException {
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
@@ -340,14 +340,14 @@ public class SilverZoneService {
         if (isCSV) {
             if (header){
 
-                processFiles.processCSVFileWithHeaderToSilver(multipartFile, delimiter, header,cnpj,nomeArquivo);
+                 return processFiles.processCSVFileWithHeaderToSilver(multipartFile, delimiter, header,cnpj,nomeArquivo);
             }
-            processFiles.processCSVFileNotHeaderToSilver(multipartFile, delimiter, header,cnpj,nomeArquivo);
+            return processFiles.processCSVFileNotHeaderToSilver(multipartFile, delimiter, header,cnpj,nomeArquivo);
         } else {
             if (header){
-                processFiles.processExcelFileWithHeaderToSilver(multipartFile,cnpj,nomeArquivo);
+                return processFiles.processExcelFileWithHeaderToSilver(multipartFile,cnpj,nomeArquivo);
             }
-            processFiles.processExcelFileWithOutHeaderToSilver(multipartFile,cnpj,nomeArquivo);
+            return processFiles.processExcelFileWithOutHeaderToSilver(multipartFile,cnpj,nomeArquivo);
         }
     }
 }

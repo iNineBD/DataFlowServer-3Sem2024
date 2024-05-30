@@ -3,6 +3,10 @@ package com.dataflow.apidomrock.services.utils;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
+import com.dataflow.apidomrock.dto.uploadsilver.MetadadosDeParaVisualizeSilver;
+import com.dataflow.apidomrock.dto.uploadsilver.ResponseDeParasSilver;
+import com.dataflow.apidomrock.dto.visualizeDePara.DeParasVisualize;
+import com.dataflow.apidomrock.dto.visualizeDePara.MetadadosDeParaVisualize;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.DePara;
 import com.dataflow.apidomrock.entities.database.Metadata;
@@ -78,35 +82,19 @@ public class ProcessFiles {
         return new ResponseUploadCSVDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
     }
 
-    public void processCSVFileWithHeaderToSilver(MultipartFile multipartFile, String delimiter, boolean header,String cnpj,String nomeArquivo) throws IOException, CustomException {
-        // Lendo o arquivo
+    public List<MetadadosDeParaVisualize> processCSVFileWithHeaderToSilver(MultipartFile multipartFile, String delimiter, boolean header, String cnpj, String nomeArquivo) throws IOException, CustomException {
         BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
-        String line = "";
+        String line;
 
-        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(nomeArquivo,cnpj);
-
-        if(arquivo.isEmpty()){
+        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(nomeArquivo, cnpj);
+        if (arquivo.isEmpty()) {
             throw new CustomException("Não foi possível identificar o arquivo passado.", HttpStatus.BAD_REQUEST);
-        }else {
-            if (header) {
-                while ((line = rd.readLine()) != null) {
-                    if (!line.trim().isEmpty()) {
-                        break;
-                    }
-                }
-            }
-            if (line == null || line.isEmpty()) {
-                throw new CustomException("Não foi possível identificar o header do arquivo.", HttpStatus.BAD_REQUEST);
-            }
+        } else {
+            List<MetadadosDeParaVisualize> metadadosList = new ArrayList<>();
 
-            // Isso foi feito para minimizar problemas do tipo: CSV não íntegro
-            while (line.endsWith(";")) {
-                line = line.substring(0, line.length() - 1);
-            }
-
-            // Pular a leitura do cabeçalho, se existir
             if (header) {
-                rd.readLine();  // lê a primeira linha de dados
+                // Ignora a primeira linha se header é verdadeiro
+                rd.readLine();
             }
 
             while ((line = rd.readLine()) != null) {
@@ -119,22 +107,25 @@ public class ProcessFiles {
                     throw new CustomException("O arquivo CSV não está no formato de 3 colunas, por favor, ajuste!", HttpStatus.BAD_REQUEST);
                 }
 
-                // Criar Metadados usando as 3 colunas
                 String metadado = content[0];
                 String de = content[1];
                 String para = content[2];
 
-                List<Metadata> metadatas = arquivo.get().getMetadados();
+                // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
+                Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
+                        .filter(metadados -> metadados.nome().equals(metadado))
+                        .findFirst();
 
-                for(Metadata m : metadatas){
-                    if(m.getIsAtivo()){
-                        if(m.getNome().equalsIgnoreCase(metadado)){
-                            int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.get().getId(),metadado.toUpperCase().trim());
-                            deParaRepository.saveDePara(idMetadado,de, para);
-                        }
-                    }
+                if (existingMetadados.isPresent()) {
+                    existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
+                } else {
+                    MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
+                            new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
+                    metadadosList.add(metadados);
                 }
             }
+
+            return metadadosList;
         }
     }
 
@@ -175,7 +166,7 @@ public class ProcessFiles {
         return new ResponseUploadCSVDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
     }
 
-    public void processCSVFileNotHeaderToSilver(MultipartFile multipartFile, String delimiter, boolean header, String cnpj, String nomeArquivo) throws IOException, CustomException {
+    public List<MetadadosDeParaVisualize> processCSVFileNotHeaderToSilver(MultipartFile multipartFile, String delimiter, boolean header, String cnpj, String nomeArquivo) throws IOException, CustomException {
         // Lendo o arquivo
         BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
         String line = "";
@@ -185,6 +176,9 @@ public class ProcessFiles {
         if (arquivo.isEmpty()) {
             throw new CustomException("Não foi possível identificar o arquivo passado.", HttpStatus.BAD_REQUEST);
         } else {
+
+            List<MetadadosDeParaVisualize> metadadosList = new ArrayList<>();
+
             if (!header) {
                 while ((line = rd.readLine()) != null) {
                     if (!line.trim().isEmpty()) {
@@ -216,17 +210,20 @@ public class ProcessFiles {
                 String de = content[1];
                 String para = content[2];
 
-                List<Metadata> metadatasList = arquivo.get().getMetadados();
+                // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
+                Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
+                        .filter(metadados -> metadados.nome().equals(metadado))
+                        .findFirst();
 
-                for (Metadata m : metadatasList) {
-                    if (m.getIsAtivo()) {
-                        if (m.getNome().equalsIgnoreCase(metadado)) {
-                            int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.get().getId(), metadado.toUpperCase().trim());
-                            deParaRepository.saveDePara(idMetadado, de, para);
-                        }
-                    }
+                if (existingMetadados.isPresent()) {
+                    existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
+                } else {
+                    MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
+                            new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
+                    metadadosList.add(metadados);
                 }
             }
+            return metadadosList;
         }
     }
 
@@ -284,12 +281,14 @@ public class ProcessFiles {
         return new ResponseUploadCSVDTO(file.getOriginalFilename(), fileSize, metadatas);
     }
 
-    public void processExcelFileWithHeaderToSilver(MultipartFile file, String cnpj, String nomeArquivo) throws IOException, CustomException {
+    public List<MetadadosDeParaVisualize>  processExcelFileWithHeaderToSilver(MultipartFile file, String cnpj, String nomeArquivo) throws IOException, CustomException {
         Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(nomeArquivo, cnpj);
 
         if (arquivo.isEmpty()) {
             throw new CustomException("Não foi possível identificar o arquivo passado.", HttpStatus.BAD_REQUEST);
         }
+
+        List<MetadadosDeParaVisualize> metadadosList = new ArrayList<>();
 
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
         Sheet sheet = workbook.getSheetAt(0);
@@ -315,16 +314,21 @@ public class ProcessFiles {
             String de = currentRow.getCell(1).getStringCellValue().trim();
             String para = currentRow.getCell(2).getStringCellValue().trim();
 
-            List<Metadata> metadatas = arquivo.get().getMetadados();
+            // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
+            Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
+                    .filter(metadados -> metadados.nome().equals(metadado))
+                    .findFirst();
 
-            for (Metadata m : metadatas) {
-                if (m.getIsAtivo() && m.getNome().equalsIgnoreCase(metadado)) {
-                    int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.get().getId(), metadado);
-                    deParaRepository.saveDePara(idMetadado, de, para);
-                }
+            if (existingMetadados.isPresent()) {
+                existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
+            } else {
+                MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
+                        new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
+                metadadosList.add(metadados);
             }
         }
-    }
+        return metadadosList;
+        }
 
     public static ResponseUploadCSVDTO processExcelFileWithOutHeader(MultipartFile file) throws CustomException {
 
@@ -354,7 +358,7 @@ public class ProcessFiles {
         return new ResponseUploadCSVDTO(file.getOriginalFilename(), fileSize, metadatas);
     }
 
-    public void processExcelFileWithOutHeaderToSilver(MultipartFile file, String cnpj, String nomeArquivo) throws CustomException, IOException {
+    public List<MetadadosDeParaVisualize> processExcelFileWithOutHeaderToSilver(MultipartFile file, String cnpj, String nomeArquivo) throws CustomException, IOException {
 
         Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(nomeArquivo, cnpj);
 
@@ -371,6 +375,8 @@ public class ProcessFiles {
             throw new CustomException("O arquivo Excel não está no formato de 3 colunas, por favor, ajuste!", HttpStatus.BAD_REQUEST);
         }
 
+        List<MetadadosDeParaVisualize> metadadosList = new ArrayList<>();
+
         // Agora processa as linhas, assumindo que todas têm 3 colunas
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             Row currentRow = sheet.getRow(i);
@@ -382,15 +388,20 @@ public class ProcessFiles {
             String de = currentRow.getCell(1).getStringCellValue().trim();
             String para = currentRow.getCell(2).getStringCellValue().trim();
 
-            List<Metadata> metadatas = arquivo.get().getMetadados();
+            // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
+            Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
+                    .filter(metadados -> metadados.nome().equals(metadado))
+                    .findFirst();
 
-            for (Metadata m : metadatas) {
-                if (m.getIsAtivo() && m.getNome().equalsIgnoreCase(metadado)) {
-                    int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.get().getId(), metadado);
-                    deParaRepository.saveDePara(idMetadado, de, para);
-                }
+            if (existingMetadados.isPresent()) {
+                existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
+            } else {
+                MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
+                        new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
+                metadadosList.add(metadados);
             }
         }
+        return metadadosList;
     }
 
     private static String getColumnName(Row headerRow, int columnIndex) {
