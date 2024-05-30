@@ -3,9 +3,17 @@ package com.dataflow.apidomrock.services.utils;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
+import com.dataflow.apidomrock.entities.database.Arquivo;
+import com.dataflow.apidomrock.entities.database.DePara;
+import com.dataflow.apidomrock.entities.database.Metadata;
+import com.dataflow.apidomrock.repository.ArquivoRepository;
+import com.dataflow.apidomrock.repository.DeParaRepository;
+import com.dataflow.apidomrock.repository.MetadataRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -15,8 +23,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+
+@Component
 public class ProcessFiles {
+
+    @Autowired
+    ArquivoRepository arquivoRepository;
+    @Autowired
+    DeParaRepository deParaRepository;
+    @Autowired
+    MetadataRepository metadataRepository;
+
     public static ResponseUploadCSVDTO processCSVFileWithHeader(MultipartFile multipartFile, String delimiter, boolean header) throws IOException, CustomException {
         //lendo o arquivo
         BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
@@ -57,6 +76,66 @@ public class ProcessFiles {
         double fileSize = (double) multipartFile.getSize() / (1024 * 1024);
 
         return new ResponseUploadCSVDTO(multipartFile.getOriginalFilename(), fileSize, metadatas);
+    }
+
+    public void processCSVFileWithHeaderToSilver(MultipartFile multipartFile, String delimiter, boolean header,String cnpj,String nomeArquivo) throws IOException, CustomException {
+        // Lendo o arquivo
+        BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
+        String line = "";
+
+        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(nomeArquivo,cnpj);
+
+        if(arquivo.isEmpty()){
+            throw new CustomException("Não foi possível identificar o arquivo passado.", HttpStatus.BAD_REQUEST);
+        }else {
+            if (header) {
+                while ((line = rd.readLine()) != null) {
+                    if (!line.trim().isEmpty()) {
+                        break;
+                    }
+                }
+            }
+            if (line == null || line.isEmpty()) {
+                throw new CustomException("Não foi possível identificar o header do arquivo.", HttpStatus.BAD_REQUEST);
+            }
+
+            // Isso foi feito para minimizar problemas do tipo: CSV não íntegro
+            while (line.endsWith(delimiter)) {
+                line = line.substring(0, line.length() - 1);
+            }
+
+            // Pular a leitura do cabeçalho, se existir
+            if (header) {
+                line = rd.readLine();  // lê a primeira linha de dados
+            }
+
+            while ((line = rd.readLine()) != null) {
+                line = line.trim();
+                while (line.endsWith(delimiter)) {
+                    line = line.substring(0, line.length() - 1);
+                }
+                String[] content = line.split(delimiter);
+                if (content.length != 3) {
+                    throw new CustomException("O arquivo CSV não está no formato de 3 colunas, por favor, ajuste!", HttpStatus.BAD_REQUEST);
+                }
+
+                // Criar Metadados usando as 3 colunas
+                String metadado = content[0];
+                String de = content[1];
+                String para = content[2];
+
+                List<Metadata> metadatas = arquivo.get().getMetadados();
+
+                for(Metadata m : metadatas){
+                    if(m.getIsAtivo()){
+                        if(m.getNome().equalsIgnoreCase(metadado)){
+                            int idMetadado = metadataRepository.findByArquivoAndMetadado(arquivo.get().getId(),metadado.toUpperCase().trim());
+                            deParaRepository.saveDePara(idMetadado,de, para);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static ResponseUploadCSVDTO processCSVFileNotHeader(MultipartFile multipartFile, String delimiter, boolean header) throws IOException, CustomException {
