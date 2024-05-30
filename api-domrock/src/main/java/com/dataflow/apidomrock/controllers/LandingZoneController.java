@@ -10,12 +10,7 @@ import com.dataflow.apidomrock.services.utils.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
@@ -65,9 +60,18 @@ public class LandingZoneController {
     @Operation(summary = "Busca metadados no banco de dados", method = "POST")
     @ApiDefaultResponses
     @PostMapping("/upsert")
+    public ResponseEntity<ResponseCustomDTO<String>> insertMetadadosInDataBase(
+            @RequestBody RequestBodyUpdateMetaDTO requestBodyUpdateMetaDTO) throws CustomException {
+        lzService.updateMetadadosInDatabase(requestBodyUpdateMetaDTO, false);
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
+    }
+
+    @Operation(summary = "Busca metadados no banco de dados", method = "POST")
+    @ApiDefaultResponses
+    @PutMapping("/upsert")
     public ResponseEntity<ResponseCustomDTO<String>> updateMetadadosInDataBase(
             @RequestBody RequestBodyUpdateMetaDTO requestBodyUpdateMetaDTO) throws CustomException {
-        lzService.updateMetadadosInDatabase(requestBodyUpdateMetaDTO);
+        lzService.updateMetadadosInDatabase(requestBodyUpdateMetaDTO, true);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", null));
     }
 
