@@ -24,8 +24,17 @@ public class MapperYamlController {
     MapperYAMLService mapperYAMLService;
 
     @PostMapping("/landing")
-    public ResponseEntity<Resource>  mapperYaml(@RequestBody RequestMapperDTO request) throws CustomException, JsonProcessingException {
+    public ResponseEntity<Resource>  mapperLandingYaml(@RequestBody RequestMapperDTO request) throws CustomException, JsonProcessingException {
         Resource response = mapperYAMLService.generateLandingYAML(request.nomeArquivo(), request.organizacao());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=landing.yaml");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
+        return new ResponseEntity<>(response, headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/bronze")
+    public ResponseEntity<Resource>  mapperBronzeYaml(@RequestBody RequestMapperDTO request) throws CustomException, JsonProcessingException {
+        Resource response = mapperYAMLService.generateBronzeYAML(request.nomeArquivo(), request.organizacao());
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=landing.yaml");
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");

@@ -69,4 +69,11 @@ public class MapperYAMLService {
     }
 
 
+    @Transactional(readOnly = false, rollbackFor = CustomException.class)
+    public Resource generateBronzeYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
+
+        return new ByteArrayResource(null);
+    }
+
+
 }
