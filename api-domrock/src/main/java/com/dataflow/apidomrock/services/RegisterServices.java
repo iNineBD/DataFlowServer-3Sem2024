@@ -1,6 +1,7 @@
 package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
+import com.dataflow.apidomrock.dto.registerdto.AutenticacaoDTO;
 import com.dataflow.apidomrock.dto.registerdto.UsuarioDTO;
 import com.dataflow.apidomrock.dto.registerdto.ValidacaoDTO;
 import com.dataflow.apidomrock.entities.database.Organizacao;
@@ -10,12 +11,15 @@ import com.dataflow.apidomrock.repository.OrganizacaoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.mail.MailService;
 import com.dataflow.apidomrock.services.utils.Encrypt;
+import com.dataflow.apidomrock.services.utils.TokenService;
 import com.dataflow.apidomrock.services.utils.Validate;
 import com.dataflow.apidomrock.services.utils.ValidateNivelAcesso;
 import jakarta.mail.MessagingException;
 import jakarta.mail.SendFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,11 @@ public class RegisterServices {
     MailService mailService;
     @Autowired
     ValidateNivelAcesso validateNivelAcesso;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+    @Autowired
+    private TokenService tokenService;
 
     @Transactional(rollbackFor = CustomException.class)
     public void registerInDatabase(UsuarioDTO register) throws CustomException {
@@ -117,4 +126,21 @@ public class RegisterServices {
             throw new CustomException("Usuário " + completionRegister.getEmailUsuario() + " não foi cadastrado previamente", HttpStatus.NOT_FOUND);
         }
     }
+
+    @Transactional(rollbackFor = CustomException.class)
+    public String login(AutenticacaoDTO autenticacaoDTO) throws CustomException, NoSuchAlgorithmException {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(), autenticacaoDTO.getSenha());
+        var auth = this.authenticationManager.authenticate(usernamePassword);
+        Usuario u = (Usuario) auth.getPrincipal();
+        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
+        return token;
+    }
+
+    public Usuario getUsuario(AutenticacaoDTO autenticacaoDTO) throws CustomException, NoSuchAlgorithmException {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(), autenticacaoDTO.getSenha());
+        var auth = this.authenticationManager.authenticate(usernamePassword);
+        Usuario u = (Usuario) auth.getPrincipal();
+        return u;
+    }
+
 }

@@ -34,8 +34,7 @@ public class RegisterController {
     RegisterServices registerServices;
     @Autowired
     AuthenticationManager authenticationManager;
-    @Autowired
-    private TokenService tokenService;
+
 
     @Operation(summary = "Cadastra usuário no banco de dados", method = "POST")
     @ApiDefaultResponses
@@ -58,17 +57,10 @@ public class RegisterController {
     @Operation(summary = "Login de usuário", method = "POST")
     @ApiDefaultResponses
     @PostMapping("/login")
-    public ResponseEntity<ResponseCustomDTO<ResponseLoginDTO>> userLogin(
-            @RequestBody @Validated AutenticacaoDTO autenticacaoDTO) throws CustomException, CustomException {
-        var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(),
-                autenticacaoDTO.getSenha());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
-        Usuario u = (Usuario) auth.getPrincipal();
-        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
-        System.out.println("\n\n\nBaerer " + token);
-
+    public ResponseEntity<ResponseCustomDTO<ResponseLoginDTO>> userLogin( @RequestBody @Validated AutenticacaoDTO autenticacaoDTO) throws CustomException, CustomException, NoSuchAlgorithmException {
+        String token = registerServices.login(autenticacaoDTO);
+        Usuario u = registerServices.getUsuario(autenticacaoDTO);
         return ResponseEntity.ok()
-                .body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", new ResponseLoginDTO(token,
-                        u.getNome(), u.getEmail(), (u.getNiveisAcesso().get(0).getNivel().equals("MASTER")))));
+                .body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", new ResponseLoginDTO(token, u.getNome(), u.getEmail(), (u.getNiveisAcesso().get(0).getNivel().equals("MASTER")))));
     }
 }
