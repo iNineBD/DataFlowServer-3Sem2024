@@ -11,6 +11,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.util.List;
 
@@ -22,13 +26,22 @@ public class BronzeYAML {
     private String fileName;
     private String currentStage;
     private OrganizacaoYAML organization;
-    private List<MetadadoYAML> metadatas;
+    private List<String> hash;
+
 
 
     public String toYAML() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // Exclude null values
-        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-        return mapper.writeValueAsString(this);
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setPrettyFlow(true);
+
+        // Custom Representer to remove class tag
+        Representer representer = new Representer(options);
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        representer.addClassTag(BronzeYAML.class, Tag.MAP);
+        representer.addClassTag(OrganizacaoYAML.class, Tag.MAP);
+
+        Yaml yaml = new Yaml(representer, options);
+        return yaml.dump(this);
     }
 }

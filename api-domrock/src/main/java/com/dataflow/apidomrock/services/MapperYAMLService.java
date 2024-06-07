@@ -4,6 +4,7 @@ import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.entities.database.Arquivo;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Restricao;
+import com.dataflow.apidomrock.entities.objectYAML.bronze.BronzeYAML;
 import com.dataflow.apidomrock.entities.objectYAML.landing.LandingYAML;
 import com.dataflow.apidomrock.entities.objectYAML.landing.MetadadoYAML;
 import com.dataflow.apidomrock.entities.objectYAML.landing.OrganizacaoYAML;
@@ -72,7 +73,27 @@ public class MapperYAMLService {
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
     public Resource generateBronzeYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
 
-        return new ByteArrayResource(null);
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(fileName, companyDocument);
+        StringBuilder bld = new StringBuilder();
+        if (arqBD.isEmpty()) {
+            throw new CustomException(bld.append("O arquivo [").append(fileName).append("] não foi encontrado.").toString(), HttpStatus.BAD_REQUEST);
+        }
+
+        BronzeYAML bronzeYAML = new BronzeYAML();
+        bronzeYAML.setFileName(fileName);
+        bronzeYAML.setCurrentStage(arqBD.get().getStatus());
+
+        OrganizacaoYAML organizacaoYAML = new OrganizacaoYAML(arqBD.get().getOrganizacao().getNome(), arqBD.get().getOrganizacao().getCnpj());
+        bronzeYAML.setOrganization(organizacaoYAML);
+
+        List<String> metadados = new ArrayList<>();
+        for (Metadata m : arqBD.get().getHash()) {
+            metadados.add(m.getNome());
+        }
+
+        bronzeYAML.setHash(metadados);
+
+        return new ByteArrayResource(bronzeYAML.toYAML().getBytes());
     }
 
 

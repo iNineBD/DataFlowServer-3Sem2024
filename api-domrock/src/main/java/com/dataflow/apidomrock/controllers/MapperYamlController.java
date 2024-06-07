@@ -36,9 +36,8 @@ public class MapperYamlController {
     public ResponseEntity<Resource>  mapperBronzeYaml(@RequestBody RequestMapperDTO request) throws CustomException, JsonProcessingException {
         Resource response = mapperYAMLService.generateBronzeYAML(request.nomeArquivo(), request.organizacao());
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=landing.yaml");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bronze.yaml");
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
         return new ResponseEntity<>(response, headers, HttpStatus.OK);
     }
-
 }
