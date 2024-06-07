@@ -2,13 +2,18 @@ package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.entities.database.Arquivo;
+import com.dataflow.apidomrock.entities.database.DePara;
 import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.entities.database.Restricao;
 import com.dataflow.apidomrock.entities.objectYAML.bronze.BronzeYAML;
 import com.dataflow.apidomrock.entities.objectYAML.landing.LandingYAML;
 import com.dataflow.apidomrock.entities.objectYAML.landing.MetadadoYAML;
 import com.dataflow.apidomrock.entities.objectYAML.landing.OrganizacaoYAML;
+import com.dataflow.apidomrock.entities.objectYAML.silver.MetadadoToFrom;
+import com.dataflow.apidomrock.entities.objectYAML.silver.SilverYAML;
+import com.dataflow.apidomrock.entities.objectYAML.silver.ToFrom;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
+import com.dataflow.apidomrock.repository.DeParaRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -26,6 +31,9 @@ public class MapperYAMLService {
 
     @Autowired
     ArquivoRepository arquivoRepository;
+
+    @Autowired
+    DeParaRepository deParaRepository;
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
     public Resource generateLandingYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
@@ -71,6 +79,45 @@ public class MapperYAMLService {
 
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
+    public Resource generateSilverYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
+
+        Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(fileName, companyDocument);
+        StringBuilder bld = new StringBuilder();
+        if (arqBD.isEmpty()) {
+            throw new CustomException(bld.append("O arquivo [").append(fileName).append("] não foi encontrado.").toString(), HttpStatus.BAD_REQUEST);
+        }
+
+        SilverYAML silverToYaml = new SilverYAML();
+        silverToYaml.setFileName(fileName);
+        silverToYaml.setCurrentStage(arqBD.get().getStatus());
+
+        OrganizacaoYAML organizacaoYAML = new OrganizacaoYAML(arqBD.get().getOrganizacao().getNome(), arqBD.get().getOrganizacao().getCnpj());
+        silverToYaml.setOrganization(organizacaoYAML);
+
+        List<MetadadoToFrom> deparaToYaml = new ArrayList<>();
+        for (Metadata m : arqBD.get().getMetadados()) {
+            MetadadoToFrom aux = new MetadadoToFrom();
+            aux.setName(m.getNome());
+
+            List<DePara> deparasBD =  deParaRepository.findByIdMetadado(m.getID());
+
+            List<ToFrom> temp = new ArrayList<>();
+            for (DePara deparaBD : deparasBD) {
+                temp.add(new ToFrom(deparaBD.getDe(), deparaBD.getPara()));
+            }
+            if (temp.size() > 0) {
+                aux.setToFrom(temp);
+                deparaToYaml.add(aux);
+            }
+
+        }
+
+        silverToYaml.setMetadadoToFrom(deparaToYaml);
+
+        return new ByteArrayResource(silverToYaml.toYAML().getBytes());
+    }
+
+    @Transactional(readOnly = false, rollbackFor = CustomException.class)
     public Resource generateBronzeYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
 
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(fileName, companyDocument);
@@ -95,6 +142,5 @@ public class MapperYAMLService {
 
         return new ByteArrayResource(bronzeYAML.toYAML().getBytes());
     }
-
 
 }

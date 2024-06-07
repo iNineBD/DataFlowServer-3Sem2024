@@ -40,4 +40,13 @@ public class MapperYamlController {
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
         return new ResponseEntity<>(response, headers, HttpStatus.OK);
     }
+
+    @PostMapping("/silver")
+    public ResponseEntity<Resource>  mapperSilverYaml(@RequestBody RequestMapperDTO request) throws CustomException, JsonProcessingException {
+        Resource response = mapperYAMLService.generateSilverYAML(request.nomeArquivo(), request.organizacao());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=silver.yaml");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
+        return new ResponseEntity<>(response, headers, HttpStatus.OK);
+    }
 }
