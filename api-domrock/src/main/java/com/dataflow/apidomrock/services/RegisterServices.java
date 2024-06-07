@@ -6,14 +6,13 @@ import com.dataflow.apidomrock.dto.registerdto.UsuarioDTO;
 import com.dataflow.apidomrock.dto.registerdto.ValidacaoDTO;
 import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.enums.Acao;
+import com.dataflow.apidomrock.entities.enums.Estagio;
 import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
 import com.dataflow.apidomrock.repository.OrganizacaoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.mail.MailService;
-import com.dataflow.apidomrock.services.utils.Encrypt;
-import com.dataflow.apidomrock.services.utils.TokenService;
-import com.dataflow.apidomrock.services.utils.Validate;
-import com.dataflow.apidomrock.services.utils.ValidateNivelAcesso;
+import com.dataflow.apidomrock.services.utils.*;
 import jakarta.mail.MessagingException;
 import jakarta.mail.SendFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,9 @@ public class RegisterServices {
     AuthenticationManager authenticationManager;
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    Logger logger;
 
     @Transactional(rollbackFor = CustomException.class)
     public void registerInDatabase(UsuarioDTO register) throws CustomException {
@@ -140,6 +142,7 @@ public class RegisterServices {
         var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(), autenticacaoDTO.getSenha());
         var auth = this.authenticationManager.authenticate(usernamePassword);
         Usuario u = (Usuario) auth.getPrincipal();
+        logger.insert(u.getId(), null, null, null, Acao.LOGIN);
         return u;
     }
 

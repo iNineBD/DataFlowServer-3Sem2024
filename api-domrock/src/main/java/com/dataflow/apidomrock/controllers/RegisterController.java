@@ -60,7 +60,6 @@ public class RegisterController {
     public ResponseEntity<ResponseCustomDTO<ResponseLoginDTO>> userLogin( @RequestBody @Validated AutenticacaoDTO autenticacaoDTO) throws CustomException, CustomException, NoSuchAlgorithmException {
         String token = registerServices.login(autenticacaoDTO);
         Usuario u = registerServices.getUsuario(autenticacaoDTO);
-        return ResponseEntity.ok()
-                .body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", new ResponseLoginDTO(token, u.getNome(), u.getEmail(), (u.getNiveisAcesso().get(0).getNivel().equals("MASTER")))));
+        return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", new ResponseLoginDTO(token, u.getNome(), u.getEmail(), (u.getNiveisAcesso().get(0).getNivel().equals("MASTER")))));
     }
 }
