@@ -57,7 +57,30 @@ public class Logger {
       log.setEstagio(estagio.getDescricao());
 
       loggerRepository.save(log);
-  }
+    }
+
+    public void insertToLogout(Integer idUser, Integer idArquivo, String obs, Estagio estagio, Acao acao,Log login) throws CustomException {
+        Optional<Usuario> userBD = usuarioRepository.findById(idUser);
+        if (userBD.isEmpty()) {
+            throw new CustomException("Usuário não identificado", HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Arquivo> arqBD = arquivoRepository.findById(idArquivo);
+        if (arqBD.isEmpty()) {
+            throw new CustomException("Arquivo não identificado", HttpStatus.BAD_REQUEST);
+        }
+
+        Log log = new Log();
+        log.setUsuario(userBD.get());
+        log.setArquivo(arqBD.get());
+        log.setAcao(acao.toString().toUpperCase());
+        log.setDataHora(login.getDataHora().plusHours(2));
+        log.setObservacao(obs);
+        log.setEstagio(estagio.getDescricao());
+
+        loggerRepository.save(log);
+    }
+
     public List<ResponseLog> visualizarLog (RequestLogDTO requestLogDTO)throws CustomException{
 
         Optional<Usuario> u = usuarioRepository.findByEmailCustom(requestLogDTO.email());
