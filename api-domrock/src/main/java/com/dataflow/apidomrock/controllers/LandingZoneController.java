@@ -88,16 +88,4 @@ public class LandingZoneController {
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", retorno));
     }
 
-    @RestController
-    @RequestMapping("/log")
-    @CrossOrigin("*")
-    public static class LogController {
-        @Autowired
-        Logger logger;
-        @PostMapping("/visualizar")
-        public ResponseEntity<ResponseCustomDTO<List<ResponseLog>>>visualizarLog(@RequestBody RequestLogDTO requestLogDTO)throws CustomException{
-            List<ResponseLog> log = logger.visualizarLog(requestLogDTO);
-            return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", log));
-        }
-    }
 }
