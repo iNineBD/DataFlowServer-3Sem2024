@@ -4,6 +4,7 @@ import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.registerdto.AutenticacaoDTO;
 import com.dataflow.apidomrock.dto.registerdto.UsuarioDTO;
 import com.dataflow.apidomrock.dto.registerdto.ValidacaoDTO;
+import com.dataflow.apidomrock.dto.userlogout.LogoutDTO;
 import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
 import com.dataflow.apidomrock.entities.enums.Acao;
@@ -130,7 +131,7 @@ public class RegisterServices {
     }
 
     @Transactional(rollbackFor = CustomException.class)
-    public String login(AutenticacaoDTO autenticacaoDTO) throws CustomException, NoSuchAlgorithmException {
+    public String login(AutenticacaoDTO autenticacaoDTO){
         var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(), autenticacaoDTO.getSenha());
         var auth = this.authenticationManager.authenticate(usernamePassword);
         Usuario u = (Usuario) auth.getPrincipal();
@@ -138,12 +139,21 @@ public class RegisterServices {
         return token;
     }
 
-    public Usuario getUsuario(AutenticacaoDTO autenticacaoDTO) throws CustomException, NoSuchAlgorithmException {
+    public Usuario getUsuario(AutenticacaoDTO autenticacaoDTO) throws CustomException {
         var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(), autenticacaoDTO.getSenha());
         var auth = this.authenticationManager.authenticate(usernamePassword);
         Usuario u = (Usuario) auth.getPrincipal();
         logger.insert(u.getId(), null, null, null, Acao.LOGIN);
         return u;
+    }
+
+    @Transactional(rollbackFor = CustomException.class)
+    public void logout(LogoutDTO request) throws CustomException {
+        Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.email());
+        if(usuario.isPresent()) {
+            throw new CustomException("Usuário não encontrado, erro ao sair da aplicação",HttpStatus.BAD_REQUEST);
+        }
+        logger.insert(usuario.get().getId(), null, null, null, Acao.LOGOUT);
     }
 
 }
