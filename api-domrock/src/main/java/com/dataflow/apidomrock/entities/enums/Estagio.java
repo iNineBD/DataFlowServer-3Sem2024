@@ -3,7 +3,8 @@ package com.dataflow.apidomrock.entities.enums;
 public enum Estagio {
     LZ("Landing Zone"),
     B("Bronze Zone"),
-    S("Silver Zone");
+    S("Silver Zone"),
+    loginLogout("LoginLogout");
 
     private final String descricao;
 

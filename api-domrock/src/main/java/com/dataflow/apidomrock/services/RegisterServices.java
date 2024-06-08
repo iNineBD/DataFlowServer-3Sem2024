@@ -1,21 +1,27 @@
 package com.dataflow.apidomrock.services;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
+import com.dataflow.apidomrock.dto.registerdto.AutenticacaoDTO;
 import com.dataflow.apidomrock.dto.registerdto.UsuarioDTO;
 import com.dataflow.apidomrock.dto.registerdto.ValidacaoDTO;
+import com.dataflow.apidomrock.dto.userlogout.LogoutDTO;
+import com.dataflow.apidomrock.entities.database.Log;
 import com.dataflow.apidomrock.entities.database.Organizacao;
 import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.enums.Acao;
+import com.dataflow.apidomrock.entities.enums.Estagio;
 import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
+import com.dataflow.apidomrock.repository.LogRepository;
 import com.dataflow.apidomrock.repository.OrganizacaoRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.mail.MailService;
-import com.dataflow.apidomrock.services.utils.Encrypt;
-import com.dataflow.apidomrock.services.utils.Validate;
-import com.dataflow.apidomrock.services.utils.ValidateNivelAcesso;
+import com.dataflow.apidomrock.services.utils.*;
 import jakarta.mail.MessagingException;
 import jakarta.mail.SendFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +42,16 @@ public class RegisterServices {
     MailService mailService;
     @Autowired
     ValidateNivelAcesso validateNivelAcesso;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    Logger logger;
+    @Autowired
+    private LogRepository logRepository;
 
     @Transactional(rollbackFor = CustomException.class)
     public void registerInDatabase(UsuarioDTO register) throws CustomException {
@@ -117,4 +133,38 @@ public class RegisterServices {
             throw new CustomException("Usuário " + completionRegister.getEmailUsuario() + " não foi cadastrado previamente", HttpStatus.NOT_FOUND);
         }
     }
+
+    @Transactional(rollbackFor = CustomException.class)
+    public String login(AutenticacaoDTO autenticacaoDTO){
+        var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(), autenticacaoDTO.getSenha());
+        var auth = this.authenticationManager.authenticate(usernamePassword);
+        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
+        return token;
+    }
+
+    public Usuario getUsuario(AutenticacaoDTO autenticacaoDTO) throws CustomException {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(), autenticacaoDTO.getSenha());
+        var auth = this.authenticationManager.authenticate(usernamePassword);
+        Usuario u = (Usuario) auth.getPrincipal();
+        Log logout = logRepository.findByUsuario(u.getId());
+        if(logout == null){
+            logger.insert(u.getId(), null, null,Estagio.loginLogout, Acao.LOGIN);
+        }else {
+            if(logout.getAcao().equalsIgnoreCase(Acao.LOGIN.toString())){
+                logger.insertToLogout(u.getId(), null, null, Estagio.loginLogout, Acao.LOGOUT,logout);
+            }
+            logger.insert(u.getId(), null, null, Estagio.loginLogout, Acao.LOGIN);
+        }
+        return u;
+    }
+
+    @Transactional(rollbackFor = CustomException.class)
+    public void logout(LogoutDTO request) throws CustomException {
+        Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.email());
+        if(usuario.isPresent()) {
+            throw new CustomException("Usuário não encontrado, erro ao sair da aplicação",HttpStatus.BAD_REQUEST);
+        }
+        logger.insert(usuario.get().getId(), 0, null, Estagio.loginLogout, Acao.LOGOUT);
+    }
+
 }
