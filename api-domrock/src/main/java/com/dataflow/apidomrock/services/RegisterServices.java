@@ -147,10 +147,14 @@ public class RegisterServices {
         var auth = this.authenticationManager.authenticate(usernamePassword);
         Usuario u = (Usuario) auth.getPrincipal();
         Log logout = logRepository.findByUsuario(u.getId());
-        if(logout.getAcao().equalsIgnoreCase(Acao.LOGIN.toString())){
-            logger.insertToLogout(u.getId(), null, null, null, Acao.LOGOUT,logout);
+        if(logout == null){
+            logger.insert(u.getId(), null, null,Estagio.loginLogout, Acao.LOGIN);
+        }else {
+            if(logout.getAcao().equalsIgnoreCase(Acao.LOGIN.toString())){
+                logger.insertToLogout(u.getId(), null, null, Estagio.loginLogout, Acao.LOGOUT,logout);
+            }
+            logger.insert(u.getId(), null, null, Estagio.loginLogout, Acao.LOGIN);
         }
-        logger.insert(u.getId(), null, null, null, Acao.LOGIN);
         return u;
     }
 
@@ -160,7 +164,7 @@ public class RegisterServices {
         if(usuario.isPresent()) {
             throw new CustomException("Usuário não encontrado, erro ao sair da aplicação",HttpStatus.BAD_REQUEST);
         }
-        logger.insert(usuario.get().getId(), null, null, null, Acao.LOGOUT);
+        logger.insert(usuario.get().getId(), 0, null, Estagio.loginLogout, Acao.LOGOUT);
     }
 
 }

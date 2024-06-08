@@ -43,14 +43,18 @@ public class Logger {
           throw new CustomException("Usuário não identificado", HttpStatus.BAD_REQUEST);
       }
 
-      Optional<Arquivo> arqBD = arquivoRepository.findById(idArquivo);
-      if (arqBD.isEmpty()) {
-          throw new CustomException("Arquivo não identificado", HttpStatus.BAD_REQUEST);
+      Log log = new Log();
+      if(!(idArquivo == null)){
+          Optional<Arquivo> arqBD = arquivoRepository.findById(idArquivo);
+          if (arqBD.isEmpty()) {
+              throw new CustomException("Arquivo não identificado", HttpStatus.BAD_REQUEST);
+          }
+          log.setArquivo(arqBD.get());
+      }else {
+          log.setArquivo(null);
       }
 
-      Log log = new Log();
       log.setUsuario(userBD.get());
-      log.setArquivo(arqBD.get());
       log.setAcao(acao.toString().toUpperCase());
       log.setDataHora(LocalDateTime.now());
       log.setObservacao(obs);
@@ -65,14 +69,18 @@ public class Logger {
             throw new CustomException("Usuário não identificado", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Arquivo> arqBD = arquivoRepository.findById(idArquivo);
-        if (arqBD.isEmpty()) {
-            throw new CustomException("Arquivo não identificado", HttpStatus.BAD_REQUEST);
+        Log log = new Log();
+        if(!(idArquivo == null)){
+            Optional<Arquivo> arqBD = arquivoRepository.findById(idArquivo);
+            if (arqBD.isEmpty()) {
+                throw new CustomException("Arquivo não identificado", HttpStatus.BAD_REQUEST);
+            }
+            log.setArquivo(arqBD.get());
+        }else {
+            log.setArquivo(null);
         }
 
-        Log log = new Log();
         log.setUsuario(userBD.get());
-        log.setArquivo(arqBD.get());
         log.setAcao(acao.toString().toUpperCase());
         log.setDataHora(login.getDataHora().plusHours(2));
         log.setObservacao(obs);
