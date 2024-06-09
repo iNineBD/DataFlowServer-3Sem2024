@@ -161,10 +161,10 @@ public class RegisterServices {
     @Transactional(rollbackFor = CustomException.class)
     public void logout(LogoutDTO request) throws CustomException {
         Optional<Usuario> usuario = usuarioRepository.findByEmailCustom(request.email());
-        if(usuario.isPresent()) {
+        if(usuario.isEmpty()) {
             throw new CustomException("Usuário não encontrado, erro ao sair da aplicação",HttpStatus.BAD_REQUEST);
         }
-        logger.insert(usuario.get().getId(), 0, null, Estagio.loginLogout, Acao.LOGOUT);
+        logger.insert(usuario.get().getId(), null, null, Estagio.loginLogout, Acao.LOGOUT);
     }
 
 }
