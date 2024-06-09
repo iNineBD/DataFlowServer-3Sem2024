@@ -25,28 +25,16 @@ public class MapperYamlController {
 
     @PostMapping("/landing")
     public ResponseEntity<Resource>  mapperLandingYaml(@RequestBody RequestMapperDTO request) throws CustomException, JsonProcessingException {
-        Resource response = mapperYAMLService.generateLandingYAML(request.nomeArquivo(), request.organizacao());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=landing.yaml");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
-        return new ResponseEntity<>(response, headers, HttpStatus.OK);
+        return mapperYAMLService.generateLandingYAML(request.nomeArquivo(), request.organizacao());
     }
 
     @PostMapping("/bronze")
     public ResponseEntity<Resource>  mapperBronzeYaml(@RequestBody RequestMapperDTO request) throws CustomException, JsonProcessingException {
-        Resource response = mapperYAMLService.generateBronzeYAML(request.nomeArquivo(), request.organizacao());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bronze.yaml");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
-        return new ResponseEntity<>(response, headers, HttpStatus.OK);
+        return mapperYAMLService.generateBronzeYAML(request.nomeArquivo(), request.organizacao());
     }
 
     @PostMapping("/silver")
     public ResponseEntity<Resource>  mapperSilverYaml(@RequestBody RequestMapperDTO request) throws CustomException, JsonProcessingException {
-        Resource response = mapperYAMLService.generateSilverYAML(request.nomeArquivo(), request.organizacao());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=silver.yaml");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
-        return new ResponseEntity<>(response, headers, HttpStatus.OK);
+        return mapperYAMLService.generateSilverYAML(request.nomeArquivo(), request.organizacao());
     }
 }

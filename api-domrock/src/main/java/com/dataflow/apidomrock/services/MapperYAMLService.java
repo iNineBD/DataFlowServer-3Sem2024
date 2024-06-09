@@ -18,7 +18,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +38,7 @@ public class MapperYAMLService {
     DeParaRepository deParaRepository;
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
-    public Resource generateLandingYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
+    public ResponseEntity<Resource> generateLandingYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
 
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(fileName, companyDocument);
         StringBuilder bld = new StringBuilder();
@@ -74,12 +76,17 @@ public class MapperYAMLService {
         }
         landingYAML.setMetadatas(metadadoYAMLList);
 
-        return new ByteArrayResource(landingYAML.toYAML().getBytes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=landing.yaml");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
+        headers.add("fileName", arqBD.get().getNomeArquivo().split("\\.")[0] + ".yml");
+        return new ResponseEntity<>(new ByteArrayResource(landingYAML.toYAML().getBytes()), headers, HttpStatus.OK);
+
     }
 
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
-    public Resource generateSilverYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
+    public ResponseEntity<Resource> generateSilverYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
 
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(fileName, companyDocument);
         StringBuilder bld = new StringBuilder();
@@ -114,11 +121,15 @@ public class MapperYAMLService {
 
         silverToYaml.setMetadadoToFrom(deparaToYaml);
 
-        return new ByteArrayResource(silverToYaml.toYAML().getBytes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=silver.yaml");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
+        headers.add("fileName", arqBD.get().getNomeArquivo().split("\\.")[0] + ".yml");
+        return new ResponseEntity<>(new ByteArrayResource(silverToYaml.toYAML().getBytes()), headers, HttpStatus.OK);
     }
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
-    public Resource generateBronzeYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
+    public ResponseEntity<Resource> generateBronzeYAML(String fileName, String companyDocument) throws CustomException, JsonProcessingException {
 
         Optional<Arquivo> arqBD = arquivoRepository.findByNameAndOrganization(fileName, companyDocument);
         StringBuilder bld = new StringBuilder();
@@ -140,7 +151,12 @@ public class MapperYAMLService {
 
         bronzeYAML.setHash(metadados);
 
-        return new ByteArrayResource(bronzeYAML.toYAML().getBytes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bronze.yaml");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
+        headers.add("fileName", arqBD.get().getNomeArquivo().split("\\.")[0] + ".yml");
+        return new ResponseEntity<>(new ByteArrayResource(bronzeYAML.toYAML().getBytes()), headers, HttpStatus.OK);
+
     }
 
 }
