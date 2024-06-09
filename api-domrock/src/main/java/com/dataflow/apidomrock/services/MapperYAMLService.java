@@ -79,7 +79,7 @@ public class MapperYAMLService {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=landing.yaml");
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
-        headers.add("fileName", arqBD.get().getNomeArquivo().split("\\.")[0] + ".yml");
+        headers.add("fileName", "LZ-"+arqBD.get().getNomeArquivo().split("\\.")[0] + ".yml");
         return new ResponseEntity<>(new ByteArrayResource(landingYAML.toYAML().getBytes()), headers, HttpStatus.OK);
 
     }
@@ -124,7 +124,7 @@ public class MapperYAMLService {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=silver.yaml");
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
-        headers.add("fileName", arqBD.get().getNomeArquivo().split("\\.")[0] + ".yml");
+        headers.add("fileName", "SZ-"+arqBD.get().getNomeArquivo().split("\\.")[0] + ".yml");
         return new ResponseEntity<>(new ByteArrayResource(silverToYaml.toYAML().getBytes()), headers, HttpStatus.OK);
     }
 
@@ -154,7 +154,7 @@ public class MapperYAMLService {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bronze.yaml");
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-yaml");
-        headers.add("fileName", arqBD.get().getNomeArquivo().split("\\.")[0] + ".yml");
+        headers.add("fileName", "BZ-"+arqBD.get().getNomeArquivo().split("\\.")[0] + ".yml");
         return new ResponseEntity<>(new ByteArrayResource(bronzeYAML.toYAML().getBytes()), headers, HttpStatus.OK);
 
     }
