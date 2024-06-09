@@ -166,5 +166,4 @@ public class RegisterServices {
         }
         logger.insert(usuario.get().getId(), null, null, Estagio.loginLogout, Acao.LOGOUT);
     }
-
 }
