@@ -107,9 +107,9 @@ public class ProcessFiles {
                     throw new CustomException("O arquivo CSV não está no formato de 3 colunas, por favor, ajuste!", HttpStatus.BAD_REQUEST);
                 }
 
-                String metadado = content[0];
-                String de = content[1];
-                String para = content[2];
+                String metadado = content[0].replace("\"","").trim();
+                String de = content[1].replace("\"","").trim();
+                String para = content[2].replace("\"","").trim();
 
                 // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
                 Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
@@ -206,9 +206,9 @@ public class ProcessFiles {
                 }
 
                 // Criar Metadados usando as 3 colunas
-                String metadado = content[0];
-                String de = content[1];
-                String para = content[2];
+                String metadado = content[0].replace("\"","").trim();
+                String de = content[1].replace("\"","").trim();
+                String para = content[2].replace("\"","").trim();
 
                 // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
                 Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
@@ -310,9 +310,9 @@ public class ProcessFiles {
                 throw new CustomException("O arquivo Excel contém uma linha fora do formato de 3 colunas.", HttpStatus.BAD_REQUEST);
             }
 
-            String metadado = currentRow.getCell(0).getStringCellValue().toUpperCase().trim();
-            String de = currentRow.getCell(1).getStringCellValue().trim();
-            String para = currentRow.getCell(2).getStringCellValue().trim();
+            String metadado = currentRow.getCell(0).getStringCellValue().toUpperCase().replace("\"","").trim();
+            String de = currentRow.getCell(1).getStringCellValue().replace("\"","").trim();
+            String para = currentRow.getCell(2).getStringCellValue().replace("\"","").trim();
 
             // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
             Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
@@ -384,9 +384,9 @@ public class ProcessFiles {
                 throw new CustomException("O arquivo Excel contém uma linha fora do formato de 3 colunas.", HttpStatus.BAD_REQUEST);
             }
 
-            String metadado = currentRow.getCell(0).getStringCellValue().toUpperCase().trim();
-            String de = currentRow.getCell(1).getStringCellValue().trim();
-            String para = currentRow.getCell(2).getStringCellValue().trim();
+            String metadado = currentRow.getCell(0).getStringCellValue().toUpperCase().replace("\"","").trim();
+            String de = currentRow.getCell(1).getStringCellValue().replace("\"","").trim();
+            String para = currentRow.getCell(2).getStringCellValue().replace("\"","").trim();
 
             // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
             Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
