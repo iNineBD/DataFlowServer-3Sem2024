@@ -106,26 +106,37 @@ public class ProcessFiles {
                 if (content.length != 3) {
                     throw new CustomException("O arquivo CSV não está no formato de 3 colunas, por favor, ajuste!", HttpStatus.BAD_REQUEST);
                 }
-
+                boolean exist = false;
                 String metadado = content[0].replace("\"","").trim();
-                String de = content[1].replace("\"","").trim();
-                String para = content[2].replace("\"","").trim();
+                int qtd = arquivo.get().getMetadados().size();
+                for(int i = 0; i < qtd;i++){
+                    if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(i).getNome())){
+                        exist = true;
+                    }
+                }
+                if(exist){
+                    String de = content[1].replace("\"","").trim();
+                    String para = content[2].replace("\"","").trim();
 
-                // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
-                Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
-                        .filter(metadados -> metadados.nome().equals(metadado))
-                        .findFirst();
+                    // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
+                    Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
+                            .filter(metadados -> metadados.nome().equals(metadado))
+                            .findFirst();
 
-                if (existingMetadados.isPresent()) {
-                    existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
-                } else {
-                    MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
-                            new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
-                    metadadosList.add(metadados);
+                    if (existingMetadados.isPresent()) {
+                        existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
+                    } else {
+                        MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
+                                new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
+                        metadadosList.add(metadados);
+                    }
                 }
             }
-
+            if(metadadosList.isEmpty()){
+                throw new CustomException("Não existe nenhum metadado compatível com o arquivo em questão, por favor revise!", HttpStatus.BAD_REQUEST);
+            }
             return metadadosList;
+
         }
     }
 
@@ -205,23 +216,34 @@ public class ProcessFiles {
                     throw new CustomException("O arquivo CSV não está no formato de 3 colunas, por favor, ajuste!", HttpStatus.BAD_REQUEST);
                 }
 
-                // Criar Metadados usando as 3 colunas
+                boolean exist = false;
                 String metadado = content[0].replace("\"","").trim();
-                String de = content[1].replace("\"","").trim();
-                String para = content[2].replace("\"","").trim();
-
-                // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
-                Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
-                        .filter(metadados -> metadados.nome().equals(metadado))
-                        .findFirst();
-
-                if (existingMetadados.isPresent()) {
-                    existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
-                } else {
-                    MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
-                            new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
-                    metadadosList.add(metadados);
+                int qtd = arquivo.get().getMetadados().size();
+                for(int i = 0; i < qtd;i++){
+                    if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(i).getNome())){
+                        exist = true;
+                    }
                 }
+                if(exist){
+                    String de = content[1].replace("\"","").trim();
+                    String para = content[2].replace("\"","").trim();
+
+                    // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
+                    Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
+                            .filter(metadados -> metadados.nome().equals(metadado))
+                            .findFirst();
+
+                    if (existingMetadados.isPresent()) {
+                        existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
+                    } else {
+                        MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
+                                new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
+                        metadadosList.add(metadados);
+                    }
+                }
+            }
+            if(metadadosList.isEmpty()){
+                throw new CustomException("Não existe nenhum metadado compatível com o arquivo em questão, por favor revise!", HttpStatus.BAD_REQUEST);
             }
             return metadadosList;
         }
@@ -310,25 +332,37 @@ public class ProcessFiles {
                 throw new CustomException("O arquivo Excel contém uma linha fora do formato de 3 colunas.", HttpStatus.BAD_REQUEST);
             }
 
-            String metadado = currentRow.getCell(0).getStringCellValue().toUpperCase().replace("\"","").trim();
-            String de = currentRow.getCell(1).getStringCellValue().replace("\"","").trim();
-            String para = currentRow.getCell(2).getStringCellValue().replace("\"","").trim();
+            boolean exist = false;
+            String metadado = currentRow.getCell(0).getStringCellValue().replace("\"","").trim();
+            int qtd = arquivo.get().getMetadados().size();
+            for(int j = 0; j < qtd;j++){
+                if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(j).getNome())){
+                    exist = true;
+                }
+            }
+            if(exist){
+                String de = currentRow.getCell(1).getStringCellValue().replace("\"","").trim();
+                String para = currentRow.getCell(2).getStringCellValue().replace("\"","").trim();
 
-            // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
-            Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
-                    .filter(metadados -> metadados.nome().equals(metadado))
-                    .findFirst();
+                // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
+                Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
+                        .filter(metadados -> metadados.nome().equals(metadado))
+                        .findFirst();
 
-            if (existingMetadados.isPresent()) {
-                existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
-            } else {
-                MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
-                        new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
-                metadadosList.add(metadados);
+                if (existingMetadados.isPresent()) {
+                    existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
+                } else {
+                    MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
+                            new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
+                    metadadosList.add(metadados);
+                }
             }
         }
-        return metadadosList;
+        if(metadadosList.isEmpty()){
+            throw new CustomException("Não existe nenhum metadado compatível com o arquivo em questão, por favor revise!", HttpStatus.BAD_REQUEST);
         }
+        return metadadosList;
+    }
 
     public static ResponseUploadCSVDTO processExcelFileWithOutHeader(MultipartFile file) throws CustomException {
 
@@ -384,22 +418,34 @@ public class ProcessFiles {
                 throw new CustomException("O arquivo Excel contém uma linha fora do formato de 3 colunas.", HttpStatus.BAD_REQUEST);
             }
 
-            String metadado = currentRow.getCell(0).getStringCellValue().toUpperCase().replace("\"","").trim();
-            String de = currentRow.getCell(1).getStringCellValue().replace("\"","").trim();
-            String para = currentRow.getCell(2).getStringCellValue().replace("\"","").trim();
-
-            // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
-            Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
-                    .filter(metadados -> metadados.nome().equals(metadado))
-                    .findFirst();
-
-            if (existingMetadados.isPresent()) {
-                existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
-            } else {
-                MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
-                        new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
-                metadadosList.add(metadados);
+            boolean exist = false;
+            String metadado = currentRow.getCell(0).getStringCellValue().replace("\"","").trim();
+            int qtd = arquivo.get().getMetadados().size();
+            for(int j = 0; j < qtd;j++){
+                if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(j).getNome())){
+                    exist = true;
+                }
             }
+            if(exist){
+                String de = currentRow.getCell(1).getStringCellValue().replace("\"","").trim();
+                String para = currentRow.getCell(2).getStringCellValue().replace("\"","").trim();
+
+                // Verifica se já existe um MetadadosDeParaVisualize com o mesmo nome de metadado
+                Optional<MetadadosDeParaVisualize> existingMetadados = metadadosList.stream()
+                        .filter(metadados -> metadados.nome().equals(metadado))
+                        .findFirst();
+
+                if (existingMetadados.isPresent()) {
+                    existingMetadados.get().dePara().add(new DeParasVisualize(de, para));
+                } else {
+                    MetadadosDeParaVisualize metadados = new MetadadosDeParaVisualize(
+                            new ArrayList<>(List.of(new DeParasVisualize(de, para))), metadado);
+                    metadadosList.add(metadados);
+                }
+            }
+        }
+        if(metadadosList.isEmpty()){
+            throw new CustomException("Não existe nenhum metadado compatível com o arquivo em questão, por favor revise!", HttpStatus.BAD_REQUEST);
         }
         return metadadosList;
     }
