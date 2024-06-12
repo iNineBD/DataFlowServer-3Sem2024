@@ -174,7 +174,7 @@ public class Logger {
             }
 
 
-            response.add(new UserDTO(u.getOrganizacao().getNome(),u.getOrganizacao().getNome(), u.getNome(), nvls.toString(), u.getEmail()));
+            response.add(new UserDTO(u.getOrganizacao().getNome(),u.getOrganizacao().getCnpj(), u.getNome(), nvls.toString(), u.getEmail()));
         }
 
         return response;
