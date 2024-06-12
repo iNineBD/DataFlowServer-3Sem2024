@@ -146,7 +146,7 @@ public class RegisterServices {
         var usernamePassword = new UsernamePasswordAuthenticationToken(autenticacaoDTO.getLogin(), autenticacaoDTO.getSenha());
         var auth = this.authenticationManager.authenticate(usernamePassword);
         Usuario u = (Usuario) auth.getPrincipal();
-        Log logout = logRepository.findByUsuario(u.getId());
+        Log logout = logRepository.findLastActionByUsuario(u.getId());
         if(logout == null){
             logger.insert(u.getId(), null, null,Estagio.loginLogout, Acao.LOGIN);
         }else {
