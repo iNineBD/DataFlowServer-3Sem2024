@@ -16,6 +16,6 @@ public interface LogRepository extends JpaRepository<Log, Integer> {
     List<Log> findByArquivo(Arquivo arquivo);
     @Query("select l from Log l where l.usuario.id = :idUsuario and l.estagio = 'LOGINLOGOUT' order by l.dataHora desc limit 1")
     Log findLastActionByUsuario(int idUsuario);
-    @Query("select l from Log l where estagio = 'LOGINLOGOUT' and l.usuario.id = :usuario")
+    @Query("select l from Log l where l.estagio = 'LOGINLOGOUT' and l.usuario.id = :usuario")
     List<Log> findByUsuario(int usuario);
 }
