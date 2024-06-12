@@ -1,10 +1,7 @@
 package com.dataflow.apidomrock.services.utils;
 
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
-import com.dataflow.apidomrock.dto.log.RequestLogDTO;
-import com.dataflow.apidomrock.dto.log.RequestLogUsuario;
-import com.dataflow.apidomrock.dto.log.ResponseLog;
-import com.dataflow.apidomrock.dto.log.ResponseLogUsuario;
+import com.dataflow.apidomrock.dto.log.*;
 import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.entities.enums.Acao;
 import com.dataflow.apidomrock.entities.enums.Estagio;
@@ -159,5 +156,27 @@ public class Logger {
             logs.add(responseLogUsuario);
         }
         return logs;
+    }
+
+
+    public List<UserDTO> findAllUsers() {
+        List<Usuario> usersBD = usuarioRepository.findAll();
+        List<UserDTO> response = new ArrayList<>();
+        for (Usuario u : usersBD) {
+            StringBuilder nvls = new StringBuilder();
+            int len = u.getNiveisAcesso().size() - 1;
+            for (NivelAcesso n : u.getNiveisAcesso()) {
+                nvls.append(n.getNivel());
+                if (len > 1){
+                    nvls.append(", ");
+                }
+                len--;
+            }
+
+
+            response.add(new UserDTO(u.getOrganizacao().getNome(), u.getNome(), nvls.toString(), u.getEmail()));
+        }
+
+        return response;
     }
 }
