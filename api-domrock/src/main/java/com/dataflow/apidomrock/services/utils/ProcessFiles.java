@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,7 +84,7 @@ public class ProcessFiles {
     }
 
     public List<MetadadosDeParaVisualize> processCSVFileWithHeaderToSilver(MultipartFile multipartFile, String delimiter, boolean header, String cnpj, String nomeArquivo) throws IOException, CustomException {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
+        BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
         String line;
 
         Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(nomeArquivo, cnpj);

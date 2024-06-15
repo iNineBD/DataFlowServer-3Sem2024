@@ -109,7 +109,7 @@ public class SilverZoneController {
     @ApiDefaultResponses
     public ResponseEntity<ResponseCustomDTO<ResponseDeParasSilver>> uploadSilver(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam(required = false) String delimiter, @RequestParam(required = false) boolean header, @RequestParam String email, @RequestParam String cnpj, @RequestParam String nomeArquivo) throws CustomException, IOException {
         List<MetadadosDeParaVisualize> listaDeParas =  silverZoneService.upload(multipartFile, delimiter, header, email,cnpj,nomeArquivo);
-        ResponseDeParasSilver response = new ResponseDeParasSilver(email,nomeArquivo,cnpj,listaDeParas);
+        ResponseDeParasSilver response = new ResponseDeParasSilver(email,nomeArquivo,cnpj,listaDeParas, silverZoneService.findAllMetadados(nomeArquivo, cnpj));
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));
     }
 }

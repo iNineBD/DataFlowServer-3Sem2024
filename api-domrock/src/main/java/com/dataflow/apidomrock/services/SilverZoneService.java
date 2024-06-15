@@ -350,4 +350,21 @@ public class SilverZoneService {
             return processFiles.processExcelFileWithOutHeaderToSilver(multipartFile,cnpj,nomeArquivo);
         }
     }
+
+    public List<String> findAllMetadados(String nomeArquivo, String cnpj) throws CustomException {
+
+        Optional<Arquivo> arquivo = arquivoRepository.findByNameAndOrganization(nomeArquivo, cnpj);
+        if (arquivo.isEmpty()) {
+            throw new CustomException("Não foi possível identificar o arquivo passado.", HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> allMetadados = new ArrayList<>();
+        for (Metadata m : arquivo.get().getMetadados()){
+            if (m.getIsAtivo()){
+                allMetadados.add(m.getNome());
+            }
+        }
+
+        return allMetadados;
+    }
 }
