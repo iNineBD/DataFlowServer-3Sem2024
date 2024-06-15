@@ -77,7 +77,7 @@ public class Logger {
 
         log.setUsuario(userBD.get());
         log.setAcao(acao.toString().toUpperCase());
-        log.setDataHora(login.getDataHora().plusHours(2));
+        log.setDataHora(LocalDateTime.now());
         log.setObservacao(obs);
         log.setEstagio(estagio.getDescricao());
 
@@ -165,9 +165,9 @@ public class Logger {
         for (Usuario u : usersBD) {
             StringBuilder nvls = new StringBuilder();
             int len = u.getNiveisAcesso().size() - 1;
-            for (NivelAcesso n : u.getNiveisAcesso()) {
+                for (NivelAcesso n : u.getNiveisAcesso()) {
                 nvls.append(n.getNivel());
-                if (len > 1){
+                if (len > 0){
                     nvls.append(", ");
                 }
                 len--;
