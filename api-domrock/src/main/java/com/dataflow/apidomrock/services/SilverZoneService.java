@@ -9,29 +9,32 @@ import com.dataflow.apidomrock.dto.gethash.ResponseNomeMetadataDTO;
 import com.dataflow.apidomrock.dto.gethash.ResquestHashToSilverDTO;
 import com.dataflow.apidomrock.dto.getmetadadostotepara.MetadadosDePara;
 import com.dataflow.apidomrock.dto.getmetadadostotepara.RequestMetaToDePara;
+import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
 import com.dataflow.apidomrock.dto.savedepara.MetadadosToDePara;
 import com.dataflow.apidomrock.dto.savedepara.RequestSaveDePara;
 import com.dataflow.apidomrock.dto.setstatussz.RequestBodySetStatusSz;
 import com.dataflow.apidomrock.dto.visualizeDePara.DeParasVisualize;
 import com.dataflow.apidomrock.dto.visualizeDePara.MetadadosDeParaVisualize;
 import com.dataflow.apidomrock.dto.visualizeDePara.RequestDadosToDePara;
-import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.DePara;
-import com.dataflow.apidomrock.entities.database.Metadata;
-import com.dataflow.apidomrock.entities.database.Usuario;
+import com.dataflow.apidomrock.entities.database.*;
 import com.dataflow.apidomrock.entities.enums.Acao;
 import com.dataflow.apidomrock.entities.enums.Estagio;
+import com.dataflow.apidomrock.entities.enums.NivelAcessoEnum;
 import com.dataflow.apidomrock.entities.enums.StatusArquivo;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.DeParaRepository;
 import com.dataflow.apidomrock.repository.MetadataRepository;
 import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.utils.Logger;
+import com.dataflow.apidomrock.services.utils.ProcessFiles;
+import com.dataflow.apidomrock.services.utils.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +56,9 @@ public class SilverZoneService {
 
     @Autowired
     Logger logger;
+
+    @Autowired
+    ProcessFiles processFiles;
 
     @Transactional(rollbackFor = CustomException.class)
     public void updateStatus(RequestBodySetStatusSz request) throws CustomException {
@@ -308,6 +314,40 @@ public class SilverZoneService {
 
             }
         }
+    }
 
+    @Transactional(readOnly = false, rollbackFor = CustomException.class)
+    public List<MetadadosDeParaVisualize> upload(MultipartFile multipartFile, String delimiter, boolean header, String email, String cnpj,String nomeArquivo) throws IOException, CustomException {
+
+        //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
+        //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice
+
+        Optional<Usuario> userBD =  usuarioRepository.findByEmailCustom(email);
+        if (userBD.isEmpty()) {
+            throw new CustomException("O usuário ["+email+"] não existe.", HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean havePermision = false;
+        for (NivelAcesso nvl : userBD.get().getNiveisAcesso()){
+            if (nvl.getNivel().equals(NivelAcessoEnum.S.toString()) || nvl.getNivel().equals(NivelAcessoEnum.MASTER.toString()) || nvl.getNivel().equals(NivelAcessoEnum.FULL.toString())){
+                havePermision = true;
+            }
+        }
+        if (!havePermision) {
+            throw new CustomException("O usuário ["+email+"] não tem permissão para realizar ação", HttpStatus.UNAUTHORIZED);
+        }
+        Boolean isCSV = Validate.validateprocessUploadCSV(multipartFile, delimiter);
+        if (isCSV) {
+            if (header){
+
+                 return processFiles.processCSVFileWithHeaderToSilver(multipartFile, delimiter, header,cnpj,nomeArquivo);
+            }
+            return processFiles.processCSVFileNotHeaderToSilver(multipartFile, delimiter, header,cnpj,nomeArquivo);
+        } else {
+            if (header){
+                return processFiles.processExcelFileWithHeaderToSilver(multipartFile,cnpj,nomeArquivo);
+            }
+            return processFiles.processExcelFileWithOutHeaderToSilver(multipartFile,cnpj,nomeArquivo);
+        }
     }
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface MetadataRepository extends JpaRepository<Metadata, Integer> {
-    @Query(value = "select * from metadado where nome = :metadadoName and arquivo_id = :arquivoId", nativeQuery = true)
+    @Query(value = "select * from metadado where Upper(trim(nome))  = :metadadoName and arquivo_id = :arquivoId", nativeQuery = true)
     Optional<Metadata> findByNameAndFile(Integer arquivoId, String metadadoName);
 
     void deleteAllByArquivo(Arquivo arq);
