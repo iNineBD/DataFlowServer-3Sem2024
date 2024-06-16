@@ -163,18 +163,19 @@ public class Logger {
         List<Usuario> usersBD = usuarioRepository.findAll();
         List<UserDTO> response = new ArrayList<>();
         for (Usuario u : usersBD) {
-            StringBuilder nvls = new StringBuilder();
+            if (u.getNome() == null){continue;}
+            StringBuilder niveis = new StringBuilder();
             int len = u.getNiveisAcesso().size() - 1;
                 for (NivelAcesso n : u.getNiveisAcesso()) {
-                nvls.append(n.getNivel());
+                niveis.append(n.getNivel());
                 if (len > 0){
-                    nvls.append(", ");
+                    niveis.append(", ");
                 }
                 len--;
             }
 
 
-            response.add(new UserDTO(u.getOrganizacao().getNome(),u.getOrganizacao().getCnpj(), u.getNome(), nvls.toString(), u.getEmail()));
+            response.add(new UserDTO(u.getOrganizacao().getNome(),u.getOrganizacao().getCnpj(), u.getNome(), niveis.toString(), u.getEmail()));
         }
 
         return response;
