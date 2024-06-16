@@ -22,15 +22,21 @@ public class MailService {
 
         String[] cc = {"joao.lamao@fatec.sp.gov.br", "eduardo.paula01@fatec.sp.gov.br", "ana.machado28@fatec.sp.gov.br", "andre.oliveira138@fatec.sp.gov.br", "lucas.oliveira321@fatec.sp.gov.br", "beatriz.bonatto@fatec.sp.gov.br", "naiara.santos3@fatec.sp.gov.br"};
 
+        String orgAux = "";
+
+        if (org != null){
+            orgAux = " e " + org;
+        }
+
         String envio = "<html>" +
                 "<body style='font-family: Arial, sans-serif; font-size: 15px;'>" +
                 "<h3 style='color: #007bff;'>Olá, " + para + "!</h3>" +
-                "<p>Estamos muito animados em tê-lo(a) a bordo nesta parceria <b>Dom Rock x "+org+"!</p>" +
+                "<p>Estamos muito animados em tê-lo(a) a bordo nesta parceria junto a <b>Dom Rock"+orgAux+"</b>!</p>" +
                 "<p>Para completar o seu registro e começar a explorar nossa plataforma incrível, precisamos de apenas mais um passo: ativar sua conta.</p>" +
                 "<p>Aqui está o seu Token de Ativação:</p>" +
                 "<p style='font-weight: bold;'>" + pass + "</p>" +
-                "<p>Para ativar sua conta, simplesmente copie e cole este token na página de ativação. Não se preocupe, é super fácil!</p>" +
-                "<p>Se precisar de alguma ajuda ou tiver alguma dúvida, nossa equipe de suporte está sempre aqui para ajudar. Basta responder a este e-mail e ficaremos felizes em ajudar.</p>" +
+                "<p>Para ativar sua conta, copie e cole este token na página de ativação. Não se preocupe, é super fácil!</p>" +
+                "<p>Se precisar de alguma ajuda ou tiver alguma dúvida, nossa equipe de suporte está sempre aqui. Basta responder a este e-mail e ficaremos felizes em auxilia-lo.</p>" +
                 "<p>Estamos ansiosos para ver você dentro da nossa comunidade!</p>" +
                 "<p>Atenciosamente,<br/>Equipe DataFlow</p>" +
                 "</body>" +
