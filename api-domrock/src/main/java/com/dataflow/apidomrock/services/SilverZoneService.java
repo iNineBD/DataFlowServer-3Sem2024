@@ -309,9 +309,7 @@ public class SilverZoneService {
                         arquivoRepository.save(arquivo.get());
                         logger.insert(usuario.get().getId(), arquivo.get().getId(), "O arquivo não possui mais De Para, por isso retorno a Silver", Estagio.S, Acao.ALTERAR);
                     }
-
                 }
-
             }
         }
     }

@@ -54,7 +54,7 @@ public class AnalyticsService {
     public List<MetricsFilesDTO> findAllByEtapa() throws CustomException {
 
         List<MetricsFilesDTO> metricsFilesDTOList = new ArrayList<>();
-        Map<String, Integer> metrica = new HashMap<>(Map.of("LZ", 0, "BZ", 0, "SZ", 0));
+        Map<String, Integer> metrica = new HashMap<>(Map.of("LZ", 0, "BZ", 0, "SZ", 0, "F", 0));
 
         List<Organizacao> orgBD = organizacaoRepository.findAll();
         if (orgBD.isEmpty()) {
@@ -72,7 +72,8 @@ public class AnalyticsService {
                     case NAO_APROVADO_PELA_BRONZE -> metrica.put("LZ", metrica.get("LZ") + 1);
                     case BRONZE_ZONE, AGUARDANDO_APROVACAO_BRONZE, NAO_APROVADO_PELA_SILVER ->
                             metrica.put("BZ", metrica.get("BZ") + 1);
-                    case AGUARDANDO_APROVACAO_SILVER, SILVER_ZONE, FINALIZADO -> metrica.put("SZ", metrica.get("SZ") + 1);
+                    case AGUARDANDO_APROVACAO_SILVER, SILVER_ZONE -> metrica.put("SZ", metrica.get("SZ") + 1);
+                    case FINALIZADO -> metrica.put("F", metrica.get("F") + 1);
                 }
             }
 
@@ -84,7 +85,7 @@ public class AnalyticsService {
     public List<MetricsFilesDTO> findOneByOrganization(String cnpj) throws CustomException {
 
         List<MetricsFilesDTO> metricsFilesDTOList = new ArrayList<>();
-        Map<String, Integer> metrica = new HashMap<>(Map.of("LZ", 0, "BZ", 0, "SZ", 0));
+        Map<String, Integer> metrica = new HashMap<>(Map.of("LZ", 0, "BZ", 0, "SZ", 0, "F", 0));
 
         Optional<Organizacao> orgBD = organizacaoRepository.findById(cnpj);
         if (orgBD.isEmpty()) {
@@ -100,9 +101,9 @@ public class AnalyticsService {
         for (Arquivo a : arqsBD) {
             switch (StatusArquivo.fromString(a.getStatus())) {
                 case NAO_APROVADO_PELA_BRONZE -> metrica.put("LZ", metrica.get("LZ") + 1);
-                case BRONZE_ZONE, AGUARDANDO_APROVACAO_BRONZE, NAO_APROVADO_PELA_SILVER ->
-                        metrica.put("BZ", metrica.get("BZ") + 1);
-                case AGUARDANDO_APROVACAO_SILVER, SILVER_ZONE, FINALIZADO -> metrica.put("SZ", metrica.get("SZ") + 1);
+                case BRONZE_ZONE, AGUARDANDO_APROVACAO_BRONZE, NAO_APROVADO_PELA_SILVER -> metrica.put("BZ", metrica.get("BZ") + 1);
+                case AGUARDANDO_APROVACAO_SILVER, SILVER_ZONE -> metrica.put("SZ", metrica.get("SZ") + 1);
+                case FINALIZADO -> metrica.put("F", metrica.get("F") + 1);
             }
         }
         metricsFilesDTOList.add(new MetricsFilesDTO(orgBD.get().getNome(), metrica));
