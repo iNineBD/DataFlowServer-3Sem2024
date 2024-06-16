@@ -28,6 +28,8 @@ public class CorsAPI {
         // Permitir cabeçalhos específicos
         config.addAllowedHeader("*");
 
+        config.addExposedHeader("fileName");
+
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }

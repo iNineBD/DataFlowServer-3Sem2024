@@ -22,5 +22,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Optional<Usuario> findByToken(String token);
     UserDetails findByEmail(String email);
 
+    @Query("select count(*) from Usuario u where u.organizacao = :organizacao and u.nome is not NULL")
     Integer countAllByOrganizacao(Organizacao organizacao);
 }
