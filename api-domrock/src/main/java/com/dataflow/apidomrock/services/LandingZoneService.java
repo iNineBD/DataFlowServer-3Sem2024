@@ -18,6 +18,7 @@ import com.dataflow.apidomrock.repository.UsuarioRepository;
 import com.dataflow.apidomrock.services.utils.Logger;
 import com.dataflow.apidomrock.services.utils.ProcessFiles;
 import com.dataflow.apidomrock.services.utils.Validate;
+import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class LandingZoneService {
     Logger logger;
 
     @Transactional(readOnly = false, rollbackFor = CustomException.class)
-    public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter, boolean header, String email) throws IOException, CustomException {
+    public ResponseUploadCSVDTO processUploadCSV(MultipartFile multipartFile, String delimiter, boolean header, String email) throws IOException, CustomException, CsvValidationException {
 
         //realiza validacoes nos parametros da request (se o arquivo existe, está ok...)
         //Se estiver ruim, internamente é lançada uma exceção que o controller trata pelo advice

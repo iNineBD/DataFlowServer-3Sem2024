@@ -37,8 +37,8 @@ public class MetadataDTO {
         this.valorPadrao = valorPadrao;
         this.descricao = descricao;
 
-        if (sampleValue.length() > 40) {
-            sampleValue = sampleValue.substring(0, 40);
+        if (sampleValue.length() > 50) {
+            sampleValue = sampleValue.substring(0, 50);
         }
         this.sampleValue = sampleValue;
         this.ativo = ativo;

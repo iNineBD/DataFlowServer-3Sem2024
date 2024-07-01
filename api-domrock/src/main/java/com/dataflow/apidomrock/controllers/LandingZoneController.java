@@ -7,6 +7,7 @@ import java.util.List;
 import com.dataflow.apidomrock.dto.log.RequestLogDTO;
 import com.dataflow.apidomrock.dto.log.ResponseLog;
 import com.dataflow.apidomrock.services.utils.Logger;
+import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +52,7 @@ public class LandingZoneController {
     public ResponseEntity<ResponseCustomDTO<ResponseUploadCSVDTO>> processUploadCSV(
             @RequestParam("multipartFile") MultipartFile multipartFile,
             @RequestParam(required = false) String delimiter, @RequestParam(required = false) boolean header,
-            @RequestParam String email) throws IOException, CustomException {
+            @RequestParam String email) throws IOException, CustomException, CsvValidationException {
         System.out.println(email);
         ResponseUploadCSVDTO response = lzService.processUploadCSV(multipartFile, delimiter, header, email);
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Processamento efetuado com sucesso", response));

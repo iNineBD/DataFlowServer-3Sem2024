@@ -3,16 +3,16 @@ package com.dataflow.apidomrock.services.utils;
 import com.dataflow.apidomrock.controllers.exceptions.CustomException;
 import com.dataflow.apidomrock.dto.entitiesdto.MetadataDTO;
 import com.dataflow.apidomrock.dto.processuploadcsv.ResponseUploadCSVDTO;
-import com.dataflow.apidomrock.dto.uploadsilver.MetadadosDeParaVisualizeSilver;
-import com.dataflow.apidomrock.dto.uploadsilver.ResponseDeParasSilver;
 import com.dataflow.apidomrock.dto.visualizeDePara.DeParasVisualize;
 import com.dataflow.apidomrock.dto.visualizeDePara.MetadadosDeParaVisualize;
 import com.dataflow.apidomrock.entities.database.Arquivo;
-import com.dataflow.apidomrock.entities.database.DePara;
-import com.dataflow.apidomrock.entities.database.Metadata;
 import com.dataflow.apidomrock.repository.ArquivoRepository;
 import com.dataflow.apidomrock.repository.DeParaRepository;
 import com.dataflow.apidomrock.repository.MetadataRepository;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,41 +41,37 @@ public class ProcessFiles {
     @Autowired
     MetadataRepository metadataRepository;
 
-    public static ResponseUploadCSVDTO processCSVFileWithHeader(MultipartFile multipartFile, String delimiter, boolean header) throws IOException, CustomException {
-        //lendo o arquivo
-        BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
-        String line = "";
-
-        if (header){
-            while ((line = rd.readLine()) != null){
-               if (!line.trim().isEmpty()){
-                   break;
-               }
-            }
-        }
-        if (line.isEmpty()){
-            throw new CustomException("Não foi possivel identificar o header do arquivo.", HttpStatus.BAD_REQUEST);
-        }
-
-        //isso foi feito para minimizar problemas do tipo: CSV não integro
-        while (line.endsWith(";")) {
-            line = line.substring(0, line.length() - 1);
-        }
-        String[] headers = line.split(delimiter);
-
-        line = rd.readLine().trim();
-        while (line.endsWith(";")) {
-            line = line.substring(0, line.length() - 1);
-        }
-        String[] content1 = line.split(delimiter);
+    public static ResponseUploadCSVDTO processCSVFileWithHeader(MultipartFile multipartFile, String delimiter, boolean header) throws IOException, CustomException, CsvValidationException {
 
         List<MetadataDTO> metadatas = new ArrayList<>();
-        //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
+
+        BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
+        CSVReader csvReader = new CSVReaderBuilder(rd)
+                .withCSVParser(new CSVParserBuilder().withSeparator(delimiter.charAt(0)).build())
+                .build();
+
+        String[] nextLine;
+        List<String> headers = new ArrayList<>();
+        List<String> content = new ArrayList<>();
         int count = 0;
-        for (String columName : headers) {
-            String sample1 = content1[count];
-            metadatas.add(new MetadataDTO(null, columName, null, null, sample1, null, null, null, null));
+        while ((nextLine = csvReader.readNext()) != null) {
+            for (String value : nextLine) {
+                if (count == 0) {
+                    headers.add(value);
+                } else {
+                    content.add(value);
+                }
+            }
+            if (count==1){
+                break;
+            }
             count++;
+        }
+
+        int i = 0;
+        for (String value : headers) {
+            metadatas.add(new MetadataDTO(null, headers.get(i),null, null, content.get(i), null, null, null, null));
+            i++;
         }
 
         double fileSize = (double) multipartFile.getSize() / (1024 * 1024);
@@ -141,36 +137,33 @@ public class ProcessFiles {
         }
     }
 
-    public static ResponseUploadCSVDTO processCSVFileNotHeader(MultipartFile multipartFile, String delimiter, boolean header) throws IOException, CustomException {
-        //lendo o arquivo
-        BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
-        String line = "";
+    public static ResponseUploadCSVDTO processCSVFileNotHeader(MultipartFile multipartFile, String delimiter, boolean header) throws IOException, CustomException, CsvValidationException {
+        List<MetadataDTO> metadatas = new ArrayList<>();
 
-        if (!header){
-            while ((line = rd.readLine()) != null){
-                if (!line.trim().isEmpty()){
-                    break;
+        BufferedReader rd = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
+        CSVReader csvReader = new CSVReaderBuilder(rd)
+                .withCSVParser(new CSVParserBuilder().withSeparator(delimiter.charAt(0)).build())
+                .build();
+        String[] nextLine;
+
+        List<String> content = new ArrayList<>();
+        int count = 0;
+        while ((nextLine = csvReader.readNext()) != null) {
+            for (String value : nextLine) {
+                if (count > 0) {
+                    content.add(value);
                 }
             }
-        }
-        if (line.isEmpty()){
-            throw new CustomException("Não foi possivel manipular o arquivo.", HttpStatus.BAD_REQUEST);
-        }
-
-        line = rd.readLine().trim();
-        while (line.endsWith(";")) {
-            line = line.substring(0, line.length() - 1);
-        }
-        String[] content1 = line.split(delimiter);
-
-        List<MetadataDTO> metadatas = new ArrayList<>();
-        //para cada coluna, crio o Metadado equivalente e ja adiciono numa lista
-        int count = 0;
-        for (String columName : content1) {
-
-            String sample1 = content1[count];
-            metadatas.add(new MetadataDTO(null, "sample_column", null, null, sample1, null, null, null, null));
+            if (count==2){
+                break;
+            }
             count++;
+        }
+
+        int i = 0;
+        for (String value : content) {
+            metadatas.add(new MetadataDTO(null, "sample_collumn",null, null, content.get(i), null, null, null, null));
+            i++;
         }
 
         double fileSize = (double) multipartFile.getSize() / (1024 * 1024);
