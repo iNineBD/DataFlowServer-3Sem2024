@@ -103,7 +103,7 @@ public class LandingZoneService {
             logger.insert(userBD.get().getId(), arqBD.get().getId(), "Arquivo inserido", Estagio.LZ, Acao.INSERIR);
 
         } else {
-            arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), userBD.get().getOrganizacao().getCnpj());
+            arqBD = arquivoRepository.findByNameAndOrganization(request.getNomeArquivo(), request.getCnpjUsuario());
             logger.insert(userBD.get().getId(), arqBD.get().getId(), "Arquivo atualizado", Estagio.LZ, Acao.ALTERAR);
             arqBD.get().setStatus(StatusArquivo.AGUARDANDO_APROVACAO_BRONZE.getDescricao());
             arqBD.get().setAtivo(true);

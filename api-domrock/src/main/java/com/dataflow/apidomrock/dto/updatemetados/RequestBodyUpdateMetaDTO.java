@@ -22,6 +22,8 @@ public class RequestBodyUpdateMetaDTO {
     private String usuario;
     @Schema(description = "Nome do arquivo em questão", example = "Arquivo01")
     private String nomeArquivo;
+    @Schema(description = "CPNJ do arquivo", example = "12345678910")
+    private String cnpjUsuario;
     @Schema(description = "Lista de metadados do arquivo em questão", example = "coluna01, coluna02")
     private List<MetadataDTO> metadados;
 }
