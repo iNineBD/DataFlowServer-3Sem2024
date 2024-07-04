@@ -46,7 +46,7 @@ public class HealthCheckController {
     @ApiDefaultResponses
     public ResponseEntity<ResponseCustomDTO<String>> sendMail() throws MessagingException {
 
-        mail.sendToken("anaraquelysmachado29@gmail.com", "iNine", UUID.randomUUID().toString());
+        mail.sendToken("joao.lamao@fatec.sp.gov.br", "iNine", UUID.randomUUID().toString());
 
         return ResponseEntity.ok().body(new ResponseCustomDTO<>("Email enviado", null));
     }

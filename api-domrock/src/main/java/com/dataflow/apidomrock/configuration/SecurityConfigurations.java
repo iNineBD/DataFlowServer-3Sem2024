@@ -33,6 +33,7 @@ public class SecurityConfigurations {
                                 .requestMatchers(HttpMethod.POST, "register/cadastro").permitAll()
                                 .requestMatchers(HttpMethod.POST, "register/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "teste").permitAll()
+                                .requestMatchers(HttpMethod.POST, "healthcheck/mail").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
