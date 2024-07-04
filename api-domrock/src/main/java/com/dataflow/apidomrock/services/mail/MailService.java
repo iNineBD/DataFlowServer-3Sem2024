@@ -9,6 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.CompletableFuture;
+
 @Component
 public class MailService {
 
@@ -32,25 +34,28 @@ public class MailService {
                 "<body style='font-family: Arial, sans-serif; font-size: 15px;'>" +
                 "<h3 style='color: #007bff;'>Olá, " + para + "!</h3>" +
                 "<p>Estamos muito animados em tê-lo(a) a bordo nesta parceria junto a <b>Dom Rock"+orgAux+"</b>!</p>" +
-                "<p>Para completar o seu registro e começar a explorar nossa plataforma incrível, precisamos de apenas mais um passo: ativar sua conta.</p>" +
+                "<p>Para completar o seu registro, precisamos de apenas mais um passo: ativar sua conta.</p>" +
                 "<p>Aqui está o seu Token de Ativação:</p>" +
                 "<p style='font-weight: bold;'>" + pass + "</p>" +
                 "<p>Para ativar sua conta, copie e cole este token na página de ativação. Não se preocupe, é super fácil!</p>" +
-                "<p>Se precisar de alguma ajuda ou tiver alguma dúvida, nossa equipe de suporte está sempre aqui. Basta responder a este e-mail e ficaremos felizes em auxilia-lo.</p>" +
+                "<p>Se precisar de alguma ajuda ou tiver alguma dúvida, nossa equipe de suporte está sempre aqui.<br>Basta responder a este e-mail e ficaremos felizes em auxilia-lo.</p>" +
                 "<p>Estamos ansiosos para ver você dentro da nossa comunidade!</p>" +
                 "<p>Atenciosamente,<br/>Equipe DataFlow</p>" +
                 "</body>" +
                 "</html>";
 
         MimeMessage msg = javaMailSender.createMimeMessage();
+        msg.setContent(envio, "text/html; charset=utf-8");
         MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
         helper.setTo(para);
         helper.setSubject("Token de acesso - DataFlow");
         helper.setText(envio, true);
         helper.setFrom(from);
         helper.setCc(cc);
-        msg.setContent(envio, "text/html; charset=utf-8");
-        javaMailSender.send(msg);
+
+        CompletableFuture.runAsync(() -> {
+            javaMailSender.send(msg);
+        });
     }
 
     public void enviarEmailComAnexo(String para, String titulo, String conteudo, String arquivo) throws MessagingException {
