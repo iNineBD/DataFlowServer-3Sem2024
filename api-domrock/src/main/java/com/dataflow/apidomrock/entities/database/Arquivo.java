@@ -28,10 +28,10 @@ public class Arquivo {
     private boolean isAtivo;
     private String status;
 
-    @OneToMany(mappedBy = "arquivo")
+    @OneToMany(mappedBy = "arquivo", fetch = FetchType.EAGER)
     private List<Metadata> metadados;
 
-    @ManyToMany(targetEntity= Metadata.class, fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity= Metadata.class, fetch = FetchType.EAGER)
     @JoinTable(name = "hash", // nome da tabela no sql
             joinColumns = @JoinColumn(name = "id_arquivo"), // fk do arquivo no hash
             inverseJoinColumns = @JoinColumn(name = "id_metadado") // fk do metadado no hash

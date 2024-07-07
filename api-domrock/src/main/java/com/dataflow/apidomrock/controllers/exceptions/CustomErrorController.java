@@ -23,6 +23,7 @@ public class CustomErrorController implements ErrorController {
 
     @RequestMapping(value = PATH)
     public ResponseEntity<ResponseCustomDTO<Object>> error() {
+
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Página não encontrada");
     }
 
