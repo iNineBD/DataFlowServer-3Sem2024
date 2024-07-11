@@ -214,7 +214,7 @@ public class ProcessFiles {
                 String metadado = content[0].replace("\"","").trim();
                 int qtd = arquivo.get().getMetadados().size();
                 for(int i = 0; i < qtd;i++){
-                    if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(i).getNome())){
+                    if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(i).getNome())&& arquivo.get().getMetadados().get(i).getIsAtivo()){
                         exist = true;
                     }
                 }
@@ -330,7 +330,7 @@ public class ProcessFiles {
             String metadado = currentRow.getCell(0).getStringCellValue().replace("\"","").trim();
             int qtd = arquivo.get().getMetadados().size();
             for(int j = 0; j < qtd;j++){
-                if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(j).getNome())){
+                if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(j).getNome())&& arquivo.get().getMetadados().get(i).getIsAtivo()){
                     exist = true;
                 }
             }
@@ -416,7 +416,7 @@ public class ProcessFiles {
             String metadado = currentRow.getCell(0).getStringCellValue().replace("\"","").trim();
             int qtd = arquivo.get().getMetadados().size();
             for(int j = 0; j < qtd;j++){
-                if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(j).getNome())){
+                if(metadado.equalsIgnoreCase(arquivo.get().getMetadados().get(j).getNome())&& arquivo.get().getMetadados().get(i).getIsAtivo()){
                     exist = true;
                 }
             }
